@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+    <title>Application Base - Presentation Server</title>
+    <script src="demo/jquery.2.0.3.js"></script>
+    <script src="demo/angular.1.2.29.js"></script>
+    <script src="demo/bootstrap.3.1.1.js"></script>
+    <script src="demo/ui-bootstrap-tpls.0.11.2.js"></script>
+    <script src="demo/prettify.1.0.1.js"></script>
+
+    <link  href="demo/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
+    <link  href="demo/prettify-style.css" rel="stylesheet" type="text/css">
+
+    <script src="angular-tree-control.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/tree-control.css">
+    <link rel="stylesheet" type="text/css" href="css/tree-control-attribute.css">
+    <style>
+        .header{padding-top: 20px; padding-bottom:20px; background-color: #444980;}
+        .head-container{width: 1140px; margin:auto;}
+        .header h1 {color: #fffffa; font-size: 60px}
+        .header h2 {color: #fffffa; font-size: 24px; font-style: normal}
+        .example-caption {color: #bbb; font-size: 12px}
+        .docs-body{width: 1140px; margin: auto auto 50px; }
+        .docs-footer{background-color: #F5F5F5; text-align: center; padding: 30px 0; border-top: #e5e5e5}
+        .tab-pane{background-color: #f8f8f8; border-right: 1px solid #ccc;border-left: 1px solid #ccc;border-bottom: 1px solid #ccc; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px }
+        .nav li.active a{background-color: #f8f8f8}
+        pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font-family: Consolas, 'Liberation Mono', Courier, monospace;}
+        .docs-sidenav { margin-top: 45px; margin-bottom: 0; }
+        .docs-sidenav > li > a {display: block; font-size: 13px; font-weight: 500; color: #999; padding: 4px 20px;}
+        .docs-sidenav > li.active > a {font-weight: 700; color: #563d7c; border-left: 2px solid #563d7c;padding-left: 18px;}
+        .docs-sidenav > li > a:hover {background-color: transparent; color: #563d7c; border-left: 1px solid #563d7c;padding-left: 19px;}
+        .type-hint-object {background:#999;}
+        .type-hint-boolean {background:rgb(18, 131, 39);}
+        .type-hint-number {background:rgb(189, 63, 66);}
+    </style>
+</head>
+<body ng-app="example">
+<div class="header">
+    <div class="head-container">
+        <h1>Application Base</h1>
+        <h2>The Presentation Server Component</h2>
+    </div>
+</div>
+<div class="row docs-body">
+<div class="col-md-9">
+
+<section id="classic" ng-controller="Classic">
+    <div class="page-header">
+        <h2>Forms <img src="images/reload-icon.png" width="30px" style="cursor:pointer" ng-click="load_forms()"/></h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6 show-grid">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="example-caption">EXAMPLE:</div>
+                    <div save-content="classic-html">
+                        <treecontrol class="tree-classic"
+                                     tree-model="treedata"
+                                     on-selection="showSelected(node)">
+                            label: {{node.label}} ({{node.id}})
+                        </treecontrol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+<!-- 
+    <div class="row">
+        <tabset>
+            <tab heading="Markup" >
+                <pre class="code" apply-content="classic-html" highlight-lang="html"></pre>
+            </tab>
+            <tab heading="JavaScript">
+                <pre class="code" apply-content="classic-js" highlight-lang="js"></pre>
+            </tab>
+        </tabset>
+    </div>
+-->
+	
+    <script save-content="classic-js">
+        function Classic($scope, $http) {
+            $scope.treedata=createSubTree(3, 4, "");
+            $scope.showSelected = function(sel) {
+                $scope.selectedNode = sel;
+            };
+			$scope.load_forms = function()
+			{
+			    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms")
+			    .success(function(response) {$scope.treedata = render_forms_response(response);});
+
+/**  
+ *				$.ajax({
+ *				  url: "http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms"
+ *				})
+ *				  .done(function( data ) {
+ *					  if(data.code == 100)
+ *					    $scope.$apply(function() {
+ *							$scope.treedata = render_forms_result();
+ *						});
+ *					  else
+ *					  	alert("Error when retrieving data: "+data.code);
+ *				  });
+**/
+			}
+            
+        }
+    </script>
+
+</section>
+
+</div>
+<div class="col-md-3">
+    <ul nav class="nav docs-sidenav">
+        <!--<li class="active"><a href="#as-attribute">classic</a></li>-->
+    </ul>
+</div>
+
+</div>
+
+<script>
+    var entityMap = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': '&quot;',
+        "'": '&#39;',
+        "/": '&#x2F;'
+    };
+    function escapeHtml(string) {
+        return String(string).replace(/[&<>"'\/]/g, function (s) {
+            return entityMap[s];
+        });
+    }
+    var nonSpace = /\S/;
+    function trimIndent(content) {
+        var lines = content.split("\n");
+        var begin = 0;
+        var end = lines.length-1;
+        while ((nonSpace.exec(lines[begin]) == null) && (begin < lines.length))
+            begin = begin + 1;
+        while ((nonSpace.exec(lines[end]) == null) && end >= begin)
+            end = end - 1;
+        var ident = nonSpace.exec(lines[begin]).index;
+        var formatted = "";
+        for (var i = begin; i <= end; i++) {
+            formatted = formatted + lines[i].slice(ident-1) + ((i < end)?"\n":"");
+        }
+        return formatted;
+    }
+    var example = angular.module("example", ["treeControl", "ui.bootstrap", "template/tabs/tab.html", "template/tabs/tabset.html"])
+                    .factory("$savedContent", function() {
+                        return [];
+                    })
+                    .directive("saveContent", function($savedContent) {
+                        return {
+                            restrict: "A",
+                            compile: function($element, $attrs) {
+                                var content = $element.html();
+                                $savedContent[$attrs.saveContent] = content;
+                            }
+                        }
+                    })
+                    .directive("applyContent", function($savedContent) {
+                        return {
+                            restrict: "EAC",
+                            compile: function($element, $attrs) {
+                                return function($scope, $element, $attrs) {
+                                    var content = $savedContent[$attrs.applyContent];
+                                    var lang = $attrs.highlightLang;
+                                    if (lang == "html")
+                                        content = escapeHtml(content);
+                                    content = trimIndent(content);
+                                    var pre = prettyPrintOne(content, lang);
+                                    $element.html(pre);
+                                }
+                            }
+                        }
+                    })
+                    .directive("nav", function() {
+                        return {
+                            restrict: "A",
+                            compile: function($element) {
+                                var sections = $("section");
+                            }
+                        }
+                    })
+            ;
+    function createSubTree(level, width, prefix) {
+        if (level > 0) {
+            var res = [];
+            for (var i=1; i <= width; i++)
+                res.push({ "label" : "Node " + prefix + i, "id" : "id"+prefix + i, "i": i, "children": createSubTree(level-1, width, prefix + i +".") });
+            return res;
+        }
+        else
+            return [];
+    }
+
+	function render_forms_response(response)	
+	{
+		alert(response.resultSet.rows.length);
+		var tree = [];
+        tree.push({ "label" : response.resultSet.rows[0][0], "id" : "id "+response.resultSet.rows[0][1], "i": 1, "children": [] });
+        tree.push({ "label" : response.resultSet.rows[1][0], "id" : "id "+response.resultSet.rows[1][1], "i": 2, "children": [] });
+		return tree;
+	}
+	
+
+</script>
+
+</body>
+</html>
