@@ -32,7 +32,7 @@
         .type-hint-object {background:#999;}
         .type-hint-boolean {background:rgb(18, 131, 39);}
         .type-hint-number {background:rgb(189, 63, 66);}
-        .footer {position: absolute; left: 10px; bottom: 10px; color: #AAAAAA;}
+        .footer {position: fixed; left: 10px; bottom: 10px; color: #AAAAAA;}
     </style>
 </head>
 <body ng-app="example">
@@ -65,6 +65,9 @@
             </div>
         </div>
     </div>
+	
+	<input type="button" value="start web-socket communication" onClick="start_ws()" style="position:absolute; left: 350px;"/>
+	<div id="messages"></div>
 	
 <!-- 
     <div class="row">
@@ -213,10 +216,32 @@
 		return tree;
 	}
 	
+	
+    var webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
+
+    webSocket.onerror = function(event) {  
+      alert("Error in WebSocket call: " + event.data);
+    };
+
+    webSocket.onopen = function(event) { 
+      document.getElementById('messages').innerHTML 
+        = 'Connection established';
+    };
+
+    webSocket.onmessage = function(event) { 
+      document.getElementById('messages').innerHTML 
+        += '<br />' + event.data;
+    };
+
+    function start_ws() {
+      webSocket.send('hello');
+      return false;
+    }
+
 
 </script>
 
-<span class="footer">v0.0.2</span>
+<span class="footer">v0.0.5</span>
 
 </body>
 </html>
