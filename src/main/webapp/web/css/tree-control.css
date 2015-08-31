@@ -47,17 +47,20 @@ treecontrol li .tree-unselectable {
 
 treecontrol.tree-classic li.tree-expanded i.tree-branch-head {
     padding: 1px 10px;
-    background: url("../images/folder.png") no-repeat;
+#   background: url("../images/folder.png") no-repeat;
+    background: url("../images/file.png") no-repeat;
 }
 
 treecontrol.tree-classic li.tree-collapsed i.tree-branch-head {
     padding: 1px 10px;
-    background: url("../images/folder-closed.png") no-repeat;
+#   background: url("../images/folder-closed.png") no-repeat;
+    background: url("../images/file.png") no-repeat;
 }
 
 treecontrol.tree-classic li.tree-leaf i.tree-leaf-head {
     padding: 1px 10px;
-    background: url("../images/file.png") no-repeat;
+#   background: url("../images/file.png") no-repeat;
+    background: url("../images/bullets.png") no-repeat;
 }
 
 treecontrol.tree-classic li .tree-selected {

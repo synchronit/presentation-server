@@ -204,15 +204,24 @@
 	function render_forms_response(response)	
 	{
 		var tree = [];
+		var tree_data = [];
 		var form_name_prev = " ";
         for (var i=0; i < response.resultSet.rows.length; i++)
         {
-        	if (response.resultSet.rows[i][0] != form_name_prev)
+        	if (response.resultSet.rows[i][0] != form_name_prev)  // A different form (or the first one)
         	{
-		        tree.push({ "label" : response.resultSet.rows[i][0], "id" : "id "+response.resultSet.rows[0][1], "i": i, "children": [] });
+        		if (form_name_prev != " ")  // It is not the first one => we must create the node and attach the children
+        		{
+			        tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "children": tree_data });
+			        tree_data = [];
+				}
 		        form_name_prev = response.resultSet.rows[i][0];
 		    }
+	        tree_data.push({ "label" : response.resultSet.rows[i][2], "id" : "type "+response.resultSet.rows[i][3], "i": i, "children": [] });
 	    }
+
+        tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "children": tree_data }); // Agrega el ultimo Form con los datos de tree_data
+
 		return tree;
 	}
 	
@@ -241,7 +250,7 @@
 
 </script>
 
-<span class="footer">v0.0.5</span>
+<span class="footer">v0.0.7</span>
 
 </body>
 </html>
