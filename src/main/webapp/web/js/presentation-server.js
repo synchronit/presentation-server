@@ -1,4 +1,4 @@
-    var example = angular.module("example", ["treeControl", "ui.bootstrap", "template/tabs/tab.html", "template/tabs/tabset.html"])
+    var myTree = angular.module("myTree", ["treeControl", "ui.bootstrap", "template/tabs/tab.html", "template/tabs/tabset.html"])
                     .factory("$savedContent", function() {
                         return [];
                     })
@@ -64,7 +64,7 @@
 				        }) 
             ;
 
-var wholeApp = angular.module('wholeApp',['example', 'myAccordion']);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion']);
 
 var entityMap = {
     "&": "&amp;",
