@@ -6,120 +6,31 @@
     <link href="http://fonts.googleapis.com/css?family=Lato:300,700,300italic" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="css/v-accordion-panel.css" rel="stylesheet">
-    <link href="css/v-accordion.css"       rel="stylesheet">
+    <link href="css/accordion/v-accordion-panel.css" rel="stylesheet">
+    <link href="css/accordion/v-accordion.css"       rel="stylesheet">
 
     <!-- Scripts -->
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script> 
 
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-animate.min.js"></script>
-    <script src="js/v-accordion.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/accordion/v-accordion.js"></script>
+    <script src="js/accordion/accordion.app.js"></script>
 
-    <script src="demo/jquery.2.0.3.js"></script>
-    <script src="demo/bootstrap.3.1.1.js"></script>
-    <script src="demo/ui-bootstrap-tpls.0.11.2.js"></script>
-    <script src="demo/prettify.1.0.1.js"></script>
+    <script src="js/jquery/jquery.2.0.3.js"></script>
+    <script src="js/bootstrap/bootstrap.3.1.1.js"></script>
+    <script src="js/bootstrap/ui-bootstrap-tpls.0.11.2.js"></script>
+    <script src="js/prettify/prettify.1.0.1.js"></script>
 
-    <link  href="demo/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
-    <link  href="demo/prettify-style.css"  rel="stylesheet" type="text/css">
+    <link  href="css/bootstrap/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
+    <link  href="css/prettify/prettify-style.css"  rel="stylesheet" type="text/css">
 
-    <script src="angular-tree-control.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/tree-control.css">
-    <link rel="stylesheet" type="text/css" href="css/tree-control-attribute.css">
-    <style>
-        .header{padding-top: 10px; padding-bottom:10px; background-color: #444980;}
-        .head-container{width: 1140px; margin:auto;}
-        .header h1 {color: #fffffa; font-size: 60px}
-        .header h2 {color: #fffffa; font-size: 24px; font-style: normal}
-        .example-caption {color: #bbb; font-size: 12px}
-        .docs-body{width: 1140px; margin: auto auto 50px; }
-        .docs-footer{background-color: #F5F5F5; text-align: center; padding: 30px 0; border-top: #e5e5e5}
-        .tab-pane{background-color: #f8f8f8; border-right: 1px solid #ccc;border-left: 1px solid #ccc;border-bottom: 1px solid #ccc; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px }
-        .nav li.active a{background-color: #f8f8f8}
-        pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font-family: Consolas, 'Liberation Mono', Courier, monospace;}
-        .docs-sidenav { margin-top: 45px; margin-bottom: 0; }
-        .docs-sidenav > li > a {display: block; font-size: 13px; font-weight: 500; color: #999; padding: 4px 20px;}
-        .docs-sidenav > li.active > a {font-weight: 700; color: #563d7c; border-left: 2px solid #563d7c;padding-left: 18px;}
-        .docs-sidenav > li > a:hover {background-color: transparent; color: #563d7c; border-left: 1px solid #563d7c;padding-left: 19px;}
-        .type-hint-object {background:#999;}
-        .type-hint-boolean {background:rgb(18, 131, 39);}
-        .type-hint-number {background:rgb(189, 63, 66);}
-        .footer {position: fixed; left: 10px; bottom: 10px; color: #AAAAAA;}
-    </style>
+    <script src="js/tree/angular-tree-control.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
+    <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
 
-	<script>
+    <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
+    <script src="js/presentation-server.js"></script>
 
-		    var example = angular.module("example", ["treeControl", "ui.bootstrap", "template/tabs/tab.html", "template/tabs/tabset.html"])
-		                    .factory("$savedContent", function() {
-		                        return [];
-		                    })
-		                    .directive("saveContent", function($savedContent) {
-		                        return {
-		                            restrict: "A",
-		                            compile: function($element, $attrs) {
-		                                var content = $element.html();
-		                                $savedContent[$attrs.saveContent] = content;
-		                            }
-		                        }
-		                    })
-		                    .directive("applyContent", function($savedContent) {
-		                        return {
-		                            restrict: "EAC",
-		                            compile: function($element, $attrs) {
-		                                return function($scope, $element, $attrs) {
-		                                    var content = $savedContent[$attrs.applyContent];
- 		                                    var lang = $attrs.highlightLang;
- 		                                    if (lang == "html")
- 		                                        content = escapeHtml(content);
- 		                                    content = trimIndent(content);
- 		                                    var pre = prettyPrintOne(content, lang);
- 		                                    $element.html(pre);
- 		                                }
-		                            }
-		                        }
-		                    })
-		                    .directive("nav", function() {
-		                        return {
-		                            restrict: "A",
-		                            compile: function($element) {
-		                                var sections = $("section");
-		                            }
-		                        }
-		                    })
-		                    .controller('Classic', function($scope, $http) 
-		                    {
-						            $scope.treedata=createSubTree(3, 4, "");
-						            $scope.showSelected = function(sel) {
-						                $scope.selectedNode = sel;
-						            };
-									$scope.load_forms = function()
-									{
-									    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms")
-									    .success(function(response) {$scope.treedata = render_forms_response(response);});
-						
-						/**  
-						 *				$.ajax({
-						 *				  url: "http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms"
-						 *				})
-						 *				  .done(function( data ) {
-						 *					  if(data.code == 100)
-						 *					    $scope.$apply(function() {
-						 *							$scope.treedata = render_forms_result();
-						 *						});
-						 *					  else
-						 *					  	alert("Error when retrieving data: "+data.code);
-						 *				  });
-						**/
-									}
-						            
-						        }) 
-		            ;
-
-		var wholeApp = angular.module('wholeApp',['example', 'myApp']);
-
-	</script>
-    
 </head>
 
 <body ng-app="wholeApp">
@@ -128,10 +39,11 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
+	        <span class="footer">v1.1</span>
 	    </div>
 	</div>
 	
-  <div ng-app="myApp">
+  <div ng-app="myAccordion">
 
 <!--<div ng-cloak class="u-wideWrapper u-paddingHm u-paddingTl" ng-controller="MainController">-->
     <div ng-cloak class="u-paddingHm u-paddingTl" ng-controller="MainController">
@@ -201,7 +113,7 @@
                         </div>
 
                         <div ng-switch-when="Web Sockets">
-							<input type="button" value="start web-socket communication" onClick="start_ws()" style="position:absolute; left: 350px;"/>
+							<input type="button" value="start web-socket communication" onClick="start_ws()" />
 							<div id="messages"></div>
 						</div>
 
@@ -231,98 +143,6 @@
 	    </div>
 	</div>
   </div>
-
-
-
-		<script  save-content="classic-js">
-		    var entityMap = {
-		        "&": "&amp;",
-		        "<": "&lt;",
-		        ">": "&gt;",
-		        '"': '&quot;',
-		        "'": '&#39;',
-		        "/": '&#x2F;'
-		    };
-		    function escapeHtml(string) {		    	
-		        return String(string).replace(/[&<>"'\/]/g, function (s) {
-		            return entityMap[s];
-		        });
-		    }
-		    var nonSpace = /\S/;
-		    function trimIndent(content) {
-		        var lines = content.split("\n");
-		        var begin = 0;
-		        var end = lines.length-1;
-		        while ((nonSpace.exec(lines[begin]) == null) && (begin < lines.length))
-		            begin = begin + 1;
-		        while ((nonSpace.exec(lines[end]) == null) && end >= begin)
-		            end = end - 1;
-		        var ident = nonSpace.exec(lines[begin]).index;
-		        var formatted = "";
-		        for (var i = begin; i <= end; i++) {
-		            formatted = formatted + lines[i].slice(ident-1) + ((i < end)?"\n":"");
-		        }
-		        return formatted;
-		    }
-				            
-		    function createSubTree(level, width, prefix) {
-		        if (level > 0) {
-		            var res = [];
-		            for (var i=1; i <= width; i++)
-		                res.push({ "label" : "Node " + prefix + i, "id" : "id"+prefix + i, "i": i, "children": createSubTree(level-1, width, prefix + i +".") });
-		            return res;
-		        }
-		        else
-		            return [];
-		    }
-		
-			function render_forms_response(response)	
-			{
-				var tree = [];
-				var tree_data = [];
-				var form_name_prev = " ";
-		        for (var i=0; i < response.resultSet.rows.length; i++)
-		        {
-		        	if (response.resultSet.rows[i][0] != form_name_prev)  // A different form (or the first one)
-		        	{
-		        		if (form_name_prev != " ")  // It is not the first one => we must create the node and attach the children
-		        		{
-					        tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "children": tree_data });
-					        tree_data = [];
-						}
-				        form_name_prev = response.resultSet.rows[i][0];
-				    }
-			        tree_data.push({ "label" : response.resultSet.rows[i][2], "id" : "type "+response.resultSet.rows[i][3], "i": i, "children": [] });
-			    }
-		
-		        tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "children": tree_data }); // Agrega el ultimo Form con los datos de tree_data
-		
-				return tree;
-			}
-			
-			
-		    var webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
-		
-		    webSocket.onerror = function(event) {  
-		      alert("Error in WebSocket call: " + event.data);
-		    };
-		
-		    webSocket.onopen = function(event) { 
-		      document.getElementById('messages').innerHTML 
-		        = 'Connection established';
-		    };
-		
-		    webSocket.onmessage = function(event) { 
-		      document.getElementById('messages').innerHTML 
-		        += '<br />' + event.data;
-		    };
-		
-		    function start_ws() {
-		      webSocket.send('hello');
-		      return false;
-		    }
-		
-		</script>
 
 </body>
 </html>
