@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Scripts -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script> 
+
+	<script>
+
+			var fgApp1 = angular.module("fgApp1", []);
+			fgApp1.controller('fgController1', function($scope) 
+			{ 
+				$scope.fgName1 = 'Hola Fer 1'; 
+				console.log($scope.fgName1); 
+			});
+
+			console.log(fgApp1);
+
+			var fgApp2 = angular.module("fgApp2", []);
+			fgApp2.controller('fgController2', function($scope) 
+			{ 
+				$scope.fgName2 = 'Hola Fer 2'; 
+				console.log($scope.fgName2); 
+			});
+
+			console.log(fgApp2);
+
+			// var wholeApp = angular.module('wholeApp',['fgApp1', 'fgApp2']);  // <<< Usar <body ng-app="wholeApp">
+
+			angular.element(document).ready(function() {
+				 angular.bootstrap(document.getElementById("fgDiv2"), ['fgApp2']);
+			});
+  
+	</script>
+    
+</head>
+
+<body>
+
+	<div ng-app="fgApp1">
+		<div ng-controller="fgController1">
+			HOLA (me dejo un msg en la consola?)
+		</div>
+	</div>
+
+	<div id="fgDiv2">
+		<div ng-controller="fgController2">
+			HOLA (me dejo un 2do. msg en la consola?)
+		</div>
+	</div>
+
+</body>
+</html>

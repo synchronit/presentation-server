@@ -28,7 +28,7 @@
     <link rel="stylesheet" type="text/css" href="css/tree-control.css">
     <link rel="stylesheet" type="text/css" href="css/tree-control-attribute.css">
     <style>
-        .header{padding-top: 10px; padding-bottom:10px; background-color: #444980;}
+        .header{padding-top: 20px; padding-bottom:20px; background-color: #444980;}
         .head-container{width: 1140px; margin:auto;}
         .header h1 {color: #fffffa; font-size: 60px}
         .header h2 {color: #fffffa; font-size: 24px; font-style: normal}
@@ -124,6 +124,8 @@
 
 <body ng-app="wholeApp">
 
+
+<div ng-app="example">   
 	<div class="header">
 	    <div class="head-container">
 	        <h1>Application Base</h1>
@@ -131,42 +133,19 @@
 	    </div>
 	</div>
 	
-  <div ng-app="myApp">
-
-<!--<div ng-cloak class="u-wideWrapper u-paddingHm u-paddingTl" ng-controller="MainController">-->
-    <div ng-cloak class="u-paddingHm u-paddingTl" ng-controller="MainController">
-
-      <div class="Grid Grid--gutters md-Grid--20">
-        <div class="Grid-cell">
-
-          <v-accordion class="vAccordion--default" control="accordionA" onexpand="expandCallback(index)" oncollapse="collapseCallback(index)">
-
-            <v-pane ng-repeat="pane in panes" expanded="$first">
-              <v-pane-header id="pane0{{$index}}-header" aria-controls="pane0{{$index}}-content">
-                <h5>{{ pane.header }}</h5>
-              </v-pane-header>
-
-              <v-pane-content id="pane0{{$index}}-content" aria-labelledby="pane0{{$index}}-header">
-
-
-                      <div ng-switch on="pane.header">
-                        <div ng-switch-when="Forms">
-
-
-<div ng-app="example">   
 	<div class="row docs-body">
 		<div class="col-md-9">
 	
 			<section id="classic" ng-controller="Classic">  
 			
 			    <div class="page-header">
-			        <img src="images/reload-icon.png" width="30px" style="cursor:pointer" ng-click="load_forms()"/> Refresh Content
+			        <h2>Forms <img src="images/reload-icon.png" width="30px" style="cursor:pointer" ng-click="load_forms()"/></h2>
 			    </div>
 			    <div class="row">
 			        <div class="col-md-6 show-grid">
-			            <div class="panel panel-default" style="width:70%">
+			            <div class="panel panel-default">
 			                <div class="panel-body">
-			                    <div class="example-caption">FORMS DEFINED:</div>
+			                    <div class="example-caption">EXAMPLE:</div>
 			                    <div save-content="classic-html">
 			                        <treecontrol class="tree-classic"
 			                                     tree-model="treedata"
@@ -178,7 +157,10 @@
 			            </div>
 			        </div>
 			    </div>
-								
+				
+				<input type="button" value="start web-socket communication" onClick="start_ws()" style="position:absolute; left: 350px;"/>
+				<div id="messages"></div>
+				
 			<!-- 
 			    <div class="row">
 			        <tabset>
@@ -198,20 +180,23 @@
 	</div>
 </div>
 
-                        </div>
 
-                        <div ng-switch-when="Web Sockets">
-							<input type="button" value="start web-socket communication" onClick="start_ws()" style="position:absolute; left: 350px;"/>
-							<div id="messages"></div>
-						</div>
+  <div ng-app="myApp">
 
-                        
-                        <div ng-switch-default>{{ pane.content }}</div>
-					  </div> <!-- SWITCH -->
+    <div ng-cloak class="u-wideWrapper u-paddingHm u-paddingTl" ng-controller="MainController">
 
-				<!-- Original Code before including the Tree
+      <div class="Grid Grid--gutters md-Grid--20">
+        <div class="Grid-cell u-marginBl">
+
+          <v-accordion class="vAccordion--default" control="accordionA" onexpand="expandCallback(index)" oncollapse="collapseCallback(index)">
+
+            <v-pane ng-repeat="pane in panes" expanded="$first">
+              <v-pane-header id="pane0{{$index}}-header" aria-controls="pane0{{$index}}-content">
+                <h5>{{ pane.header }}</h5>
+              </v-pane-header>
+
+              <v-pane-content id="pane0{{$index}}-content" aria-labelledby="pane0{{$index}}-header">
                 <p>{{ pane.content }}</p>
-				-->
 
                 <v-accordion ng-if="pane.subpanes">
                   <v-pane ng-repeat="subpane in pane.subpanes" expanded="$first">

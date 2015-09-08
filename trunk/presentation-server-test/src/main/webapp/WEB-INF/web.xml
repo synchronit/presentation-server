@@ -4,4 +4,14 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+
+	<servlet>
+		<servlet-name>wsFallback</servlet-name>
+		<servlet-class>com.pserver.test.wsocket.WSTestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>wsFallback</servlet-name>
+		<url-pattern>/wsocket</url-pattern>
+	</servlet-mapping>
+  
 </web-app>
