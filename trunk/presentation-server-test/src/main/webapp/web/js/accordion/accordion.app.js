@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('myAccordion', [ 'ngAnimate', 'vAccordion', 'example' ])
+    .module('myAccordion', [ 'ngAnimate', 'vAccordion', 'myTree' ])
 
     .config(function ($compileProvider) {
       $compileProvider.debugInfoEnabled(false);
