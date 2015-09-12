@@ -62,7 +62,7 @@ function parse_forms_response(response)
         tree_data.push({ "label" : response.resultSet.rows[i][2], "id" : "type "+response.resultSet.rows[i][3], "i": i, "isForm" : function() { return false; }, "children": [] });
     }
 
-    tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": tree_data }); // Adds the last form 
+    tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "children": tree_data }); // Agrega el ultimo Form con los datos de tree_data
 
 	return tree;
 }
