@@ -16,7 +16,7 @@
 			                        <treecontrol class="tree-classic"
 			                                     tree-model="treedata"
 			                                     on-selection="showSelected(node)">
-			                            label: {{node.label}} ({{node.id}})
+			                            {{node.label}} ({{node.id}})
 			                        </treecontrol>
 			                    </div>
 			                </div>

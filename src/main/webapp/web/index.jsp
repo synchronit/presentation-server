@@ -27,9 +27,12 @@
     <script src="js/tree/angular-tree-control.js"></script>
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
+    <script src="js/tree/tree.app.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
     <script src="js/presentation-server.js"></script>
+
+    <script src="js/form_content.app.js"></script>
 
 </head>
 
@@ -39,12 +42,19 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v1.3</span>
+	        <span class="footer">v0.4</span>
 	    </div>
 	</div>
 
-	<!-- this page includes also the Tree (tree.app.jsp) -->
-	<jsp:include page="accordion.app.jsp" />
+	<div>
+		<div style="float: left">
+			<!-- this page includes also the Tree (tree.app.jsp) -->
+			<jsp:include page="accordion.app.jsp" />
+		</div>
+		<div id="contentDiv" style="float: left;">
+			<jsp:include page="form_content.app.jsp" />
+		</div>
+	</div>
 	
 </body>
 </html>
