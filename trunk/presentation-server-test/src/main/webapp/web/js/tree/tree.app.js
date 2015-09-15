@@ -35,26 +35,28 @@
                             }
                         }
                     })
-                    .controller('Classic', function($scope, $http, formSelectedService) 
+                    .controller('Classic', function($scope, $http, $timeout, formSelectedService) 
                     {
 //				            $scope.treedata=createSubTree(3, 4, ""); // replaced by load_forms() call (see below)
 							
 				            $scope.showSelected = function(node) {
 				                $scope.selectedNode = node;
 //				                console.log($scope);
-
+//
 //								console.log(node.children.length);
-								console.log(node.isForm());
+//								console.log(node.isForm());
 //								console.log("===========");
 
 				                if (node.isForm())
 				                {
-				                	console.log("is a Form");
+//				                	console.log("is a Form");
 									formSelectedService.setFormSelected(node);
 				                }
 				            };
 							$scope.load_forms = function()
 							{
+//								console.log("Requesting form data ...");
+							
 							    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms")
 							    .success(function(response) {$scope.treedata = parse_forms_response(response);});
 				
@@ -71,6 +73,9 @@
 				 *					  	alert("Error when retrieving data: "+data.code);
 				 *				  });
 				**/
+				
+							    setTimeout(function(){ $scope.load_forms() }, 5000);	// Refreshes every 60s
+
 							}
 
 							$scope.load_forms();	// This replaced the original "createSubTree(...)" call

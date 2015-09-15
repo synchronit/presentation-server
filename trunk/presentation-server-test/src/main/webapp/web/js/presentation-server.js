@@ -44,30 +44,110 @@ function createSubTree(level, width, prefix) {
 
 function parse_forms_response(response)	
 {
-	var tree = [];
-	var tree_data = [];
-	var form_name_prev = " ";
+	var forms = [];
+	var formData = [];
+	var refData = [];
+	var formNamePrev = " ";
+	var previousReference = " ";
+	
     for (var i=0; i < response.resultSet.rows.length; i++)
     {
-    	if (response.resultSet.rows[i][0] != form_name_prev)  // A different form (or the first one)
+    	var formName     = response.resultSet.rows[i][0];
+    	var label        = response.resultSet.rows[i][2];
+    	var type         = response.resultSet.rows[i][3];
+    	var isReference  = (response.resultSet.rows[i][5] == "true");
+    	var refLabel     = response.resultSet.rows[i][7];
+    	
+    	var wasReference = false;
+    
+		// If it was in a Reference and (is not a reference any more OR is a different one) 
+		if (previousReference != " " && (!isReference || isReference && (label != previousReference || formName != formNamePrev) ))
+		{
+// console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
+	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "children": refData });
+			refData = [];
+		}
+		previousReference = ( isReference ? label : " " );
+
+    	if (formName != formNamePrev)  // A different form (or the first one)
     	{
-    		if (form_name_prev != " ")  // It is not the first one => we must create the FORM node and attach the children
+    		if (formNamePrev != " ")  // It is not the first one => we must create the FORM node, attach the children and reset the collection
     		{
-		        tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": tree_data});
-		        tree_data = [];
+// console.log("2. loads a Form in the tree, with "+formData.length+" DATA children");
+		        forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": formData});
+		        formData = [];
 			}
-	        form_name_prev = response.resultSet.rows[i][0];
+	        formNamePrev = formName;
 	    }
-	    // It is a leaf node (Form_DATA)
-        tree_data.push({ "label" : response.resultSet.rows[i][2], "id" : "type "+response.resultSet.rows[i][3], "i": i, "isForm" : function() { return false; }, "children": [] });
+	    
+	    // Pushes a LEAF node, even a Reference (refData) or an Atomic Data (formData)
+		if (isReference)
+		{
+			refData.push({ "label" : refLabel, "type" : type,  "isReference" : isReference, "i": i, "isForm" : function() { return false; }, "children": [] });
+// console.log("3. loads a reference in the tree, it now has "+refData.length+" children");
+		}
+		else
+		{
+	        formData.push({ "label" : label, "type" : type,  "isReference" : isReference, "i": i, "isForm" : function() { return false; }, "children": [] });
+// console.log("4. loads a data in the tree, it now has "+formData.length+" children");
+		}
     }
 
-    tree.push({ "label" : form_name_prev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": tree_data }); // Adds the last form 
+	if (refData.length > 0) // Checks if there are pending dataReferences to be loaded
+	{
+// console.log("5. loads a Data in the tree, with "+refData.length+" REF children");
+        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "children": refData });
+// console.log("6. loads a data in the tree, it now has "+formData.length+" children");
+	}
+    forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": formData }); // Adds the last form 
+// console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
-	return tree;
+// console.log(forms);
+
+	return forms;
 }
 
+/**********************************  EJEMPLO DE RESPUESTA DEL REQUEST *******
 
+ {
+ 	"code":100,
+ 	"message":"4 forms found.",
+ 	"resultSet":
+	{
+		"headers":
+		[
+			{"label":"FormName","type":"TEXT"},
+			{"label":"FormVersion","type":"NUMBER"},
+			{"label":"DataLabel","type":"TEXT"},
+			{"label":"DataType","type":"TEXT"},
+			{"label":"DataOrder","type":"NUMBER"},
+			{"label":"FormReferenced","type":"TEXT"},
+			{"label":"DataReferenced","type":"TEXT"}
+		],
+		"rows":
+		[
+			["MYTEST","1","MYNUM","NUMBER","0",null],
+			["MYTEST","1","MYTEXT","TEXT","1",null],
+			["MYTEST","1","MYBOOL","BOOLEAN","2",null],
+			
+			["MYTEST2","1","A","NUMBER","0",null],
+			["MYTEST2","1","B","TEXT","1",null],
+			["MYTEST2","1","C","BOOLEAN","2",null],
+			
+			["SEX","1","ID","NUMBER","0",null],
+			["SEX","1","SEX","TEXT","1",null],
+			
+			["PERSON","1","ID","NUMBER","0",null],
+			["PERSON","1","NAME","TEXT","1",null],
+			["PERSON","1","GENDER","REFERENCE","2","SEX", "ID"],
+			["PERSON","1","GENDER","REFERENCE","3","SEX", "SEX"]
+
+		]
+	},
+	"debugInfo":[]
+} 
+
+***********************************/
 var webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
 
 webSocket.onerror = function(event) {  
