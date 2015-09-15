@@ -4,19 +4,22 @@
 	
 			<section id="classic" ng-controller="Classic">  
 			
-			    <div class="page-header">
-			        <img src="images/reload-icon.png" width="30px" style="cursor:pointer" ng-click="load_forms()"/> Refresh Content
+<!--
+			    <div class="page-header" style="height: 3px">
+			        <img src="images/reload-icon.png" width="30px" style="cursor:pointer" ng-click="load_forms()"/> Refresh Content  
 			    </div>
-			    <div class="row">
+-->
+			    <div class="row" style="margin-top: 10px">
 			        <div class="col-md-6 show-grid">
 			            <div class="panel panel-default" style="width:70%">
 			                <div class="panel-body">
-			                    <div class="example-caption">FORMS DEFINED:</div>
+<!--		                    <div class="example-caption">FORMS DEFINED:</div>  -->
 			                    <div save-content="classic-html">
 			                        <treecontrol class="tree-classic"
 			                                     tree-model="treedata"
 			                                     on-selection="showSelected(node)">
-			                            {{node.label}} ({{node.id}})
+			                            {{node.label}}
+			                            <span ng-if="node.type > ' ' ">({{node.type}})</span>
 			                        </treecontrol>
 			                    </div>
 			                </div>

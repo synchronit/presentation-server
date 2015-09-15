@@ -46,7 +46,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.5</span>
+	        <span class="footer">v0.6</span>
 	    </div>
 	</div>
 
@@ -55,7 +55,7 @@
 			<!-- this page includes also the Tree (tree.app.jsp) -->
 			<jsp:include page="accordion.app.jsp" />
 		</div>
-		<div id="contentDiv" style="overflow: hidden; padding-left: 3%">
+		<div id="contentDiv" style="overflow: hidden; padding-left: 3%; padding-right: 3%;">
 			<jsp:include page="form_content.app.jsp" />
 		</div>
 	</div>

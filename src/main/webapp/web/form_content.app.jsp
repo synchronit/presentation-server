@@ -3,14 +3,43 @@
 	<h3 style="formTitle">{{formSelected.label}}</h3>
 
 	<div ng-repeat="data in formSelected.children">
-		<div style="float: left; clear: left; width: 30%">
-			{{data.label}}
+
+		<!-- Native data is rendered directly -->
+		<div  ng-if="!data.isReference" style="margin-left: 15px;">
+		<div>
+	  		<div style="float: left; width: 30%; margin-top: 5px;">
+				{{data.label}}
+			</div>
+			<div ng-switch="data.type" style="margin-top: 5px;">
+				<div ng-switch-when="BOOLEAN"><input type="checkbox"></div> 
+				<div ng-switch-when="NUMBER"><input type="number"></div> 
+				<div ng-switch-default><input type="text"></div> 
+			</div>
 		</div>
-		<div ng-switch="data.id" style="float: left;">
-			<span ng-switch-when="type BOOLEAN"><input type="checkbox"></span> 
-			<span ng-switch-when="type NUMBER"><input type="number"></span> 
-			<span ng-switch-default><input type="text"></span> 
+  		</div>
+
+		<!-- Referenced data is rendered within a fieldset -->
+		<div  ng-if="data.isReference">
+			<fieldset style="border: 1px solid grey; border-radius: 10px; padding: 15px; padding-top: 10px; margin-top: 5px; width: auto;"> 
+
+				<legend style="font-size: 12px; text-decoration: none; margin: 0px; border: 0px; padding-left: 5px; padding-right: 5px; width: auto; font-weight: bold; color: grey;">{{data.label}}</legend> 
+
+				<div ng-repeat="ref in data.children">
+			  		<div style="float: left; width: 30%; margin-top: 5px;"> <!--  -->
+						{{ref.label}}
+					</div>
+	
+					<div ng-switch="ref.type" style="margin-top: 5px;"> <!--   -->
+						<div ng-switch-when="BOOLEAN"><input type="checkbox"></div> 
+						<div ng-switch-when="NUMBER"><input type="number"></div> 
+						<div ng-switch-default><input type="text"></div> 
+					</div>
+				</div>
+  			</fieldset>
 		</div>
+		
 	</div>
 
   </div>
+
+  
