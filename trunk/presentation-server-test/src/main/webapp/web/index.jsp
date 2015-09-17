@@ -2,12 +2,18 @@
 <html lang="en">
   <head>
 
+	<link rel="stylesheet" href="css/fontello/style.css">  
+
+	<link rel="stylesheet" href="css/fontello/form-actions-embedded.css">
+
     <!-- Google fonts -->
     <link href="css/fonts-lato.css" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
     <link href="css/accordion/v-accordion-panel.css" rel="stylesheet">
     <link href="css/accordion/v-accordion.css"       rel="stylesheet">
+
+	<link rel="stylesheet" href="css/form_content.toolbar.css">
 
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
@@ -36,7 +42,6 @@
     <script src="js/presentation-server.js"></script>
 
     <script src="js/form_content.app.js"></script>
-    <script src="js/formSelectedController.js"></script>
 
 </head>
 
@@ -46,7 +51,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.6</span>
+	        <span class="footer">v0.0.62</span>
 	    </div>
 	</div>
 
@@ -56,7 +61,7 @@
 			<jsp:include page="accordion.app.jsp" />
 		</div>
 		<div id="contentDiv" style="overflow: hidden; padding-left: 3%; padding-right: 3%;">
-			<jsp:include page="form_content.app.jsp" />
+			<jsp:include page="form_content.template.jsp" />
 		</div>
 	</div>
 	

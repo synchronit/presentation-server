@@ -1,4 +1,4 @@
-.header{padding-top: 10px; padding-bottom:10px; background-color: #444980;}
+.header{padding-top: 10px; padding-bottom:10px; background-color: #80444F; background-color-old: #444980;}
 .head-container{width: 1140px; margin:auto;}
 .header h1 {color: #fffffa; font-size: 60px}
 .header h2 {color: #fffffa; font-size: 24px; font-style: normal}
@@ -16,4 +16,4 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .type-hint-boolean {background:rgb(18, 131, 39);}
 .type-hint-number {background:rgb(189, 63, 66);}
 .footer {color: #aaaaaa;}
-.formTitle {padding-left: 5%;}
+.formTitle {display: inline-block; float: left;width: 50%;}
