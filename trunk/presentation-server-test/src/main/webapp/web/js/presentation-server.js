@@ -110,7 +110,7 @@ function parse_forms_response(response)
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
 // *******************
-// console.log(forms);
+ console.log(forms);
 // *******************
 
 	return forms;

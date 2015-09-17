@@ -16,7 +16,7 @@
 					{
 						var dataValueList = "";
 						var comma         = firstComma;
-						
+console.log("getDataValueList: comes with "+data);						
 						for (var i=0; i<data.length; i++)
 						{
 							dataValueList += (data[i].type == "TEXT")      ? comma + '"'+data[i].value+'"' : "";
@@ -25,7 +25,7 @@
 							dataValueList += (data[i].type == "REFERENCE") ? $scope.getDataValueList(data[i].children, ', ')  : "";
 							comma = ', ';
 						}
-						
+console.log("getDataValueList Returns : "+dataValueList);						
 						return dataValueList;
 					}
 
@@ -41,7 +41,7 @@
 						else
 						{
 							var fqlStmt = "Create New "+form.label+" ( "+$scope.getDataValueList(data, " ")+' ) ';
-console.log(fqlStmt);							
+// console.log(fqlStmt);							
 							$scope.executeFQL(fqlStmt);
 						}
 					}
@@ -51,12 +51,12 @@ console.log(fqlStmt);
 						console.log("Executing FQL: "+stmt);
 					
 					    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command="+stmt)
-					    .success(function(response) {$scope.afterExecuteFQL(response);});
+					    .success(function(response) {$scope.afterExecuteFQL(response, stmt);});
 					}
 
-					$scope.afterExecuteFQL = function(response)
+					$scope.afterExecuteFQL = function(response, stmt)
 					{
-						alert("Result: "+response.code);
+						alert("Result: "+response.code+"\nwhen executing: "+stmt);
 					}
 					
 		    	}
