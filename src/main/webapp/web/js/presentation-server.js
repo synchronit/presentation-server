@@ -49,6 +49,13 @@ function parse_forms_response(response)
 	var refData = [];
 	var formNamePrev = " ";
 	var previousReference = " ";
+	var setValue = function(dataType)
+	{
+		if (dataType == "BOOLEAN") 
+			return false;
+		else
+			return '';		
+	}
 	
     for (var i=0; i < response.resultSet.rows.length; i++)
     {
@@ -64,7 +71,7 @@ function parse_forms_response(response)
 		if (previousReference != " " && (!isReference || isReference && (label != previousReference || formName != formNamePrev) ))
 		{
 // console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
-	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "children": refData });
+	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
 			refData = [];
 		}
 		previousReference = ( isReference ? label : " " );
@@ -74,7 +81,7 @@ function parse_forms_response(response)
     		if (formNamePrev != " ")  // It is not the first one => we must create the FORM node, attach the children and reset the collection
     		{
 // console.log("2. loads a Form in the tree, with "+formData.length+" DATA children");
-		        forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": formData});
+		        forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "value" : setValue("FORM"), "children": formData});
 		        formData = [];
 			}
 	        formNamePrev = formName;
@@ -83,12 +90,12 @@ function parse_forms_response(response)
 	    // Pushes a LEAF node, even a Reference (refData) or an Atomic Data (formData)
 		if (isReference)
 		{
-			refData.push({ "label" : refLabel, "type" : type,  "isReference" : isReference, "i": i, "isForm" : function() { return false; }, "children": [] });
+			refData.push({ "label" : refLabel, "type" : type,  "isReference" : true, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": [] });
 // console.log("3. loads a reference in the tree, it now has "+refData.length+" children");
 		}
 		else
 		{
-	        formData.push({ "label" : label, "type" : type,  "isReference" : isReference, "i": i, "isForm" : function() { return false; }, "children": [] });
+	        formData.push({ "label" : label, "type" : type,  "isReference" : false, "i": i, "isForm" : function() { return false; },  "value" : setValue(type), "children": [] });
 // console.log("4. loads a data in the tree, it now has "+formData.length+" children");
 		}
     }
@@ -96,13 +103,15 @@ function parse_forms_response(response)
 	if (refData.length > 0) // Checks if there are pending dataReferences to be loaded
 	{
 // console.log("5. loads a Data in the tree, with "+refData.length+" REF children");
-        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "children": refData });
+        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
 // console.log("6. loads a data in the tree, it now has "+formData.length+" children");
 	}
-    forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "children": formData }); // Adds the last form 
+    forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "value" : setValue("FORM"), "children": formData }); // Adds the last form 
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
+// *******************
 // console.log(forms);
+// *******************
 
 	return forms;
 }
