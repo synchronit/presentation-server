@@ -110,7 +110,7 @@ function parse_forms_response(response)
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
 // *******************
- console.log(forms);
+// console.log(forms);
 // *******************
 
 	return forms;
@@ -156,6 +156,24 @@ function parse_forms_response(response)
 	"debugInfo":[]
 } 
 
+{
+	"code":100,
+	"message":"1 cases returned.",
+	"resultSet":
+	{
+		"headers":
+		[
+			{"label":"ID","type":"NUMBER"},
+			{"label":"SEX","type":"TEXT"}
+		],
+		"rows":
+		[
+			["1","M"]
+		]
+	},
+	"debugInfo":["select SEX.ID, SEX.SEX from SEX where SEX.SEX = 'M'"]
+}
+
 ***********************************/
 var webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
 
@@ -178,4 +196,34 @@ function start_ws() {
   return false;
 }
 
+function showMsg(msg)
+{
+	var delta = 50;
+	
+	var marginTop     = Number($("#notificationIcon").css("margin-top").replace("px", ""));
+	var width         = Number($("#notificationIcon").css("width").replace("px", ""));
+	var height        = Number($("#notificationIcon").css("height").replace("px", ""));
+	var lineHeight    = Number($("#notificationIcon").css("line-height").replace("px", ""));
+
+	$("#notificationMsg").html(msg);
+
+	$("#notificationIcon").css("margin-top",  "-"+ (marginTop + delta) + "px");
+	$("#notificationIcon").css("width",  (width  + delta)  + "px");
+	$("#notificationIcon").css("height", (height + delta) + "px");
+	$("#notificationIcon").css("line-height", (height + delta) + "px");
+	$("#notificationIcon").css("opacity", "0.1");	
+
+	$("#msgFooter").show();
+
+	$("#notificationIcon").animate(
+		{
+			height    : (height+"px"), 
+			width     :  (width+"px"), 
+			marginTop : (marginTop+"px"),
+			lineHeight: (lineHeight+"px"),
+			opacity   : 0.7
+		}, 700);
+
+	setTimeout(function() {$("#msgFooter").fadeOut(500)}, 3000);	
+}
 

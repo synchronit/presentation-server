@@ -1,9 +1,9 @@
 
 <!-- <div class="toolBar"> -->
 		<nav class="nav">
-			<span><a href class="icon-create" ng-click="createNew();" title="Create a New Case"></a></span>
-			<span><a href class="icon-get"></a></span>
-			<span><a href class="icon-update"></a></span>
-			<span><a href class="icon-delete"></a></span>
+			<span><a ng-href="{{hash}}" class="icon-create" ng-click="fqlCreate();" title="Create a New Case"></a></span>
+			<span><a ng-href="{{hash}}" class="icon-get"    ng-click="fqlGet();"    title="Search Cases matching the values entered"></a></span>
+			<span><a ng-href="{{hash}}" class="icon-update"></a></span>
+			<span><a ng-href="{{hash}}" class="icon-delete"></a></span>
 		</nav>
 <!-- </div> -->
