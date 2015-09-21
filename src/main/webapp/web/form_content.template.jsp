@@ -30,7 +30,7 @@
 
 				<div ng-repeat="ref in data.children">
 			  		<div style="float: left; width: 30%; margin-top: 5px;"> <!--  -->
-						{{ref.label}}
+						{{ref.refLabel}}
 					</div>
 	
 					<div ng-switch="ref.type" style="margin-top: 5px;"> <!--   -->
