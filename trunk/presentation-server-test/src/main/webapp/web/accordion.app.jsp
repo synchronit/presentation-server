@@ -1,7 +1,7 @@
   <div ng-app="myAccordion">
 
 <!--<div ng-cloak class="u-wideWrapper u-paddingHm u-paddingTl" ng-controller="MainController">-->
-    <div ng-cloak class="u-paddingHm u-paddingTl" ng-controller="MainController">
+    <div ng-cloak class="u-paddingHm" style="padding-top: 5px" ng-controller="MainController">
 
       <div class="Grid Grid--gutters md-Grid--20">
         <div class="Grid-cell">

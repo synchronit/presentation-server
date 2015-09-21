@@ -19,10 +19,11 @@
 // console.log("getDataValueList: comes with "+data);						
 						for (var i=0; i<data.length; i++)
 						{
-							dataValueList += (data[i].type == "TEXT")      ? comma + '"'+data[i].value+'"' : "";
-							dataValueList += (data[i].type == "NUMBER")    ? comma +     data[i].value     : "";
-							dataValueList += (data[i].type == "BOOLEAN")   ? comma +     data[i].value     : "";
-							dataValueList += (data[i].type == "REFERENCE") ? $scope.getDataValueList(data[i].children, ', ')  : "";
+							if (data[i].type != "REFERENCE")
+								dataValueList += comma + $scope.getQuotedValue(data[i].type, data[i].value);
+							else
+								dataValueList += comma + "( "  + $scope.getDataValueList(data[i].children, "") + " )";
+
 							comma = ', ';
 						}
 // console.log("getDataValueList Returns : "+dataValueList);						
@@ -40,7 +41,7 @@
 						}
 						else
 						{
-							var fqlStmt = "Create New "+form.label+" ( "+$scope.getDataValueList(data, " ")+' ) ';
+							var fqlStmt = "Create New "+form.label+" ( "+$scope.getDataValueList(data, "")+' ) ';
 // console.log(fqlStmt);							
 							$scope.executeFQL(fqlStmt, $scope.afterExecuteFQL);
 						}
@@ -49,20 +50,28 @@
 					$scope.getDataWithList = function(data, firstAnd) 
 					{
 						var dataWithList = "";
-						var and         = firstAnd;
-// console.log("getDataWithList: comes with "+data);						
+						var and          = firstAnd;
 						for (var i=0; i<data.length; i++)
 						{
-							if (data[i].value > "")
+// console.log("data["+i+"].value = "+data[i].value);						
+// console.log("data["+i+"].type = "+data[i].type);						
+							if (data[i].type != "REFERENCE")
 							{
-								dataWithList += and + data[i].label + " = " + $scope.getEscapedValue(data[i].type, data[i].value);
-	
-//								dataWithList += (data[i].type == "REFERENCE") ? $scope.getDataWithList(data[i].children, ' and ')  : "";
-	
-								and = ' and ';
+								if (data[i].value > "")
+								{
+									var refLabel = (data[i].refLabel) ? "." + data[i].refLabel : "";
+									dataWithList += and + data[i].label + refLabel + " = " + $scope.getQuotedValue(data[i].type, data[i].value);
+									and = ' and ';
+								}
+// console.log("dataWithList = "+dataWithList);						
+							}
+							else		
+							{
+								dataWithList += (data[i].type == "REFERENCE") ? $scope.getDataWithList(data[i].children, and )  : "";
+								and = (dataWithList) ? " and " : "";
 							}
 						}
- console.log("getDataValueList Returns : "+dataWithList);						
+// console.log("getWithValueList Returns : "+dataWithList);						
 						return dataWithList;
 					}
 
@@ -77,7 +86,9 @@
 						}
 						else
 						{
-							var fqlStmt = "Get "+form.label+" with "+$scope.getDataWithList(data, " ");
+							var fqlStmt = "Get "  + form.label;
+							var withCondition = $scope.getDataWithList(data, " ");
+							fqlStmt += (withCondition) ? " with " + withCondition : "";
 // console.log(fqlStmt);							
 							$scope.executeFQL(fqlStmt, $scope.afterGetData);
 						}
@@ -99,34 +110,55 @@
 					
 					$scope.afterGetData = function(response, stmt)
 					{
-						showMsg("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
-
-						var returnedRows = response.resultSet.rows;
-
-						if (returnedRows.length > 0)  // TODO: Check cases of 0, 1 and MANY
+// console.log(stmt);
+						if ($scope.fqlResultOK(response))
 						{
-							var data     = $scope.formSelected.children;
-							var headers  = response.resultSet.headers;
-							var firstRow = response.resultSet.rows[0];
+// console.log(response);
+							showMsg("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
 	
-						    for (var i=0; i < data.length; i++)
-						    {
-						    	data[i].value = $scope.getTypedValue(headers[i].type, firstRow[i]);
+							var returnedRows = response.resultSet.rows;
+	
+							if (returnedRows.length > 0)  // TODO: Check cases of 0, 1 and MANY
+							{
+								$scope.loadGetResultData(response);
 							}
 						}
 						else
 						{
+							showMsg("ERROR: "+response.message);
 						}
 					}
 
-					$scope.getEscapedValue = function (type, value)
+					$scope.loadGetResultData = function(response, children, startPos)
 					{
-						var escapedValue = value;	// default
+						var data  = (children) ? children : $scope.formSelected.children;
+						var index = (startPos) ? startPos : 0;
 
-						if (type == "NUMBER")  typedValue = Number(value);
-						if (type == "TEXT"  )  typedValue = '"'+value+'"';
-						
-						return escapedValue;
+						var headers = response.resultSet.headers;
+						var dataRow = response.resultSet.rows[0];
+
+					    for (var i=0; i < data.length; i++)
+					    {
+					    	if (data[i].type != "REFERENCE")
+					    	{
+						    	data[i].value = $scope.getTypedValue(data[i].type, dataRow[index]);
+						    	index++;
+						    }
+						    else
+						    {
+						    	$scope.loadGetResultData(response, data[i].children, index);
+						    	index += data[i].children.length;
+						    }
+						}
+					}
+
+					$scope.getQuotedValue = function (type, value)
+					{
+						var quotedValue = value;	// default
+
+						if (type == "TEXT" && value )  quotedValue = '"'+value+'"';  // if value is empty or null, instead of "" we return an empty value
+
+						return quotedValue;
 					}
 
 					$scope.getTypedValue = function (type, value)
@@ -149,6 +181,26 @@
 						return typedValue;
 					}
 					
+					$scope.fqlResultOK = function(response)  // 100 ... 199 => OK
+					{
+						return (response.code > 99 && response.code < 200);
+					}
+					
+					$scope.clearForm = function(data)
+					{
+						if (!data) { data = $scope.formSelected.children; }
+						for (var i=0; i<data.length; i++)
+						{
+							if (data[i].type != "REFERENCE")
+							{
+								data[i].value = "";
+							}
+							else
+							{
+								$scope.clearForm(data[i].children);
+							}
+						}
+					}
 		    	}
 		    ]
 		)
