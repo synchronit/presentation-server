@@ -1,5 +1,5 @@
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content']);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow']);
 
 var entityMap = {
     "&": "&amp;",
@@ -116,7 +116,7 @@ function parse_forms_response(response)
 	return forms;
 }
 
-/**********************************  EJEMPLO DE RESPUESTA DEL REQUEST *******
+/**********************************  REQUEST RESPONSE EXAMPLE *******
 
  {
  	"code":100,
@@ -196,7 +196,9 @@ function start_ws() {
   return false;
 }
 
-function showMsg(msg)
+var fadeMessageThread;
+
+function showNotification(msg)
 {
 	var delta = 50;
 	
@@ -213,17 +215,44 @@ function showMsg(msg)
 	$("#notificationIcon").css("line-height", (height + delta) + "px");
 	$("#notificationIcon").css("opacity", "0.1");	
 
+
 	$("#msgFooter").show();
 
 	$("#notificationIcon").animate(
 		{
 			height    : (height+"px"), 
-			width     :  (width+"px"), 
+			width     : (width+"px"), 
 			marginTop : (marginTop+"px"),
 			lineHeight: (lineHeight+"px"),
 			opacity   : 0.7
 		}, 700);
 
-	setTimeout(function() {$("#msgFooter").fadeOut(500)}, 4000);	
+	msgFadeOut(4000);	
+}
+
+function msgFadeOut(delay)
+{
+	fadeMessageThread = setTimeout(function() {$("#msgFooter").fadeOut(700)}, delay);
+}
+
+function msgInfo(msg)
+{
+	$("#msgFooter").removeClass( "msgFooterERROR" ).removeClass( "msgFooterWARNING" ).addClass( "msgFooterOK" );
+	$("#notificationIcon").removeClass("icon-delete").removeClass("icon-attention").addClass("icon-ok");
+	showNotification(msg);
+}
+
+function msgError(msg)
+{
+	$("#msgFooter").removeClass( "msgFooterOK" ).removeClass( "msgFooterWARNING" ).addClass( "msgFooterERROR" );
+	$("#notificationIcon").removeClass("icon-ok").removeClass("icon-attention").addClass("icon-delete");
+	showNotification(msg);
+}
+
+function msgWarning(msg)
+{
+	$("#msgFooter").removeClass( "msgFooterOK" ).removeClass( "msgFooterERROR" ).addClass( "msgFooterWARNING" );
+	$("#notificationIcon").removeClass("icon-ok").removeClass("icon-delete").addClass("icon-attention");
+	showNotification(msg);
 }
 

@@ -55,7 +55,7 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 }
 
 
-#msgFooter {
+.msgFooter {
   display: block;
   position: fixed;
   width: 100%;
@@ -92,8 +92,12 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
       text-shadow: 0 1px 0 #fafafa; 
       z-index: 0;
 }
+
+.msgFooterOK
+{
+}  
   
-#msgFooter a
+.msgFooterOK a
 {
   display: inline-block;
   background-color: #f7f7f7;
@@ -118,8 +122,66 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
   box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
 }  
 
+.msgFooterERROR
+{
+}
+
+.msgFooterERROR a
+{
+  display: inline-block;
+  background-color: #f7f7f7;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#E4365B), to(#823243));
+  background-image: -webkit-linear-gradient(top, #E4365B, #823243); 
+  background-image: -moz-linear-gradient(top, #E4365B, #823243); 
+  background-image: -ms-linear-gradient(top, #E4365B, #823243); 
+  background-image: -o-linear-gradient(top, #E4365B, #823243); 
+  # values were:  #f7f7f7, #e7e7e7
+  
+  # color: #a7a7a7;
+  color: #FFFFFF;
+  
+  margin: 12px;
+  margin-top: -15px;
+  width: 54px;
+  height: 54px;
+  position: relative;
+  text-align: center;
+  line-height: 54px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+}  
+
+.msgFooterWARNING
+{
+}
+
+.msgFooterWARNING a
+{
+  display: inline-block;
+  background-color: #f7f7f7;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#F7FF00), to(#CAD400));
+  background-image: -webkit-linear-gradient(top, #F7FF00, #CAD400); 
+  background-image: -moz-linear-gradient(top, #F7FF00, #CAD400); 
+  background-image: -ms-linear-gradient(top, #F7FF00, #CAD400); 
+  background-image: -o-linear-gradient(top, #F7FF00, #CAD400); 
+  # values were:  #f7f7f7, #e7e7e7
+  
+  # color: #a7a7a7;
+  color: #333333;
+  
+  margin: 12px;
+  margin-top: -15px;
+  width: 54px;
+  height: 54px;
+  position: relative;
+  text-align: center;
+  line-height: 54px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+}  
+
 /************
-#msgFooter a:hover 
+.msgFooterOK a:hover 
 {
   text-decoration: none;
   color: #555;
@@ -127,7 +189,7 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 }
 *************/
 
-#msgFooter:hover 
+.msgFooterOK:hover 
 {
   opacity: 1.0;
 }
