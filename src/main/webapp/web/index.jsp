@@ -15,12 +15,20 @@
 
 	<link rel="stylesheet" href="css/form_content.toolbar.css">
 
+	<link rel="stylesheet" href="css/ui-grid/ui-grid.min.css">
+
+    <link  href="css/bootstrap/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
+    <link  href="css/prettify/prettify-style.css"  rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
+    <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
+    <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
+
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
-
     <script src="js/angular/angular.animate.1.4.0.min.js"></script>
 
-    <script src="js/formSelectedService.js"></script>
+    <script src="js/broadcastService.js"></script>
 
     <script src="js/accordion/v-accordion.js"></script>
     <script src="js/accordion/accordion.app.js"></script>
@@ -30,15 +38,14 @@
     <script src="js/bootstrap/ui-bootstrap-tpls.0.11.2.js"></script>
     <script src="js/prettify/prettify.1.0.1.js"></script>
 
-    <link  href="css/bootstrap/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
-    <link  href="css/prettify/prettify-style.css"  rel="stylesheet" type="text/css">
+    <script src="js/multi-select.js"></script> 
+    <script src="js/angular-ui/ui-bootstrap0.13.4.js"></script>
+    <script src="js/angular-ui/ui-grid.min.js"></script>
 
     <script src="js/tree/angular-tree-control.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
-    <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
     <script src="js/tree/tree.app.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
+
     <script src="js/presentation-server.js"></script>
 
     <script src="js/form_content.app.js"></script>
@@ -53,13 +60,14 @@
 
 </head>
 
-<body ng-app="wholeApp">
+<body>
+<div ng-app="wholeApp">
 
 	<div class="header">
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.74</span>
+	        <span class="footer">v0.0.87</span>
 	    </div>
 	</div>
 
@@ -69,12 +77,18 @@
 			<jsp:include page="accordion.app.jsp" />
 		</div>
 		<div id="contentDiv" style="overflow: hidden; padding-left: 3%; padding-right: 3%;">
+
 			<jsp:include page="form_content.template.jsp" />
+
 		</div>
 	</div>
-	
+
+	<!-- multi-selection modal dialog -->
+	<jsp:include page="multi-select.jsp" />
+
 	<!-- The Message Footer -->
 	<jsp:include page="footer.jsp" />
 
+</div>
 </body>
 </html>

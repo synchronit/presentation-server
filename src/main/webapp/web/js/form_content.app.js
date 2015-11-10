@@ -1,17 +1,34 @@
 
-    var form_content = angular.module("form_content", ['formSelectedService'])
+    var form_content = angular.module("form_content", ['broadcastService'])
     	.controller
     	( 'formSelectedController', 
-    		['$scope', '$http', 'formSelectedService', function($scope, $http, formSelectedService) 
+    		['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
     			{
 
 				    $scope.formSelected = {};
 
 				    $scope.$on('newFormSelected', function() 
 				    {
-						$scope.formSelected = formSelectedService.getFormSelected();
+						$scope.formSelected = broadcastService.getFormSelected();
 					});    	
 
+					$scope.fqlCreate = function()
+					{
+						var form = $scope.formSelected;
+						data = form.children;
+
+						if (!form.label || form.label == '')
+						{
+							msgWarning("Please select a Form in order to enable this action.");
+						}
+						else
+						{
+							var fqlStmt = "Create New "+form.label+" ( "+$scope.getDataValueList(data, "")+' ) ';
+// console.log(fqlStmt);							
+							$scope.executeFQL(fqlStmt, $scope.afterExecuteFQL);
+						}
+					}
+					
 					$scope.getDataValueList = function(data, firstComma) 
 					{
 						var dataValueList = "";
@@ -30,23 +47,6 @@
 						return dataValueList;
 					}
 
-					$scope.fqlCreate = function()
-					{
-						var form = $scope.formSelected;
-						data = form.children;
-
-						if (!form.label || form.label == '')
-						{
-							alert("Please select a Form in order to enable this action");
-						}
-						else
-						{
-							var fqlStmt = "Create New "+form.label+" ( "+$scope.getDataValueList(data, "")+' ) ';
-// console.log(fqlStmt);							
-							$scope.executeFQL(fqlStmt, $scope.afterExecuteFQL);
-						}
-					}
-					
 					$scope.getDataWithList = function(data, firstAnd) 
 					{
 						var dataWithList = "";
@@ -82,7 +82,7 @@
 
 						if (!form.label || form.label == '')
 						{
-							alert("Please select a Form in order to enable this action");
+							msgWarning("Please select a Form in order to enable this action");
 						}
 						else
 						{
@@ -105,7 +105,7 @@
 
 					$scope.afterExecuteFQL = function(response, stmt)
 					{
-						showMsg("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
+						msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
 					}
 					
 					$scope.afterGetData = function(response, stmt)
@@ -114,18 +114,31 @@
 						if ($scope.fqlResultOK(response))
 						{
 // console.log(response);
-							showMsg("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
+							msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
 	
 							var returnedRows = response.resultSet.rows;
 	
-							if (returnedRows.length > 0)  // TODO: Check cases of 0, 1 and MANY
+							if (returnedRows.length > 0) 
 							{
-								$scope.loadGetResultData(response);
+								if (returnedRows.length > 1)
+								{
+									// Multiple cases found
+									broadcastService.setResponse(response);
+								}
+								else
+								{
+									// Only one case found => shows it
+									$scope.loadGetResultData(response);
+								}
+							}
+							else
+							{
+								// No case found
 							}
 						}
 						else
 						{
-							showMsg("ERROR: "+response.message);
+							msgError("ERROR: "+response.message);
 						}
 					}
 
