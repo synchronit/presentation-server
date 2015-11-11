@@ -37,11 +37,11 @@
       ];
 
       $scope.expandCallback = function (index) {
-        console.log('expand:', index);
+//      console.log('expand:', index);
       };
 
       $scope.collapseCallback = function (index) {
-        console.log('collapse:', index);
+//      console.log('collapse:', index);
       };
 
     });

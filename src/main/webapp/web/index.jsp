@@ -2,23 +2,23 @@
 <html lang="en">
   <head>
 
-	<link rel="stylesheet" href="css/fontello/style.css">  
+	<link rel="stylesheet" type="text/css" href="css/fontello/style.css">  
 
-	<link rel="stylesheet" href="css/fontello/form-actions-embedded.css">
+	<link rel="stylesheet" type="text/css" href="css/fontello/form-actions-embedded.css">
 
     <!-- Google fonts -->
-    <link href="css/fonts-lato.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/fonts-lato.css" >
 
     <!-- Styles -->
-    <link href="css/accordion/v-accordion-panel.css" rel="stylesheet">
-    <link href="css/accordion/v-accordion.css"       rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/accordion/v-accordion-panel.css" >
+    <link rel="stylesheet" type="text/css" href="css/accordion/v-accordion.css">
 
-	<link rel="stylesheet" href="css/form_content.toolbar.css">
+	<link rel="stylesheet" type="text/css" href="css/form_content.toolbar.css">
 
-	<link rel="stylesheet" href="css/ui-grid/ui-grid.min.css">
+	<link rel="stylesheet" type="text/css" href="css/ui-grid/ui-grid.min.css">
 
-    <link  href="css/bootstrap/bootstrap.3.1.1.css" rel="stylesheet" type="text/css">
-    <link  href="css/prettify/prettify-style.css"  rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.3.1.1.css" >
+    <link rel="stylesheet" type="text/css" href="css/prettify/prettify-style.css" >
 
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
@@ -54,7 +54,7 @@
 		$(function()
 		{
 			$("#msgFooter").hide();
-			console.log("OK");
+//			console.log("OK");
 		});
 	</script>
 
@@ -67,7 +67,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.87</span>
+	        <span class="footer">v0.0.89</span>
 	    </div>
 	</div>
 

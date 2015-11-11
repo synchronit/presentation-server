@@ -1,12 +1,12 @@
 <div ng-controller="ModalDemoCtrl">
     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
-            <h4 class="modal-title">Multiple results ({{myData.length}}) fulfill this criteria. Please choose a case from the list below.</h3>
+            <h4 class="modal-title">Multiple results ({{gridOptions.data.length}}) fulfill this criteria. Please choose a case from the list below.</h3>
         </div>
         <div class="modal-body">
         </div>
 
-		<div ui-grid="{ data: myData }" class="myGrid"></div>
+		<div ui-grid="gridOptions" class="myGrid" ui-grid-selection ></div>
 
         <div class="modal-footer">
 <!--        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>  -->

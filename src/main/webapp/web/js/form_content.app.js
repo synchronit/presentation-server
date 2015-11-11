@@ -114,16 +114,22 @@
 						if ($scope.fqlResultOK(response))
 						{
 // console.log(response);
-							msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
-	
 							var returnedRows = response.resultSet.rows;
 	
 							if (returnedRows.length > 0) 
 							{
+
+								msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
+	
 								if (returnedRows.length > 1)
 								{
-									// Multiple cases found
+									// Multiple cases found ...
 									broadcastService.setResponse(response);
+									// ... note ... after broadcasting this message (from broadcastService), 
+									// it continues at multi-select.js listening to: 
+									//   $scope.$on('multipleResults', function() 
+									// and then, it follows again here, on "multipleResultsRowSelected"
+									// (once the option has been selected)
 								}
 								else
 								{
@@ -134,6 +140,7 @@
 							else
 							{
 								// No case found
+								msgError("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code> ("+response.resultSet.rows.length+" cases retrieved)");
 							}
 						}
 						else
@@ -142,13 +149,24 @@
 						}
 					}
 
-					$scope.loadGetResultData = function(response, children, startPos)
+					$scope.$on('multipleResultsRowSelected', function() 
 					{
-						var data  = (children) ? children : $scope.formSelected.children;
-						var index = (startPos) ? startPos : 0;
+						var rowSelected = broadcastService.getRowSelected();		
+						var response    = broadcastService.getRowSelectedResponse();
+//console.log("Getting row nr. "+rowSelected+" from ...");
+//console.log(response);
+						$scope.loadGetResultData(response, rowSelected);
+					});    	
+
+					$scope.loadGetResultData = function(response, rownumber, children, startPos)
+					{
+						// Loads defaults
+						var rownum = (rownumber) ? rownumber : 0;
+						var data   = (children)  ? children  : $scope.formSelected.children;
+						var index  = (startPos)  ? startPos  : 0;
 
 						var headers = response.resultSet.headers;
-						var dataRow = response.resultSet.rows[0];
+						var dataRow = response.resultSet.rows[ rownum ];
 
 					    for (var i=0; i < data.length; i++)
 					    {
@@ -159,7 +177,7 @@
 						    }
 						    else
 						    {
-						    	$scope.loadGetResultData(response, data[i].children, index);
+						    	$scope.loadGetResultData(response, rownum, data[i].children, index);
 						    	index += data[i].children.length;
 						    }
 						}
