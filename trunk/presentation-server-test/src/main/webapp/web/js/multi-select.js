@@ -1,8 +1,6 @@
 angular.module('modalWindow', ['ngAnimate', 'ui.bootstrap', 'ui.grid', 'ui.grid.selection', 'broadcastService']);
 angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $modal, $log ) {
 
-  $scope.items = ['item1', 'item2', 'item3'];
-
   $scope.animationsEnabled = true;
 
   $scope.$on('multipleResults', function() 
@@ -27,7 +25,7 @@ angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $mod
     modalInstance.result.then(function (selectedItem) {
       $scope.selected = selectedItem;
     }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
+//    $log.info('Modal dismissed at: ' + new Date());
     });
   };
 
@@ -40,58 +38,39 @@ angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $mod
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $modal service used above.
 
-angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, $modalInstance, items, uiGridConstants, broadcastService) {
+angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, $modalInstance, uiGridConstants, broadcastService) {
 
-  $scope.items = items;
-  $scope.selected = {
-    item: $scope.items[0]
-  };
-
-  $scope.ok = function () {
-    $modalInstance.close($scope.selected.item);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-  
 	$scope.gridOptions = { enableRowSelection: true, enableRowHeaderSelection: false };
+
     $scope.gridOptions.multiSelect = false;
     $scope.gridOptions.modifierKeysToMultiSelect = false;
-//    $scope.gridOptions.noUnselect = true;
+    $scope.gridOptions.noUnselect = true;
     $scope.gridOptions.onRegisterApi = function( gridApi ) {
-      $scope.gridApi = gridApi;
+		$scope.gridApi = gridApi;
+
+		gridApi.selection.on.rowSelectionChanged
+		( $scope, function(row)
+			{
+		//      console.log(row.entity);
+		//		console.log(row.entity.internal_row_id);
+				broadcastService.setRowSelected(row.entity.internal_row_id, $scope.response);		
+				$scope.cancel();
+			}
+		);
+
     };
 
-    $scope.gridOptions.enableRowSelection = true;
+	$scope.ok = function () {
+	    $modalInstance.close($scope.selected.item);
+	};
 
-	/***************************
-	$scope.myData = 
-	[
-	    {
-	        "firstName": "Cox",
-	        "lastName": "Carney",
-	        "company": "Enormo",
-	        "employed": true
-	    },
-	    {
-	        "firstName": "Lorraine",
-	        "lastName": "Wise",
-	        "company": "Comveyer",
-	        "employed": false
-	    },
-	    {
-	        "firstName": "Nancy",
-	        "lastName": "Waters",
-	        "company": "Fuelton",
-	        "employed": false
-	    }
-	];
-	***************************/
+	$scope.cancel = function () {
+    	$modalInstance.dismiss('cancel');
+	};
 
-	/************************************************
-	 * Loads the response on the table to be shown
-	 ************************************************/
+	/***************************************************************************
+	 * Function to load the response on the table to be shown (used just below)
+	 ***************************************************************************/
 
 	$scope.parseResponse = function (response) {
 
@@ -127,6 +106,7 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	  		{
 	  			rowData[response.resultSet.headers[h].label] = response.resultSet.rows[r][h];
 	  		}
+	  		rowData["internal_row_id"] = r;	// Internal ID to keep track of the rows
 	  		responseData.push(rowData);
 	  	}
 	
@@ -134,11 +114,17 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	
 	}  
 
-	var response = broadcastService.getResponse();
-		
-	var responseData = $scope.parseResponse(response);
-//console.log(responseData);
-		
-	$scope.myData = responseData;
-  
+	$scope.response = broadcastService.getResponse();		
+	var responseData = $scope.parseResponse($scope.response);
+//  console.log(responseData);
+
+	$scope.gridOptions.data = responseData;
+
+	$scope.gridOptions.columnDefs = [];
+	for (var h=0; h < $scope.response.resultSet.headers.length; h++)
+	{
+		$scope.gridOptions.columnDefs.push( { name: $scope.response.resultSet.headers[h].label } );
+	}
+	$scope.gridOptions.columnDefs.push( { name: "internal_row_id", visible: false } );
+	    
 });

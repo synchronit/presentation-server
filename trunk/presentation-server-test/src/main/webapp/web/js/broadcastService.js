@@ -4,7 +4,8 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	
 	service.formSelected = {label: ''};
 
-	//**** A FORM IS SELECTED ON THE LEFT-SIDE TREE *****//
+	/***************************************************
+	/**** A FORM IS SELECTED ON THE LEFT-SIDE TREE *****/
 	service.getFormSelected = function()
 	{
 		return this.formSelected;
@@ -16,7 +17,9 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 		$rootScope.$broadcast("newFormSelected");
 	}
 
-	//***** MULTIPLE RESULTS ARE RETURNED FROM A QUERY *****//
+
+	/******************************************************
+	/***** MULTIPLE RESULTS ARE RETURNED FROM A QUERY *****/
 	service.response = { };
 
 	service.getResponse = function()
@@ -28,6 +31,29 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	{
 		this.response = response;
 		$rootScope.$broadcast("multipleResults");
+	}
+	
+	
+	/*******************************************************
+	/***** A ROW HAS BEEN CHOSEN FROM MULTIPLE RESULTS *****/
+	service.rowSelected = -1;
+	service.rowSelectedResponse = { };
+
+	service.getRowSelected = function()
+	{
+		return this.rowSelected;
+	}
+	service.getRowSelectedResponse = function()
+	{
+		return this.rowSelectedResponse;
+	}
+	
+	
+	service.setRowSelected = function(rowSelected, response)
+	{
+		this.rowSelected = rowSelected;
+		this.rowSelectedResponse = response;
+		$rootScope.$broadcast("multipleResultsRowSelected");
 	}
 	
 	
