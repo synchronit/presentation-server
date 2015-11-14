@@ -49,6 +49,7 @@ function parse_forms_response(response)
 	var refData = [];
 	var formNamePrev = " ";
 	var previousReference = " ";
+	var previousRefMin, previousRefMax;
 	var setValue = function(dataType)
 	{
 		if (dataType == "BOOLEAN") 
@@ -64,6 +65,8 @@ function parse_forms_response(response)
     	var type         = response.resultSet.rows[i][3];
     	var isReference  = (response.resultSet.rows[i][5] == "true");
     	var refLabel     = response.resultSet.rows[i][7];
+    	var refMin       = response.resultSet.rows[i][8];
+    	var refMax       = response.resultSet.rows[i][9];
     	
     	var wasReference = false;
     
@@ -71,10 +74,12 @@ function parse_forms_response(response)
 		if (previousReference != " " && (!isReference                || isReference && (label != previousReference || formName != formNamePrev) ))
 		{
 // console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
-	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true,  "refLabel" : previousReference, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
+	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true,  "refLabel" : previousReference, "refMin" : previousRefMin, "refMax" : previousRefMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
 			refData = [];
 		}
 		previousReference = ( isReference ? label : " " );
+		previousRefMin    = refMin;
+		previousRefMax    = refMax;
 
     	if (formName != formNamePrev)  // A different form (or the first one)
     	{
@@ -90,12 +95,12 @@ function parse_forms_response(response)
 	    // Pushes a LEAF node, even a Reference (refData) or an Atomic Data (formData)
 		if (isReference)
 		{
-			refData.push({ "label" : label, "type" : type,  "isReference" : true, "refLabel" : refLabel, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": [] });
+			refData.push({ "label" : label, "type" : type,  "isReference" : true, "refLabel" : refLabel, "refMin" : refMin, "refMax" : refMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": [] });
 // console.log("3. loads a reference in the tree, it now has "+refData.length+" children");
 		}
 		else
 		{
-	        formData.push({ "label" : label, "type" : type,  "isReference" : false, "refLabel" : refLabel, "i": i, "isForm" : function() { return false; },  "value" : setValue(type), "children": [] });
+	        formData.push({ "label" : label, "type" : type,  "isReference" : false, "refLabel" : refLabel, "refMin" : refMin, "refMax" : refMax, "i": i, "isForm" : function() { return false; },  "value" : setValue(type), "children": [] });
 // console.log("4. loads a data in the tree, it now has "+formData.length+" children");
 		}
     }
@@ -103,7 +108,7 @@ function parse_forms_response(response)
 	if (refData.length > 0) // Checks if there are pending dataReferences to be loaded
 	{
 // console.log("5. loads a Data in the tree, with "+refData.length+" REF children");
-        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "refLabel" : refLabel, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
+        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "refLabel" : refLabel, "refMin" : previousRefMin, "refMax" : previousRefMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
 // console.log("6. loads a data in the tree, it now has "+formData.length+" children");
 	}
     forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "value" : setValue("FORM"), "children": formData }); // Adds the last form 

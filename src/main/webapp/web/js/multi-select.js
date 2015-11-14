@@ -109,7 +109,7 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	  		rowData["internal_row_id"] = r;	// Internal ID to keep track of the rows
 	  		responseData.push(rowData);
 	  	}
-	
+console.log(responseData);	
 		return responseData;
 	
 	}  
