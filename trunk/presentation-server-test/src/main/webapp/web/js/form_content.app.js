@@ -130,6 +130,14 @@
 									//   $scope.$on('multipleResults', function() 
 									// and then, it follows again here, on "multipleResultsRowSelected"
 									// (once the option has been selected)
+/********
+									response.resultSet.headers[2].label = "OWNERID";
+									response.resultSet.headers[3].label = "OWNERNAME";
+									response.resultSet.headers[4].label = "OWNERSEX";
+									console.log(response.resultSet.headers[2].label);
+									console.log(response.resultSet.headers[3].label);
+									console.log(response.resultSet.headers[4].label);
+*********/
 								}
 								else
 								{
