@@ -1,5 +1,26 @@
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow']);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'appMultiRef']);
+
+/*
+
+var dynControllers = angular.module('dynControllers',[]);
+dynControllers.controller( 'dynControllersController', 
+    		['$scope', function($scope) 
+    			{
+					$scope.generateController = function(controllerName)
+					{
+alert("it works!");
+
+//						eval("var app-"+controllerName+" = angular.module('app-multi-"+controllerName+"', ['ngTouch', 'ui.grid'])");
+//						eval("app-"+controllerName+".controller('multiCtrl-"+controllerName+"', ['$scope', '$http', function ($scope, $http) {"+
+//						     "$scope.gridOptions-multi = {};"+						 
+//							 "$scope.gridOptions-multi.columnDefs.push({name: '"+controllerName+"'});"
+//							);
+
+					}
+				}
+			]);
+*/
 
 var entityMap = {
     "&": "&amp;",

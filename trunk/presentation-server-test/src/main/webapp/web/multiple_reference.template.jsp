@@ -1,12 +1,6 @@
 		<!-- Single Reference data is rendered within a fieldset -->
 		<fieldset style="border: 1px solid grey; border-radius: 10px; padding: 15px; padding-top: 10px; margin-top: 5px; width: auto;"> 
 
-/*
- *
- *		<div ui-grid="gridOptions" class="myGrid" ui-grid-selection ></div>
- *
- */
-
 			<legend style="font-size: 12px; text-decoration: none; margin: 0px; border: 0px; padding-left: 5px; padding-right: 5px; width: auto; font-weight: bold; color: grey;">
 				{{data.label}} 
 				( {{data.refMin}} .. 
@@ -15,16 +9,55 @@
 				)
 			</legend> 
 
-			<div ng-repeat="ref in data.children">
-		  		<div style="float: left; width: 30%; margin-top: 5px;"> <!--  -->
-					{{ref.refLabel}}
-				</div>
+			<div ng-app="appMultiRef"  id="{{data.label}}-multi-ref-app">
 
-				<div ng-switch="ref.type" style="margin-top: 5px;"> <!--   -->
-					<div ng-switch-when="BOOLEAN"><input type="checkbox" ng-model="ref.value"></div> 
-					<div ng-switch-when="NUMBER"> <input type="number"   ng-model="ref.value"></div> 
-					<div ng-switch-default>       <input type="text"     ng-model="ref.value"></div> 
+			<script>
+
+				var appMultiRef = angular.module('appMultiRef', ['ui.grid']);
+				appMultiRef.controller("appMultiRefController", 
+				function ($scope) 
+				{
+				  $scope.myData = [
+					    {
+					        "firstName": "Cox",
+					        "lastName": "Carney",
+					        "company": "Enormo",
+					        "employed": true
+					    },
+					    {
+					        "firstName": "Lorraine",
+					        "lastName": "Wise",
+					        "company": "Comveyer",
+					        "employed": false
+					    },
+					    {
+					        "firstName": "Nancy",
+					        "lastName": "Waters",
+					        "company": "Fuelton",
+					        "employed": false
+					    }
+					];
+					$scope.gridOptionsMultiRef = {};
+					$scope.gridOptionsMultiRef.data = [ {"name": "Fernando", "gender": "M", "company": "Synchronit"} ];
+				});
+
+/*
+console.log(document.getElementById('dynControllers'));
+console.log(angular.element(document.getElementById('dynControllers')));
+console.log(angular.element(document.getElementById('dynControllers')).scope);
+console.log(angular.element(document.getElementById('dynControllers')).scope());
+
+					angular.element(document.getElementById('dynControllers')).scope().genDynController("DD22");
+*/			
+	
+  			</script>
+
+				<div id="{{data.label}}-multi-ref-ctrl"  ng-controller="appMultiRefController">
+
+					<div ui-grid="{ data: myData, enableColumnMenus: false }"  class="myGrid" ></div>
+
 				</div>
 			</div>
+			
 		</fieldset>
 		
