@@ -61,13 +61,14 @@
 </head>
 
 <body>
-<div ng-app="wholeApp">
+
+<div id="wholeApp" ng-app="wholeApp">
 
 	<div class="header">
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.90</span>
+	        <span class="footer">v0.0.91</span>
 	    </div>
 	</div>
 

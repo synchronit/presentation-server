@@ -1,4 +1,4 @@
-  <div ng-app="form_content" ng-controller="formSelectedController">
+  <div id="form-content" ng-app="form_content" ng-controller="formSelectedController">
 
 	<h3 class="formTitle">{{formSelected.label}}</h3>
 
