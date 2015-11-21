@@ -6,7 +6,7 @@
         <div class="modal-body">
         </div>
 
-		<div ui-grid="gridOptions" class="myGrid" ui-grid-selection ></div>
+		<div ui-grid="gridOptions" class="myGrid" ui-grid-selection ui-grid-resize-columns ></div>
 
         <div class="modal-footer">
 <!--        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>  -->
