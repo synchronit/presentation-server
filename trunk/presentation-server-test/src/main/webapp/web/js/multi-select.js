@@ -1,4 +1,4 @@
-angular.module('modalWindow', ['ngAnimate', 'ui.bootstrap', 'ui.grid', 'ui.grid.selection', 'broadcastService']);
+angular.module('modalWindow', ['ngAnimate', 'ui.bootstrap', 'ui.grid', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.edit', 'broadcastService']);
 angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $modal, $log ) {
 
   $scope.animationsEnabled = true;
@@ -68,6 +68,36 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
     	$modalInstance.dismiss('cancel');
 	};
 
+	/************************************************************************/
+	/** Generates the label for the Grid, adding the reference path **/
+  	$scope.generateLabel = function(response, h) 
+  	{
+		var result = response.resultSet.headers[h].label;
+		if (response.resultSet.headers[h].referencedData.length > 0)
+		{
+			result += '_' + response.resultSet.headers[h].referencedData.join('_');
+		}
+		return result;
+  	}
+  	
+	/******************************************************************(*********************/
+	/** Generates the label to be displayed on the Grid header, without the reference path **/
+  	$scope.generateDisplayLabel = function(response, h) 
+  	{
+		var result = '';
+		if (response.resultSet.headers[h].referencedData.length == 0)
+		{
+			result = response.resultSet.headers[h].label;
+		}
+		else
+		{
+			var last = response.resultSet.headers[h].referencedData.length - 1;
+			result  += response.resultSet.headers[h].referencedData[last];
+		}
+		return result;
+  	}
+  	
+
 	/***************************************************************************
 	 * Function to load the response on the table to be shown (used just below)
 	 ***************************************************************************/
@@ -104,12 +134,13 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	  		var rowData = {};
 	  		for (var h=0; h < response.resultSet.headers.length; h++)
 	  		{
-	  			rowData[response.resultSet.headers[h].label] = response.resultSet.rows[r][h];
+	  			rowData[ $scope.generateLabel(response, h) ] = response.resultSet.rows[r][h];
 	  		}
 	  		rowData["internal_row_id"] = r;	// Internal ID to keep track of the rows
 	  		responseData.push(rowData);
 	  	}
-console.log(responseData);	
+//console.log(responseData);	
+
 		return responseData;
 	
 	}  
@@ -123,7 +154,8 @@ console.log(responseData);
 	$scope.gridOptions.columnDefs = [];
 	for (var h=0; h < $scope.response.resultSet.headers.length; h++)
 	{
-		$scope.gridOptions.columnDefs.push( { name: $scope.response.resultSet.headers[h].label } );
+		$scope.gridOptions.columnDefs.push( { field:       $scope.generateLabel($scope.response, h), 
+											  displayName: $scope.generateDisplayLabel($scope.response, h) } );
 	}
 	$scope.gridOptions.columnDefs.push( { name: "internal_row_id", visible: false } );
 	    

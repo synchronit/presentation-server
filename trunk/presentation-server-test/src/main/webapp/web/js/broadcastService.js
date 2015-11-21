@@ -8,12 +8,12 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	/**** A FORM IS SELECTED ON THE LEFT-SIDE TREE *****/
 	service.getFormSelected = function()
 	{
-		return this.formSelected;
+		return service.formSelected;
 	}
 	
 	service.setFormSelected = function(formSelected)
 	{
-		this.formSelected = formSelected;
+		service.formSelected = formSelected;
 		$rootScope.$broadcast("newFormSelected");
 	}
 
@@ -24,12 +24,12 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 
 	service.getResponse = function()
 	{
-		return this.response;
+		return service.response;
 	}
 	
 	service.setResponse = function(response)
 	{
-		this.response = response;
+		service.response = response;
 		$rootScope.$broadcast("multipleResults");
 	}
 	
@@ -57,6 +57,87 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	}
 	
 	
+	
+	/*******************************************************
+	/*****  MULTIPLE REFERENCES OF THE SELECTED FORM  *****/
+
+	service.getMultirefColumnDefs = function( label )
+	{
+		var columnDefs = [];
+		
+		var formSelected = service.getFormSelected();
+		
+		/** REFACTORIZAR **/
+		var refMultiple;
+
+		for (var i=0; i < formSelected.children.length; i++)
+		{
+			if ( formSelected.children[i].label == label )
+			{
+				refMultiple = formSelected.children[i];
+			}
+		}
+
+  		for (var i=0; i < refMultiple.children.length; i++)
+  		{
+			columnDefs.push( { field : refMultiple.children[i].refLabel, resizable: true } );
+  		}
+
+		return columnDefs;
+
+	}
+
+	service.getMultirefData = function( label )
+	{
+		var data = [];
+		
+		var formSelected = service.getFormSelected();
+		
+		/** REFACTORIZAR **/
+		var refMultiple;
+
+		for (var i=0; i < formSelected.children.length; i++)
+		{
+			if ( formSelected.children[i].label == label )
+			{
+				refMultiple = formSelected.children[i];
+			}
+		}
+		
+  		var rowData ={} ;
+  		for (var i=0; i < refMultiple.children.length; i++)
+  		{
+  			rowData[ refMultiple.children[i].refLabel ] = ' ';
+  		}
+		data.push( rowData );
+
+		return data;
+
+/***************************************************				
+		return [
+				    {
+				        "firstName": "Cox",
+				        "lastName": "Carney",
+				        "company": "Enormo",
+				        "employed": true
+				    },
+				    {
+				        "firstName": "Lorene",
+				        "lastName": "Wise",
+				        "company": "Comveyer",
+				        "employed": false
+				    },
+				    {
+				        "firstName": "Nancy",
+				        "lastName": "Waters",
+				        "company": "Fuelton",
+				        "employed": false
+				    }
+				];
+****************************************************/				
+
+	}
+
 	//***** END OF SERVICES ******//
 	
 	return service;

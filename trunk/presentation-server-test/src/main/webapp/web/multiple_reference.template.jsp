@@ -1,4 +1,4 @@
-		<!-- Single Reference data is rendered within a fieldset -->
+		<!-- Multiple Reference data is rendered within a fieldset -->
 		<fieldset style="border: 1px solid grey; border-radius: 10px; padding: 15px; padding-top: 10px; margin-top: 5px; width: auto;"> 
 
 			<legend style="font-size: 12px; text-decoration: none; margin: 0px; border: 0px; padding-left: 5px; padding-right: 5px; width: auto; font-weight: bold; color: grey;">
@@ -9,52 +9,32 @@
 				)
 			</legend> 
 
-			<div ng-app="appMultiRef"  id="{{data.label}}-multi-ref-app">
+			<div ng-app="appMultiRef"  id="{{data.label}}-multi-ref-app" >
 
-			<script>
+				<script>
+				
+					var appMultiRef = angular.module('appMultiRef', ['ui.grid', 'broadcastService']);
+					appMultiRef.controller("appMultiRefController", 
+					function ($scope, broadcastService) 
+					{
+						$scope.gridOptions = { };
+						$scope.gridOptions.enableColumnMenus     = false;
+						$scope.gridOptions.enableCellSelection   = true;
+						$scope.gridOptions.enableCellEditOnFocus = true;
 
-				var appMultiRef = angular.module('appMultiRef', ['ui.grid']);
-				appMultiRef.controller("appMultiRefController", 
-				function ($scope) 
-				{
-				  $scope.myData = [
-					    {
-					        "firstName": "Cox",
-					        "lastName": "Carney",
-					        "company": "Enormo",
-					        "employed": true
-					    },
-					    {
-					        "firstName": "Lorraine",
-					        "lastName": "Wise",
-					        "company": "Comveyer",
-					        "employed": false
-					    },
-					    {
-					        "firstName": "Nancy",
-					        "lastName": "Waters",
-					        "company": "Fuelton",
-					        "employed": false
-					    }
-					];
-					$scope.gridOptionsMultiRef = {};
-					$scope.gridOptionsMultiRef.data = [ {"name": "Fernando", "gender": "M", "company": "Synchronit"} ];
-				});
+						$scope.gridOptions.columnDefs = broadcastService.getMultirefColumnDefs( $scope.$parent.data.label );
 
-/*
-console.log(document.getElementById('dynControllers'));
-console.log(angular.element(document.getElementById('dynControllers')));
-console.log(angular.element(document.getElementById('dynControllers')).scope);
-console.log(angular.element(document.getElementById('dynControllers')).scope());
 
-					angular.element(document.getElementById('dynControllers')).scope().genDynController("DD22");
-*/			
+						// Gets the Data to initialize the Grid, representing the columns (and rows) of a multiple reference
+						$scope.gridOptions.data = broadcastService.getMultirefData( $scope.$parent.data.label );
+											
+					});
+		
+	  			</script>
 	
-  			</script>
-
 				<div id="{{data.label}}-multi-ref-ctrl"  ng-controller="appMultiRefController">
 
-					<div ui-grid="{ data: myData, enableColumnMenus: false }"  class="myGrid" ></div>
+					<div ui-grid="gridOptions" ui-grid-edit ui-grid-resize-columns class="myGrid" ></div>
 
 				</div>
 			</div>

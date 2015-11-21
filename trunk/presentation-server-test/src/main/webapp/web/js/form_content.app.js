@@ -124,12 +124,16 @@
 								if (returnedRows.length > 1)
 								{
 									// Multiple cases found ...
+
 									broadcastService.setResponse(response);
+
+									//**********************************************************************
 									// ... note ... after broadcasting this message (from broadcastService), 
 									// it continues at multi-select.js listening to: 
 									//   $scope.$on('multipleResults', function() 
 									// and then, it follows again here, on "multipleResultsRowSelected"
 									// (once the option has been selected)
+									//**********************************************************************
 /********
 									response.resultSet.headers[2].label = "OWNERID";
 									response.resultSet.headers[3].label = "OWNERNAME";
@@ -157,6 +161,7 @@
 						}
 					}
 
+					/* After selecting a case from multiple results, it comes here ...   */
 					$scope.$on('multipleResultsRowSelected', function() 
 					{
 						var rowSelected = broadcastService.getRowSelected();		
