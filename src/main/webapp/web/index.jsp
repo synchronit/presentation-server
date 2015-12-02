@@ -24,6 +24,8 @@
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control-attribute.css">
     <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
 
+    <link rel="stylesheet" type="text/css" href="css/resizable/resizable.css">
+ 
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
     <script src="js/angular/angular.animate.1.4.0.min.js"></script>
@@ -33,7 +35,9 @@
     <script src="js/accordion/v-accordion.js"></script>
     <script src="js/accordion/accordion.app.js"></script>
 
-    <script src="js/jquery/jquery.2.0.3.js"></script>
+    <script src="js/jquery/jquery-1.11.3.min.js"></script>
+    <script src="js/jquery/jquery-ui.min.js"></script>
+        
     <script src="js/bootstrap/bootstrap.3.1.1.js"></script>
     <script src="js/bootstrap/ui-bootstrap-tpls.0.11.2.js"></script>
     <script src="js/prettify/prettify.1.0.1.js"></script>
@@ -56,6 +60,9 @@
 			$("#msgFooter").hide();
 //			console.log("OK");
 		});
+		
+		var already_shown = false;
+
 	</script>
 
 </head>
@@ -68,12 +75,12 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.92</span>
+	        <span class="footer">v0.0.94</span>
 	    </div>
 	</div>
 
 	<div>
-		<div style="float: left">
+		<div id="leftDiv" style="float: left">
 			<!-- this page includes also the Tree (tree.app.jsp) -->
 			<jsp:include page="accordion.app.jsp" />
 		</div>

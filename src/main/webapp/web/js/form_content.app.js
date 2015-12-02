@@ -10,6 +10,10 @@
 				    $scope.$on('newFormSelected', function() 
 				    {
 						$scope.formSelected = broadcastService.getFormSelected();
+
+// This can be refactored, when only one model is implemented for the whole form
+setTimeout(function(){ $(".resizable").resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); }, 5000);
+
 					});    	
 
 					$scope.fqlCreate = function()
@@ -53,8 +57,6 @@
 						var and          = firstAnd;
 						for (var i=0; i<data.length; i++)
 						{
-// console.log("data["+i+"].value = "+data[i].value);						
-// console.log("data["+i+"].type = "+data[i].type);						
 							if (data[i].type != "REFERENCE")
 							{
 								if (data[i].value > "")
@@ -130,18 +132,12 @@
 									//**********************************************************************
 									// ... note ... after broadcasting this message (from broadcastService), 
 									// it continues at multi-select.js listening to: 
+									//
 									//   $scope.$on('multipleResults', function() 
+									//
 									// and then, it follows again here, on "multipleResultsRowSelected"
 									// (once the option has been selected)
 									//**********************************************************************
-/********
-									response.resultSet.headers[2].label = "OWNERID";
-									response.resultSet.headers[3].label = "OWNERNAME";
-									response.resultSet.headers[4].label = "OWNERSEX";
-									console.log(response.resultSet.headers[2].label);
-									console.log(response.resultSet.headers[3].label);
-									console.log(response.resultSet.headers[4].label);
-*********/
 								}
 								else
 								{

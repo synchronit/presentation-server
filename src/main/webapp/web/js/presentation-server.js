@@ -63,6 +63,21 @@ function createSubTree(level, width, prefix) {
         return [];
 }
 
+/********************************************************************
+Given the REPONSE from the request, this functions generates a tree
+where each node has the following information:
+
+#	id          - the FQL ID
+	label       - the data label
+	i           - a unique index in the whole tree, indicating the order of creation
+	nodeType    - "Form" | "Reference" | "Data"
+	isForm      - boolean function, indicating if it is a Form      node or not
+	isReference - boolean function, indicating if it is a Reference node or not
+	isData      - boolean function, indicating if it is a Data      node or not 
+	value       - the value shown in the UI
+	children    - array with child nodes (data if it is a Form, refData if it is a reference)
+	
+*********************************************************************/
 function parse_forms_response(response)	
 {
 	var forms = [];
@@ -70,7 +85,9 @@ function parse_forms_response(response)
 	var refData = [];
 	var formNamePrev = " ";
 	var previousReference = " ";
+	var previousIndex = 0;
 	var previousRefMin, previousRefMax;
+
 	var setValue = function(dataType)
 	{
 		if (dataType == "BOOLEAN") 
@@ -79,15 +96,19 @@ function parse_forms_response(response)
 			return '';		
 	}
 	
+	var isFormFunction      = function() {  return this.type == "FORM";  }
+	var isDataFunction      = function() {  return this.type != "FORM" && this.type != "REFERENCE";  }	
+	var isReferenceFunction = function() {  return this.type == "REFERENCE";  }
+
     for (var i=0; i < response.resultSet.rows.length; i++)
     {
-    	var formName     = response.resultSet.rows[i][0];
-    	var label        = response.resultSet.rows[i][2];
-    	var type         = response.resultSet.rows[i][3];
+    	var formName     =  response.resultSet.rows[i][0];
+    	var label        =  response.resultSet.rows[i][2];
+    	var type         =  response.resultSet.rows[i][3];
     	var isReference  = (response.resultSet.rows[i][5] == "true");
-    	var refLabel     = response.resultSet.rows[i][7];
-    	var refMin       = response.resultSet.rows[i][8];
-    	var refMax       = response.resultSet.rows[i][9];
+    	var refLabel     =  response.resultSet.rows[i][7];
+    	var refMin       =  response.resultSet.rows[i][8];
+    	var refMax       =  response.resultSet.rows[i][9];
     	
     	var wasReference = false;
     
@@ -95,33 +116,66 @@ function parse_forms_response(response)
 		if (previousReference != " " && (!isReference                || isReference && (label != previousReference || formName != formNamePrev) ))
 		{
 // console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
-	        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true,  "refLabel" : previousReference, "refMin" : previousRefMin, "refMax" : previousRefMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
+	        formData.push({ "label"    : previousReference, 
+	        				"type"     : "REFERENCE", 
+	        				"refLabel" : previousReference, 
+	        				"i"        : previousIndex, 
+	        				"value"    : setValue("REFERENCE"), 
+	        				"refMin"   : previousRefMin, 
+	        				"refMax"   : previousRefMax, 
+	        				"children" : refData, 
+	        				"isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 			refData = [];
 		}
 		previousReference = ( isReference ? label : " " );
 		previousRefMin    = refMin;
 		previousRefMax    = refMax;
+		previousIndex     = i;
 
     	if (formName != formNamePrev)  // A different form (or the first one)
     	{
     		if (formNamePrev != " ")  // It is not the first one => we must create the FORM node, attach the children and reset the collection
     		{
 // console.log("2. loads a Form in the tree, with "+formData.length+" DATA children");
-		        forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "value" : setValue("FORM"), "children": formData});
+		        forms.push({ "label"    : formNamePrev, 
+		         			 "type"     : "FORM", 
+	        				 "refLabel" : null, 
+		         			 "i"        : i, 
+		         			 "value"    : setValue("FORM"), 
+	        				 "refMin"   : null, 
+	        				 "refMax"   : null, 
+		         			 "children" : formData, 
+	        				 "isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 		        formData = [];
 			}
 	        formNamePrev = formName;
 	    }
 	    
-	    // Pushes a LEAF node, even a Reference (refData) or an Atomic Data (formData)
+	    // Pushes a child node, even a Reference (refData) or an Atomic Data (formData)
 		if (isReference)
 		{
-			refData.push({ "label" : label, "type" : type,  "isReference" : true, "refLabel" : refLabel, "refMin" : refMin, "refMax" : refMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": [] });
+			refData.push({ "label"    : label, 
+						   "type"     : type,  
+						   "refLabel" : refLabel, 
+						   "i"        : i, 
+						   "refMin"   : refMin, 
+						   "refMax"   : refMax, 
+						   "value"    : setValue("REFERENCE"), 
+						   "children" : [],
+	        			   "isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 // console.log("3. loads a reference in the tree, it now has "+refData.length+" children");
 		}
 		else
 		{
-	        formData.push({ "label" : label, "type" : type,  "isReference" : false, "refLabel" : refLabel, "refMin" : refMin, "refMax" : refMax, "i": i, "isForm" : function() { return false; },  "value" : setValue(type), "children": [] });
+	        formData.push({ "label"    : label, 
+	        				"type"     : type,  
+	        				"refLabel" : refLabel, 
+	        				"i"        : i, 
+	        				"refMin"   : refMin, 
+	        				"refMax"   : refMax, 
+	        				"value"    : setValue(type), 
+	        				"children" : [],
+	        				"isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 // console.log("4. loads a data in the tree, it now has "+formData.length+" children");
 		}
     }
@@ -129,15 +183,36 @@ function parse_forms_response(response)
 	if (refData.length > 0) // Checks if there are pending dataReferences to be loaded
 	{
 // console.log("5. loads a Data in the tree, with "+refData.length+" REF children");
-        formData.push({ "label" : previousReference, "type" : "REFERENCE",  "isReference" : true, "refLabel" : refLabel, "refMin" : previousRefMin, "refMax" : previousRefMax, "i": i, "isForm" : function() { return false; }, "value" : setValue("REFERENCE"), "children": refData });
+        formData.push({ "label"    : previousReference, 
+        				"type"     : "REFERENCE",  
+        				"refLabel" : refLabel, 
+        				"i"        : previousIndex, 
+        				"refMin"   : previousRefMin, 
+        				"refMax"   : previousRefMax, 
+        				"value"    : setValue("REFERENCE"), 
+        				"children" : refData,
+        				"isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 // console.log("6. loads a data in the tree, it now has "+formData.length+" children");
 	}
-    forms.push({ "label" : formNamePrev, "id" : "id ", "i": i, "isForm" : function() { return true; }, "value" : setValue("FORM"), "children": formData }); // Adds the last form 
+	// Adds the last form 
+    forms.push({ "label"    : formNamePrev, 
+    			 "type"     : "FORM",
+        		 "refLabel" : null, 
+    			 "i"        : i, 
+				 "refMin"   : null, 
+				 "refMax"   : null, 
+    			 "value"    : setValue("FORM"), 
+    			 "children" : formData,
+   				 "isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
-// *******************
-// console.log(forms);
-// *******************
+// ******************* SHOWS THE LOADED TREE STRUCTURE **************
+   if (!already_shown)
+   {
+	   console.log(forms);
+	   already_shown = true;
+   }
+// ******************************************************************
 
 	return forms;
 }
