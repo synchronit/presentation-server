@@ -1,21 +1,67 @@
 
-    var form_content = angular.module("form_content", ['broadcastService'])
-    	.controller
+    var form_content = angular.module("form_content", ['broadcastService', 'ui.grid', 'ui.grid.autoResize']);
+
+        form_content.directive('resizeableGrid', function() 
+		{
+			return  { 
+						link: 	function(scope, elem, attrs) 
+								{ 
+									console.log("*"+attrs.id+"*");
+									
+									setTimeout(function(){ $("#"+attrs.id).resizable(); }, 500); 
+//									setTimeout(function(){ $("#DD52-multi-ref-div").resizable(); }, 3000);
+
+//									$("#"+attrs.id).resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); 
+								}  
+					}
+		});
+
+	form_content.controller
     	( 'formSelectedController', 
     		['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
     			{
 
 				    $scope.formSelected = {};
+					$scope.gridOptions  = {};
+					
+					$scope.generateGridOptions = function (formSelected)
+					{
+						var gridOptions = {};
+						var data        = formSelected.children;
+						
+						for (var i=0; i<data.length; i++)
+						{
+							var d = data[i];
+							if (d.isReference() && d.refMax != 1)
+							{
+								// console.log("Multiple reference found: "+d.label);
+
+								var options = { };
+								options.enableColumnMenus     = false;
+								options.enableCellSelection   = true;
+								options.enableCellEditOnFocus = true;
+
+								options.columnDefs = broadcastService.getMultirefColumnDefs( d.label );
+
+								// Gets the Data to initialize the Grid, representing the columns (and rows) of a multiple reference
+								options.data = broadcastService.getMultirefData( d.label );
+
+								gridOptions[d.label] = options;
+							}
+						}
+						
+						return gridOptions;
+					}
 
 				    $scope.$on('newFormSelected', function() 
 				    {
+
 						$scope.formSelected = broadcastService.getFormSelected();
 
-// This can be refactored, when only one model is implemented for the whole form
-setTimeout(function(){ $(".resizable").resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); }, 5000);
+						$scope.gridOptions  = $scope.generateGridOptions($scope.formSelected);
 
 					});    	
-
+					
 					$scope.fqlCreate = function()
 					{
 						var form = $scope.formSelected;
@@ -240,7 +286,7 @@ setTimeout(function(){ $(".resizable").resizable( {alsoResize: "#grid_TBD"} ).fi
 								$scope.clearForm(data[i].children);
 							}
 						}
-					}
+					}					
 		    	}
 		    ]
 		)
