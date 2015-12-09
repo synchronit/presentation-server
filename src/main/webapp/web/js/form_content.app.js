@@ -6,11 +6,8 @@
 			return  { 
 						link: 	function(scope, elem, attrs) 
 								{ 
-									console.log("*"+attrs.id+"*");
-									
 									setTimeout(function(){ $("#"+attrs.id).resizable(); }, 500); 
-//									setTimeout(function(){ $("#DD52-multi-ref-div").resizable(); }, 3000);
-
+									setTimeout(function(){ $("#"+attrs.id).resizable(); }, 3000); // PCs lentas ... 
 //									$("#"+attrs.id).resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); 
 								}  
 					}
@@ -41,10 +38,10 @@
 								options.enableCellSelection   = true;
 								options.enableCellEditOnFocus = true;
 
-								options.columnDefs = broadcastService.getMultirefColumnDefs( d.label );
+								options.columnDefs = $scope.getMultirefColumnDefs( d.label, formSelected );
 
 								// Gets the Data to initialize the Grid, representing the columns (and rows) of a multiple reference
-								options.data = broadcastService.getMultirefData( d.label );
+								options.data = $scope.getMultirefData( d.label, formSelected );
 
 								gridOptions[d.label] = options;
 							}
@@ -287,6 +284,76 @@
 							}
 						}
 					}					
+					
+					$scope.getRefMultiple = function (label, formSelected)
+					{
+						var refMultiple = [];				
+
+						for (var i=0; i < formSelected.children.length; i++)
+						{
+							if ( formSelected.children[i].label == label )
+							{
+								refMultiple = formSelected.children[i];
+							}
+						}
+						return refMultiple;				
+					}
+
+					$scope.getMultirefColumnDefs = function( label, formSelected )
+					{
+						var columnDefs = [];
+						
+						var refMultiple = $scope.getRefMultiple(label, formSelected);
+				
+				  		for (var i=0; i < refMultiple.children.length; i++)
+				  		{
+							columnDefs.push( { field : refMultiple.children[i].refLabel, resizable: true } );
+				  		}
+				
+						return columnDefs;
+				
+					}
+				
+					$scope.getMultirefData = function( label, formSelected )
+					{
+						var data        = [];
+						var refMultiple = $scope.getRefMultiple(label, formSelected);
+				  		var rowData     = {} ;
+
+				  		for (var i=0; i < refMultiple.children.length; i++)
+				  		{
+				  			rowData[ refMultiple.children[i].refLabel ] = ' ';
+				  		}
+
+						data.push( rowData );
+				
+						return data;
+				
+				/***************************************************				
+						return [
+								    {
+								        "firstName": "Cox",
+								        "lastName": "Carney",
+								        "company": "Enormo",
+								        "employed": true
+								    },
+								    {
+								        "firstName": "Lorene",
+								        "lastName": "Wise",
+								        "company": "Comveyer",
+								        "employed": false
+								    },
+								    {
+								        "firstName": "Nancy",
+								        "lastName": "Waters",
+								        "company": "Fuelton",
+								        "employed": false
+								    }
+								];
+				****************************************************/				
+				
+					}
+
 		    	}
 		    ]
 		)
