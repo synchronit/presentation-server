@@ -4,7 +4,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	
 	service.formSelected = {label: ''};
 
-	/***************************************************
+	/***************************************************/
 	/**** A FORM IS SELECTED ON THE LEFT-SIDE TREE *****/
 	service.getFormSelected = function()
 	{
@@ -18,7 +18,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	}
 
 
-	/******************************************************
+	/******************************************************/
 	/***** MULTIPLE RESULTS ARE RETURNED FROM A QUERY *****/
 	service.response = { };
 
@@ -34,7 +34,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	}
 	
 	
-	/*******************************************************
+	/*******************************************************/
 	/***** A ROW HAS BEEN CHOSEN FROM MULTIPLE RESULTS *****/
 	service.rowSelected = -1;
 	service.rowSelectedResponse = { };
@@ -58,7 +58,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	
 	
 	
-	/*******************************************************
+	/******************************************************/
 	/*****  MULTIPLE REFERENCES OF THE SELECTED FORM  *****/
 
 	service.getMultirefColumnDefs = function( label )
@@ -138,7 +138,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 
 	}
 
-	//***** END OF SERVICES ******//
+	/***** END OF SERVICES ******/
 	
 	return service;
 

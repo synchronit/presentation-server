@@ -53,6 +53,27 @@
 									broadcastService.setFormSelected(node);
 				                }
 				            };
+				            
+				            $scope.auto_refresh = false;
+				            
+				            $scope.toggle_refresh = function()
+				            {
+				            	$scope.auto_refresh = !$scope.auto_refresh;
+				            	var imgURL = ($scope.auto_refresh) ? "images/reload_green_icon.png" : "images/reload_grey_icon.png";
+				            	$("#auto_refresh_btn").attr("src", imgURL);
+				            	if ($scope.auto_refresh)
+				            	{
+				            		$("#auto_refresh_txt").html("refreshing ...");
+									$("#auto_refresh_txt").css("color", "green");
+									$scope.load_forms();
+				            	}
+				            	else
+				            	{
+				            		$("#auto_refresh_txt").html("(not refreshing)");
+									$("#auto_refresh_txt").css("color", "grey");
+								}
+				            }
+				            
 							$scope.load_forms = function()
 							{
 //								console.log("Requesting form data ...");
@@ -73,8 +94,11 @@
 				 *					  	alert("Error when retrieving data: "+data.code);
 				 *				  });
 				**/
-				
-							    setTimeout(function(){ $scope.load_forms() }, 5000);	// Refreshes every 60s
+
+								if ($scope.auto_refresh)
+								{
+								    setTimeout(function(){ $scope.load_forms() }, 3000);	// Refreshes tree content
+								}
 
 							}
 

@@ -1,5 +1,5 @@
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'appMultiRef']);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow' ]);
 
 /*
 
@@ -207,11 +207,7 @@ function parse_forms_response(response)
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
 // ******************* SHOWS THE LOADED TREE STRUCTURE **************
-   if (!already_shown)
-   {
-	   console.log(forms);
-	   already_shown = true;
-   }
+   console.log(forms);
 // ******************************************************************
 
 	return forms;
