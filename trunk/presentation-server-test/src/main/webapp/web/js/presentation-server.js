@@ -69,11 +69,14 @@ where each node has the following information:
 
 #	id          - the FQL ID
 	label       - the data label
+	refLabel    - the data label of the referenced data
 	i           - a unique index in the whole tree, indicating the order of creation
 	nodeType    - "Form" | "Reference" | "Data"
 	isForm      - boolean function, indicating if it is a Form      node or not
 	isReference - boolean function, indicating if it is a Reference node or not
 	isData      - boolean function, indicating if it is a Data      node or not 
+	refMin      - min references allowed
+	refMax      - max references allowed
 	value       - the value shown in the UI
 	children    - array with child nodes (data if it is a Form, refData if it is a reference)
 	

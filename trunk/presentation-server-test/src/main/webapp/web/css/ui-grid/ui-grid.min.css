@@ -9,3 +9,10 @@
     border: 1px solid grey;
  }
  
+ .deleteRowIcon
+{
+	margin-top: -10px;
+	height:      45px !important;
+}
+
+ 

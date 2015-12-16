@@ -41,7 +41,7 @@
 								options.columnDefs = $scope.getMultirefColumnDefs( d.label, formSelected );
 
 								// Gets the Data to initialize the Grid, representing the columns (and rows) of a multiple reference
-								options.data = $scope.getMultirefData( d.label, formSelected );
+								options.data = $scope.getEmptyDataRow( d.label, formSelected );
 
 								gridOptions[d.label] = options;
 							}
@@ -309,12 +309,19 @@
 				  		{
 							columnDefs.push( { field : refMultiple.children[i].refLabel, resizable: true } );
 				  		}
-				
+
+						// Delete Row Icon
+						// '<button class="btn primary" ng-click="grid.appScope.deleteRow(\''+label+'\', row)">Delete</button>'
+						var cellTemplateHTML  = "<nav class='nav_small'><span style='margin-top: -5px'><a style='font-size: 1em;' class='icon-delete' ng-click='grid.appScope.deleteRow(";
+						    cellTemplateHTML += '"'+label+'"';	// "columnLabel"
+						    cellTemplateHTML += ", row)' title='Delete row'></a></span></nav>";
+						columnDefs.push({ name: 'DeleteRow', displayName: ' ', cellTemplate: cellTemplateHTML, width: 45, cellClass: 'deleteRowIcon', enableCellEdit: false });
+
 						return columnDefs;
 				
 					}
-				
-					$scope.getMultirefData = function( label, formSelected )
+
+					$scope.getEmptyDataRow = function( label, formSelected )
 					{
 						var data        = [];
 						var refMultiple = $scope.getRefMultiple(label, formSelected);
@@ -354,6 +361,60 @@
 				
 					}
 
+					$scope.getMinRefs = function (label)
+					{
+						return $scope.getLimitRefs(label).min;
+					}
+
+					$scope.getMaxRefs = function (label)
+					{
+						return $scope.getLimitRefs(label).max;
+					}
+
+					$scope.getLimitRefs = function (label, minMax)
+					{
+						var formSelected = $scope.formSelected;
+						var limits = {};
+						for (var i=0; i<formSelected.children.length; i++)
+						{
+							if (formSelected.children[i].label == label)
+							{
+								limits.min = formSelected.children[i].refMin;
+								limits.max = formSelected.children[i].refMax;
+							}
+						}
+						return limits;
+					}
+
+					$scope.addRow = function(label) 
+					{
+//						console.log("add row : "+label+" to a list of "+$scope.gridOptions[label].data.length);
+
+						var refMax = $scope.getMaxRefs(label);						
+						if ($scope.gridOptions[label].data.length < refMax) 
+						{
+							$scope.gridOptions[label].data.push($scope.getEmptyDataRow(label, $scope.formSelected));
+						}
+						else
+						{
+							msgError("Max. number of rows ("+refMax+") already reached.");
+						}
+					}
+
+					$scope.deleteRow = function(label, row) 
+					{
+						var refMin = $scope.getMinRefs(label);						
+						if ($scope.gridOptions[label].data.length > refMin) 
+						{
+							var index = $scope.gridOptions[label].data.indexOf(row.entity);
+							$scope.gridOptions[label].data.splice(index, 1);
+						}
+						else
+						{
+							msgError("Min. number of rows ("+refMin+") already reached.");
+						}
+					};				
+				
 		    	}
 		    ]
 		)
