@@ -78,18 +78,19 @@ h1 {
   font-weight: bold;
 }
 
-.nav {
+.nav, .nav_small {
   list-style: none;
   text-align: center;
+  display: inline;
 }
 
-.nav span {
+.nav span, .nav_small span {
   position: relative;
   display: inline;
 #  margin-right: -4px; /* See: http://css-tricks.com/fighting-the-space-between-inline-block-elements/ */
 }
 
-.nav li:before {
+.nav li:before, .nav_small li:before {
   content: "";
   display: block;
   border-top: 1px solid #ddd;
@@ -101,7 +102,7 @@ h1 {
   z-index: -1;
 }
 
-.nav a {
+.nav a, .nav_small a {
   display: inline-block;
   background-color: #f7f7f7;
   background-image: -webkit-gradient(linear, left top, left bottom, from(#f7f7f7), to(#e7e7e7));
@@ -111,20 +112,31 @@ h1 {
   background-image: -o-linear-gradient(top, #f7f7f7, #e7e7e7); 
   color: #a7a7a7;
   margin: 12px;
-  width: 54px;
-  height: 54px;
   position: relative;
   text-align: center;
-  line-height: 54px;
   border-radius: 50%;
   box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+  cursor: pointer;
 }
+
+.nav a {
+  width: 54px;
+  height: 54px;
+  line-height: 54px;
+}
+
+.nav_small a {
+  width: 27px;
+  height: 27px;
+  line-height: 27px;
+}
+
 
 /****** 
 #
 # Bevel (biselado) 
 #
-.nav a:before {
+.nav a:before, .nav_small a:before {
   content: "";
   display: block;
   background: #fff;
@@ -140,7 +152,7 @@ h1 {
 }
 ************/
 
-.nav a:hover {
+.nav a:hover, .nav_small a:hover {
   text-decoration: none;
   color: #555;
   background: #f5f5f5;
