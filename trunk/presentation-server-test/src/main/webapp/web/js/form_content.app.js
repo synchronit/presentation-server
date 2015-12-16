@@ -391,7 +391,7 @@
 //						console.log("add row : "+label+" to a list of "+$scope.gridOptions[label].data.length);
 
 						var refMax = $scope.getMaxRefs(label);						
-						if ($scope.gridOptions[label].data.length < refMax) 
+						if ($scope.gridOptions[label].data.length < refMax || refMax == 0) // 0 means "no limit" 
 						{
 							$scope.gridOptions[label].data.push($scope.getEmptyDataRow(label, $scope.formSelected));
 						}
