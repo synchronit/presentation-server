@@ -43,6 +43,12 @@
 								// Gets the Data to initialize the Grid, representing the columns (and rows) of a multiple reference
 								options.data = $scope.getEmptyDataRow( d.label, formSelected );
 
+								var refMin = $scope.getMinRefs(d.label);						
+								while (options.data.length < refMin) 
+								{
+									options.data.push( $scope.getEmptyDataRow(d.label, formSelected) );
+								}
+
 								gridOptions[d.label] = options;
 							}
 						}
@@ -84,14 +90,51 @@
 						for (var i=0; i<data.length; i++)
 						{
 							if (data[i].type != "REFERENCE")
+							{
 								dataValueList += comma + $scope.getQuotedValue(data[i].type, data[i].value);
+							}
 							else
-								dataValueList += comma + "( "  + $scope.getDataValueList(data[i].children, "") + " )";
-
+							{
+								if (data[i].refMax == 1)
+								{	// Ref. simple
+									dataValueList += comma + "( "  + $scope.getDataValueList(data[i].children, "") + " )";
+								}
+								else
+								{	// Ref. multiple
+									dataValueList += comma + "( "  + $scope.getValuesFromMultipleReference(data[i]) + " )";
+								}
+							}
 							comma = ', ';
 						}
 // console.log("getDataValueList Returns : "+dataValueList);						
 						return dataValueList;
+					}
+
+					$scope.getValuesFromMultipleReference = function (multiRef)
+					{
+						var values   = "";
+						var comma    = "";
+						var dataRows = $scope.gridOptions[ multiRef.label ].data;
+						for (var i=0; i<dataRows.length; i++)
+						{
+							values += comma + "(" + $scope.getValuesFromRow(dataRows[i], multiRef) + ")";
+							comma = ', ';
+						}
+// console.log(values);						
+						return values;
+					}
+
+					$scope.getValuesFromRow = function (dataRow, multiRef)
+					{
+						var values = "";
+						var comma = "";
+						for (var i=0; i<multiRef.children.length; i++)
+						{
+// console.log("Agregando valor de: "+multiRef.children[i].refLabel);
+							values += comma + dataRow[ multiRef.children[i].refLabel ];
+							comma = ', ';
+						}
+						return values;
 					}
 
 					$scope.getDataWithList = function(data, firstAnd) 
