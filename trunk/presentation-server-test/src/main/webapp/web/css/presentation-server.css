@@ -16,7 +16,7 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .type-hint-boolean {background:rgb(18, 131, 39);}
 .type-hint-number {background:rgb(189, 63, 66);}
 .footer {color: #aaaaaa;}
-.formTitle {display: inline-block; float: left;width: 50%;}
+.formTitle {float: left; }
 
 
 
