@@ -1,17 +1,25 @@
 
-    var form_content = angular.module("form_content", ['broadcastService', 'ui.grid', 'ui.grid.autoResize']);
+    var form_content = angular.module("form_content", ['broadcastService', 'ui.grid', 'ui.grid.autoResize', 'ui.select' ]);
 
-        form_content.directive('resizeableGrid', function() 
-		{
-			return  { 
-						link: 	function(scope, elem, attrs) 
-								{ 
-									setTimeout(function(){ $("#"+attrs.id).resizable(); }, 500); 
-									setTimeout(function(){ $("#"+attrs.id).resizable(); }, 3000); // PCs lentas ... 
-//									$("#"+attrs.id).resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); 
-								}  
-					}
-		});
+    form_content.directive('resizeableGrid', function() 
+	{
+		return  { 
+					link: 	function($scope, elem, attrs) 
+							{ 
+								$scope.activateResize($scope, elem, attrs);
+							}  
+				}
+	});
+
+    form_content.directive('contextMenu', function() 
+	{
+		return  { 
+					link: 	function($scope, elem, attrs) 
+							{ 
+								$scope.defineContextMenu($scope, elem, attrs);
+							}  
+				}
+	});
 
 	form_content.controller
     	( 'formSelectedController', 
@@ -20,6 +28,15 @@
 
 				    $scope.formSelected = {};
 					$scope.gridOptions  = {};
+				    $scope.referenceValues = {};
+									
+				    $scope.$on('newFormSelected', function() 
+				    {
+						$scope.formSelected     = broadcastService.getFormSelected();
+						$scope.gridOptions      = $scope.generateGridOptions($scope.formSelected);
+
+						$scope.loadReferenceValues($scope.formSelected);
+					});    	
 					
 					$scope.generateGridOptions = function (formSelected)
 					{
@@ -56,15 +73,70 @@
 						return gridOptions;
 					}
 
-				    $scope.$on('newFormSelected', function() 
-				    {
-
-						$scope.formSelected = broadcastService.getFormSelected();
-
-						$scope.gridOptions  = $scope.generateGridOptions($scope.formSelected);
-
-					});    	
+					$scope.ctrlDefaults = {
+										refAs          : "text",
+										refAsText      : function() { return (this.refAs == "text");       },
+										refAsDropDown  : function() { return (this.refAs == "drop-down");  },
+										refAsTextArea  : function() { return (this.refAs == "text-area");  }
+									  };
 					
+//				    $scope.selectedItem = $scope.optionValues[0];
+
+					$scope.getSingleReferences = function(formSelected)
+					{
+						var singleReferences = [];
+						for (var i=0; i<formSelected.children.length; i++)
+						{
+							var dat = formSelected.children[i];
+							if (dat.isReference() && dat.refMax == 1)
+							{
+								singleReferences.push(dat);
+							}
+						}
+						return singleReferences;
+					}
+
+					$scope.loadReferenceValues = function(formSelected)
+					{
+						var references = $scope.getSingleReferences(formSelected);
+						
+						for (var i=0; i<references.length; i++)
+						{
+							var fqlStmt = "Get "  + references[i].refForm;
+							$scope.executeFQL(fqlStmt, $scope.afterLoadReferences, {reference: references[i]} );
+						}
+					}
+
+					$scope.afterLoadReferences = function(response, stmt, params)
+					{
+						var options = [];
+						if ($scope.fqlResultOK(response))
+						{
+							var returnedRows = response.resultSet.rows;
+							var columnIndex  = $scope.getColumnIndex(response.resultSet.headers, params.reference.refLabel);
+							for (var i=0; i<returnedRows.length; i++)
+							{
+								var value = returnedRows[i][columnIndex];
+console.log(value);
+								options.push({ id: value, name: value });
+							}
+						}
+						$scope.referenceValues[params.reference.refLabel] = options;
+					}
+
+					$scope.getColumnIndex = function(headers, label)
+					{
+						var columnIndex = null;
+						for (var i=0; i<headers.length; i++)
+						{
+							if (headers[i].label == label)
+							{
+								columnIndex = i;
+							}
+						}
+						return columnIndex;
+					}
+
 					$scope.fqlCreate = function()
 					{
 						var form = $scope.formSelected;
@@ -182,16 +254,16 @@
 						}
 					}
 					
-					$scope.executeFQL = function(stmt, callback)
+					$scope.executeFQL = function(stmt, callback, params)
 					{
 // console.log("Executing FQL: "+stmt);
 					
 					    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command="+stmt)
-					    .success(function(response) {callback(response, stmt);});
+					    .success(function(response) {callback(response, stmt, params);});
 					    
 					}
 
-					$scope.afterExecuteFQL = function(response, stmt)
+					$scope.afterExecuteFQL = function(response, stmt, params)
 					{
 						msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
 					}
@@ -457,6 +529,50 @@
 							msgError("Min. number of rows ("+refMin+") already reached.");
 						}
 					};				
+
+					$scope.activateResize = function($scope, elem, attrs)
+					{
+						setTimeout(function(){ $("#"+attrs.id).resizable(); }, 500); 
+						setTimeout(function(){ $("#"+attrs.id).resizable(); }, 3000); // PCs lentas ... 
+//						$("#"+attrs.id).resizable( {alsoResize: "#grid_TBD"} ).find('.resizable'); 
+					}
+					
+					$scope.defineContextMenu = function($scope, elem, attrs)
+					{
+					    /**************************************************
+					     * Context-Menu with Sub-Menu
+					     **************************************************/
+					    $.contextMenu({
+					        selector: '.singleReferenceFieldset', 
+					        callback: function(key, options) 
+					        {
+					            var m = "clicked: " + key;
+								$scope.ctrlDefaults.refAs = key;
+
+								/*
+									** TODO: review the source of this JQuery plugin, to see if $scope can be kept **
+									$scope is being lost because this is NOT an AngularJS plugin
+									therefore, we call $apply()
+								*/
+
+								$scope.$apply();
+
+					        },
+					        items: 
+					        {
+					            "fold1": 
+					            {
+					                "name": "UI Controls", 
+					                "items": 
+					                {
+			                            "text"     : {"name": "text"},
+			                            "drop-down": {"name": "drop-down"},
+			                            "text-area": {"name": "text-area"}
+					                }
+					            }
+					        }
+					    });
+					}
 				
 		    	}
 		    ]

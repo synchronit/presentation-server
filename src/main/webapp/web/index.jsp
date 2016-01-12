@@ -25,6 +25,9 @@
     <link rel="stylesheet" type="text/css" href="css/presentation-server.css">
 
     <link rel="stylesheet" type="text/css" href="css/resizable/resizable.css">
+    <link rel="stylesheet" type="text/css" href="css/angular-ui/select.min.css">
+    <link rel="stylesheet" type="text/css" href="css/angular-ui/jquery.contextMenu.min.css">
+    <link rel="stylesheet" type="text/css" href="css/angular-ui/selectize.default.css">
  
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
@@ -49,9 +52,11 @@
     <script src="js/tree/angular-tree-control.js"></script>
     <script src="js/tree/tree.app.js"></script>
 
+    <script src="js/angular-ui/select.min.js"></script>
+    <script src="js/angular-ui/jquery.contextMenu.min.js"></script>
+    <script src="js/angular-ui/jquery.ui.position.min.js"></script>
 
     <script src="js/presentation-server.js"></script>
-
     <script src="js/form_content.app.js"></script>
 
 	<script>
@@ -74,16 +79,16 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.98</span>
+	        <span class="footer">v0.0.98.033</span>
 	    </div>
 	</div>
 
 	<div>
-		<div id="leftDiv" style="float: left">
+		<div id="leftDiv">
 			<!-- this page includes also the Tree (tree.app.jsp) -->
 			<jsp:include page="accordion.app.jsp" />
 		</div>
-		<div id="contentDiv" style="overflow: hidden; padding-left: 3%; padding-right: 3%;">
+		<div id="contentDiv">
 
 			<jsp:include page="form_content.template.jsp" />
 
