@@ -69,7 +69,8 @@ where each node has the following information:
 
 #	id          - the FQL ID
 	label       - the data label
-	refLabel    - the data label of the referenced data
+	refLabel    - the data label of the referenced data	
+	refForm     - the form being referenced 
 	i           - a unique index in the whole tree, indicating the order of creation
 	nodeType    - "Form" | "Reference" | "Data"
 	isForm      - boolean function, indicating if it is a Form      node or not
@@ -78,7 +79,7 @@ where each node has the following information:
 	refMin      - min references allowed
 	refMax      - max references allowed
 	value       - the value shown in the UI
-	children    - array with child nodes (data if it is a Form, refData if it is a reference)
+	children    - array with child nodes (data if it is a Form, refData if it is a reference, same structure always)
 	
 *********************************************************************/
 function parse_forms_response(response)	
@@ -87,7 +88,9 @@ function parse_forms_response(response)
 	var formData = [];
 	var refData = [];
 	var formNamePrev = " ";
-	var previousReference = " ";
+	var previousLabel = " ";
+	var previousRefForm = " ";
+	var previousRefLabel = " ";
 	var previousIndex = 0;
 	var previousRefMin, previousRefMax;
 
@@ -109,6 +112,7 @@ function parse_forms_response(response)
     	var label        =  response.resultSet.rows[i][2];
     	var type         =  response.resultSet.rows[i][3];
     	var isReference  = (response.resultSet.rows[i][5] == "true");
+    	var refForm      =  response.resultSet.rows[i][6];
     	var refLabel     =  response.resultSet.rows[i][7];
     	var refMin       =  response.resultSet.rows[i][8];
     	var refMax       =  response.resultSet.rows[i][9];
@@ -116,12 +120,13 @@ function parse_forms_response(response)
     	var wasReference = false;
     
 		// If it was in a Reference and (is not a reference any more OR is a different reference                   OR form) 
-		if (previousReference != " " && (!isReference                || isReference && (label != previousReference || formName != formNamePrev) ))
+		if (previousRefLabel != " " &&  (!isReference                || isReference && (label != previousRefLabel || formName != formNamePrev) ))
 		{
 // console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
-	        formData.push({ "label"    : previousReference, 
+	        formData.push({ "label"    : previousLabel, 
 	        				"type"     : "REFERENCE", 
-	        				"refLabel" : previousReference, 
+	        				"refForm"  : previousRefForm,
+	        				"refLabel" : previousRefLabel, 
 	        				"i"        : previousIndex, 
 	        				"value"    : setValue("REFERENCE"), 
 	        				"refMin"   : previousRefMin, 
@@ -130,7 +135,9 @@ function parse_forms_response(response)
 	        				"isData"   : isDataFunction, "isForm": isFormFunction, "isReference": isReferenceFunction  });
 			refData = [];
 		}
-		previousReference = ( isReference ? label : " " );
+		previousLabel     = ( isReference ? label    : " " );
+		previousRefForm   = ( isReference ? refForm  : " " );
+		previousRefLabel  = ( isReference ? refLabel : " " );
 		previousRefMin    = refMin;
 		previousRefMax    = refMax;
 		previousIndex     = i;
@@ -142,6 +149,7 @@ function parse_forms_response(response)
 // console.log("2. loads a Form in the tree, with "+formData.length+" DATA children");
 		        forms.push({ "label"    : formNamePrev, 
 		         			 "type"     : "FORM", 
+		         			 "refForm"  : null,
 	        				 "refLabel" : null, 
 		         			 "i"        : i, 
 		         			 "value"    : setValue("FORM"), 
@@ -159,6 +167,7 @@ function parse_forms_response(response)
 		{
 			refData.push({ "label"    : label, 
 						   "type"     : type,  
+						   "refForm"  : refForm,
 						   "refLabel" : refLabel, 
 						   "i"        : i, 
 						   "refMin"   : refMin, 
@@ -172,6 +181,7 @@ function parse_forms_response(response)
 		{
 	        formData.push({ "label"    : label, 
 	        				"type"     : type,  
+	        				"refForm"  : refForm,
 	        				"refLabel" : refLabel, 
 	        				"i"        : i, 
 	        				"refMin"   : refMin, 
@@ -186,8 +196,9 @@ function parse_forms_response(response)
 	if (refData.length > 0) // Checks if there are pending dataReferences to be loaded
 	{
 // console.log("5. loads a Data in the tree, with "+refData.length+" REF children");
-        formData.push({ "label"    : previousReference, 
+        formData.push({ "label"    : previousLabel, 
         				"type"     : "REFERENCE",  
+        				"refForm"  : refForm,
         				"refLabel" : refLabel, 
         				"i"        : previousIndex, 
         				"refMin"   : previousRefMin, 
@@ -200,6 +211,7 @@ function parse_forms_response(response)
 	// Adds the last form 
     forms.push({ "label"    : formNamePrev, 
     			 "type"     : "FORM",
+    			 "refForm"  : null,
         		 "refLabel" : null, 
     			 "i"        : i, 
 				 "refMin"   : null, 
@@ -275,21 +287,27 @@ function parse_forms_response(response)
 }
 
 ***********************************/
-var webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
 
-webSocket.onerror = function(event) {  
-  alert("Error in WebSocket call: " + event.data);
-};
+var webSocket;
 
-webSocket.onopen = function(event) { 
-  document.getElementById('messages').innerHTML 
-    = 'Connection established';
-};
+$(function() {
 
-webSocket.onmessage = function(event) { 
-  document.getElementById('messages').innerHTML 
-    += '<br />' + event.data;
-};
+	webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
+	
+	webSocket.onerror = function(event) {  
+	  alert("Error in WebSocket call: " + event.data);
+	};
+	
+	webSocket.onopen = function(event) { 
+	  document.getElementById('messages').innerHTML 
+	    = 'Connection established';
+	};
+	
+	webSocket.onmessage = function(event) { 
+	  document.getElementById('messages').innerHTML 
+	    += '<br />' + event.data;
+	};
+});
 
 function start_ws() {
   webSocket.send('hello');

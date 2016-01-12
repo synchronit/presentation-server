@@ -18,9 +18,6 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .footer {color: #aaaaaa;}
 .formTitle {float: left; }
 
-
-
-
 .toolBar {
   display: block;
   position: relative;
@@ -207,5 +204,33 @@ code
 	border:black dashed 1px; 
 	padding:6px; 
 	color:#000070;
+}
+
+HTML, BODY
+{
+	height: 100%;
+}
+
+#leftDiv
+{
+	float: left;
+	width: 30%;
+}
+
+#contentDiv
+{
+	float: right;
+	width: 70%;
+	padding-right: 3%;"
+}
+
+.singleReferenceFieldset
+{
+	border       : 1px solid grey; 
+	border-radius: 10px; 
+	padding      : 15px; 
+	padding-top  : 10px; 
+	margin-top   : 5px; 
+	width        : auto;
 }
 
