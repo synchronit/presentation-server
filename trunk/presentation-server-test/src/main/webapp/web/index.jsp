@@ -27,7 +27,6 @@
     <link rel="stylesheet" type="text/css" href="css/resizable/resizable.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/select.min.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/jquery.contextMenu.min.css">
-    <link rel="stylesheet" type="text/css" href="css/angular-ui/selectize.default.css">
  
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
@@ -79,7 +78,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.98.033</span>
+	        <span class="footer">v0.0.99</span>
 	    </div>
 	</div>
 

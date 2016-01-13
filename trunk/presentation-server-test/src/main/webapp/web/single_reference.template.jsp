@@ -21,16 +21,13 @@
 				</div>
 				
 				<div  ng-if="ctrlDefaults.refAsDropDown()" style="margin-top: 0px; float: left; max-width: 70%; width: 50%;"> 
-					<ui-select   ng-model="selectedItem" theme="selectize"> <!-- ng-model="{id: ref.value, name: ref.value}" -->
-					    <ui-select-match>
-					        <span ng-bind="$select.selected.name"></span>
-					    </ui-select-match>
-					    <ui-select-choices repeat="option in (referenceValues[ref.refLabel] | filter: $select.search) track by option.id">
-					        <span ng-bind="option.name"></span>
-					    </ui-select-choices>
-					</ui-select>
+					<select ng-model="ref.value" class="dropDown">
+						<option ng-repeat="option in referenceValues[ref.refLabel]" ng-selected="option == ref.value" value="{{option}}" >
+							{{option}}
+						</option>
+					</select>
 				</div>
-
+				
 			</div>
 
 		</fieldset>
