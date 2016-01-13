@@ -80,7 +80,7 @@
 										refAsTextArea  : function() { return (this.refAs == "text-area");  }
 									  };
 					
-//				    $scope.selectedItem = $scope.optionValues[0];
+				    $scope.selectedOption = {};
 
 					$scope.getSingleReferences = function(formSelected)
 					{
@@ -109,16 +109,16 @@
 
 					$scope.afterLoadReferences = function(response, stmt, params)
 					{
-						var options = [];
+						var options = [""];
 						var alreadyThere = function(value)
-						{
-							var alreadyThere = false;
-							for (var i=0; i<options.length; i++)
-							{
-								alreadyThere = alreadyThere || (options[i].id == value);
-							}
-							return alreadyThere;
-						}
+											{
+												var alreadyThere = false;
+												for (var i=0; i<options.length; i++)
+												{
+													alreadyThere = alreadyThere || (options[i] == value);
+												}
+												return alreadyThere;
+											}
 						
 						if ($scope.fqlResultOK(response))
 						{
@@ -129,7 +129,7 @@
 								var value = returnedRows[i][columnIndex];
 								if (!alreadyThere(value))
 								{
-									options.push({ id: value, name: value });
+									options.push(value);
 								}
 							}
 						}
