@@ -110,6 +110,16 @@
 					$scope.afterLoadReferences = function(response, stmt, params)
 					{
 						var options = [];
+						var alreadyThere = function(value)
+						{
+							var alreadyThere = false;
+							for (var i=0; i<options.length; i++)
+							{
+								alreadyThere = alreadyThere || (options[i].id == value);
+							}
+							return alreadyThere;
+						}
+						
 						if ($scope.fqlResultOK(response))
 						{
 							var returnedRows = response.resultSet.rows;
@@ -117,8 +127,10 @@
 							for (var i=0; i<returnedRows.length; i++)
 							{
 								var value = returnedRows[i][columnIndex];
-console.log(value);
-								options.push({ id: value, name: value });
+								if (!alreadyThere(value))
+								{
+									options.push({ id: value, name: value });
+								}
 							}
 						}
 						$scope.referenceValues[params.reference.refLabel] = options;
