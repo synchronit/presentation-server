@@ -686,7 +686,7 @@ hr {
   text-align: left;
   font-size: 0;
   border: 1px solid #c0c0c0;
-  width: 330px;
+  width: 100%;
 }
 
 .Grid--center {

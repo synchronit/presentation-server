@@ -375,3 +375,18 @@ function msgWarning(msg)
 	showNotification(msg);
 }
 
+leftPanelOpened = true;
+toggleLefPane = function()
+{
+	if (leftPanelOpened)
+	{
+		$("#leftDiv").animate({ width: "0%", opacity: 0 }, 500 );
+		$("#contentDiv").animate({ width: "100%", "padding-left": "10%" }, 500 );
+	}
+	else
+	{
+		$("#leftDiv").animate({ width: "30%", opacity: 1 }, 500 );
+		$("#contentDiv").animate({ width: "70%", "padding-left": "0%" }, 500 );
+	}
+	leftPanelOpened = !leftPanelOpened;
+}
