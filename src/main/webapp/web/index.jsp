@@ -83,7 +83,10 @@
 	</div>
 
 	<div>
-		<div id="leftDiv">
+	
+		<span class="menu"><a class="icon-menu" onclick="toggleLefPane();" title="menu"></a></span>
+
+		<div id="leftDiv" >
 			<!-- this page includes also the Tree (tree.app.jsp) -->
 			<jsp:include page="accordion.app.jsp" />
 		</div>

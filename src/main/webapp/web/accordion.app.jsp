@@ -15,7 +15,6 @@
 
               <v-pane-content id="pane0{{$index}}-content" aria-labelledby="pane0{{$index}}-header">
 
-
                       <div ng-switch on="pane.header">
                         <div ng-switch-when="Forms">
 

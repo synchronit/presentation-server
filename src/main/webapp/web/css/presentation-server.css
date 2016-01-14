@@ -219,7 +219,7 @@ HTML, BODY
 
 #contentDiv
 {
-	float: right;
+	float: left;
 	width: 70%;
 	padding-right: 3%;"
 }
@@ -258,5 +258,26 @@ HTML, BODY
 
 *:focus {
     outline: 0;
+}
+
+.menu
+{
+	position: absolute;
+	margin-top: 1%;
+	left: 2%;
+	z-index: 1000;
+	cursor: pointer;
+}
+
+.menu a
+{
+	font-size: 2em;
+	color: grey;
+}
+
+.menu a:hover
+{
+	text-decoration: none;
+	color: black;
 }
 

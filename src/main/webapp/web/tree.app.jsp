@@ -22,7 +22,7 @@
 			                                     tree-model="treedata"
 			                                     on-selection="showSelected(node)">
 			                            {{node.label}}
-			                            <span ng-if="node.type > ' ' ">({{node.type}})</span>
+			                            <span ng-if="node.type > ' ' && node.type != 'FORM'">({{node.type}})</span>
 			                        </treecontrol>
 			                    </div>
 			                </div>
