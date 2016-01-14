@@ -362,6 +362,7 @@ function msgInfo(msg)
 
 function msgError(msg)
 {
+	console.log(msg);
 	$("#msgFooter").removeClass( "msgFooterOK" ).removeClass( "msgFooterWARNING" ).addClass( "msgFooterERROR" );
 	$("#notificationIcon").removeClass("icon-ok").removeClass("icon-attention").addClass("icon-delete");
 	showNotification(msg);
