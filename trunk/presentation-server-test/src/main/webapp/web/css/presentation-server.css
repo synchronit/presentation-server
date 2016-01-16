@@ -281,3 +281,22 @@ HTML, BODY
 	color: black;
 }
 
+.formActions 
+{
+	vertical-align: middle;
+	cursor: pointer;	
+}
+
+.formActions a
+{
+	vertical-align: middle;
+	font-size: 2em;
+	color: grey;
+}
+
+.formActions a:hover
+{
+	text-decoration: none;
+	color: black;
+}
+
