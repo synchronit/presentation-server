@@ -59,18 +59,20 @@
 				            $scope.toggle_refresh = function()
 				            {
 				            	$scope.auto_refresh = !$scope.auto_refresh;
-				            	var imgURL = ($scope.auto_refresh) ? "images/reload_green_icon.png" : "images/reload_grey_icon.png";
+				            	var imgURL = ($scope.auto_refresh) ? "images/on.png" : "images/off.png";
 				            	$("#auto_refresh_btn").attr("src", imgURL);
 				            	if ($scope.auto_refresh)
 				            	{
-				            		$("#auto_refresh_txt").html("refreshing ...");
-									$("#auto_refresh_txt").css("color", "green");
+
+////////////////////////////////	$("#auto_refresh_txt").html("refreshing ...");
+////////////////////////////////	$("#auto_refresh_txt").css("color", "green");
+
 									$scope.load_forms();
 				            	}
 				            	else
 				            	{
-				            		$("#auto_refresh_txt").html("(not refreshing)");
-									$("#auto_refresh_txt").css("color", "grey");
+////////////////////////////////	$("#auto_refresh_txt").html("(not refreshing)");
+////////////////////////////////	$("#auto_refresh_txt").css("color", "grey");
 								}
 				            }
 				            
