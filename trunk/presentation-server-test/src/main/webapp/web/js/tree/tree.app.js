@@ -80,12 +80,12 @@
 							{
 //								console.log("Requesting form data ...");
 							
-							    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms")
+							    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command=show%20forms")
 							    .success(function(response) {$scope.treedata = parse_forms_response(response);});
 				
 				/**  
 				 *				$.ajax({
-				 *				  url: "http://tomcat.synchronit.com/appbase-webconsole/json?command=show%20forms"
+				 *				  url: "http://dev.synchronit.com/appbase-webconsole/json?command=show%20forms"
 				 *				})
 				 *				  .done(function( data ) {
 				 *					  if(data.code == 100)
