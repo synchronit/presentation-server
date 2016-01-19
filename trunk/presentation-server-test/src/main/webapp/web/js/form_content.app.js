@@ -270,7 +270,7 @@
 					{
 // console.log("Executing FQL: "+stmt);
 					
-					    $http.get("http://tomcat.synchronit.com/appbase-webconsole/json?command="+stmt)
+					    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
 					    .success(function(response) {callback(response, stmt, params);});
 					    
 					}
