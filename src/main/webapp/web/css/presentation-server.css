@@ -17,6 +17,14 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .type-hint-number {background:rgb(189, 63, 66);}
 .footer {color: #aaaaaa;}
 .formTitle {float: left; }
+.newFormTitle
+{
+	border: 0px;
+	float: left;
+	font-size: 30px;
+}
+
+#.my-placeholder { color: #aaa; }
 
 .toolBar {
   display: block;
@@ -204,6 +212,17 @@ code
 	border:black dashed 1px; 
 	padding:6px; 
 	color:#000070;
+}
+
+.createFormStmt 
+{
+	background:#F0F0F7; 
+	border:black dashed 1px; 
+	padding:6px; 
+	color:#000070;
+	bottom: 20px;
+	position: absolute;
+	width: 65%
 }
 
 HTML, BODY

@@ -7,7 +7,7 @@
            		<img id="auto_refresh_btn" ng-click="toggle_refresh();"  src="images/off.png" style="cursor:pointer; height: 25px; margin-top:5px;">
 <!--            <div id="auto_refresh_txt" style="display: inline; color: grey; vertical-align: bottom;">(not refreshing)</div>  -->
 
-				<span class="formActions"><a ng-href="{{hash}}" class="icon-doc" onclick="alert('new Form')" title="New Form"></a></span>
+				<span class="formActions"><a ng-href="{{hash}}" class="icon-doc" ng-click="$parent.newForm()" title="New Form"></a></span>
 
 			    <div class="row" style="margin-top: 10px">
 			        <div class="col-md-6 show-grid">
