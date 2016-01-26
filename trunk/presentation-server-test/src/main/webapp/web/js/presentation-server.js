@@ -1,26 +1,131 @@
+$(function() {
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow' ]);
+	$('input, textarea').placeholder({customClass:'my-placeholder'});
 
-/*
+});
 
-var dynControllers = angular.module('dynControllers',[]);
-dynControllers.controller( 'dynControllersController', 
-    		['$scope', function($scope) 
-    			{
-					$scope.generateController = function(controllerName)
-					{
-alert("it works!");
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'broadcastService' ]);
 
-//						eval("var app-"+controllerName+" = angular.module('app-multi-"+controllerName+"', ['ngTouch', 'ui.grid'])");
-//						eval("app-"+controllerName+".controller('multiCtrl-"+controllerName+"', ['$scope', '$http', function ($scope, $http) {"+
-//						     "$scope.gridOptions-multi = {};"+						 
-//							 "$scope.gridOptions-multi.columnDefs.push({name: '"+controllerName+"'});"
-//							);
-
+/****************************
+	var dynControllers = angular.module('dynControllers',[]);
+	dynControllers.controller( 'dynControllersController', 
+	    		['$scope', function($scope) 
+	    			{
+						$scope.generateController = function(controllerName)
+						{
+	alert("it works!");
+	//						eval("var app-"+controllerName+" = angular.module('app-multi-"+controllerName+"', ['ngTouch', 'ui.grid'])");
+	//						eval("app-"+controllerName+".controller('multiCtrl-"+controllerName+"', ['$scope', '$http', function ($scope, $http) {"+
+	//						     "$scope.gridOptions-multi = {};"+						 
+	//							 "$scope.gridOptions-multi.columnDefs.push({name: '"+controllerName+"'});"
+	//							);
+	
+						}
 					}
-				}
-			]);
-*/
+				]);
+****************************/
+
+
+wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
+{
+
+	if (!$scope.newFormName) 	$scope.newFormName = "";
+	if (!$scope.newFormData)	$scope.newFormData = [];	
+
+	if (!$scope.dataTypes)		$scope.dataTypes = ['Text', 'Number', 'Boolean'];
+	if (!$scope.newType)		$scope.newType   =  'Text';
+
+	$scope.newData = function()
+	{
+		var newData = {
+						label  : $scope.newLabel, 
+						type   : $scope.newType,
+						notNull: $scope.notNull,
+						unique : $scope.unique
+					  };
+		
+		$scope.newFormData.push( newData ); 
+		
+		$scope.newLabel = '';
+	}
+
+	$scope.deleteData = function()
+	{
+		var dataLabel = $("#definedData").val();
+		if (dataLabel) 
+		{
+			// Removes [dataLabel] from [newFormData]
+			$scope.newFormData = jQuery.grep($scope.newFormData, function(formData) { return formData.label != dataLabel; });
+		}		
+	}
+	
+	$scope.createNewForm = function()
+	{
+		var createFormStmt = 'CREATE FORM '+$scope.newFormName+' ( '; 
+		var comma = '';
+		for (var i=0; i<$scope.newFormData.length; i++)
+		{
+			createFormStmt += comma+$scope.newFormData[i].label+' '+$scope.newFormData[i].type;
+			createFormStmt += ($scope.newFormData[i].notNull) ? ' NOT NULL ' : '';
+			createFormStmt += ($scope.newFormData[i].unique ) ? ' UNIQUE '   : '';
+			comma = ', ';
+		}
+		createFormStmt += ')';
+		$scope.executeFQL( createFormStmt, $scope.clearInputs );
+	}	
+
+//
+// TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined
+//
+	$scope.executeFQL = function(stmt, callback, params)
+	{
+
+console.log("Executing FQL: "+stmt);
+	
+	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
+	    .success(function(response) {callback(response, stmt, params);});
+	    
+	}
+
+	$scope.clearInputs = function(response, stmt)
+	{
+		// TODO: Look at form_content and refactor to a common place
+		if (response.code > 99 && response.code < 200)
+		{
+			msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
+		}
+		else
+		{
+			msgError("ERROR when executing: <code>"+stmt+"</code> ("+response.message+")");
+		}
+
+		$scope.newFormName = "";
+		$scope.newFormData = [];	
+	
+		$scope.newType   =  'Text';
+		$scope.notNull   = false;
+		$scope.unique    = false;
+	}
+	
+}]);
+
+
+
+wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
+{
+	$scope.actualSelection = 'CRUD';
+	
+	$scope.newForm = function()
+	{
+		$scope.actualSelection = 'NEW_FORM';
+	}
+
+    $scope.$on('newFormSelected', function() 
+    {
+		$scope.actualSelection = 'CRUD';
+	});    	
+					
+}]);
 
 var entityMap = {
     "&": "&amp;",

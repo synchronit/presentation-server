@@ -5,6 +5,7 @@
 	<h3 class="formTitle">{{formSelected.label}}</h3>
 
 	<div style="display: block; clear: both; padding-top: 15px;">
+
 		<div ng-repeat="data in formSelected.children">
 	
 			<div  ng-if="!data.isReference()" style="margin-left: 15px;">

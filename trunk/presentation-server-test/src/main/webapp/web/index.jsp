@@ -39,6 +39,7 @@
 
     <script src="js/jquery/jquery-1.11.3.min.js"></script>
     <script src="js/jquery/jquery-ui.min.js"></script>
+    <script src="js/jquery/jquery.placeholder.min.js"></script>
         
     <script src="js/bootstrap/bootstrap.3.1.1.js"></script>
     <script src="js/bootstrap/ui-bootstrap-tpls.0.11.2.js"></script>
@@ -72,13 +73,13 @@
 
 <body>
 
-<div id="wholeApp" ng-app="wholeApp">
+<div id="wholeApp" ng-app="wholeApp" ng-controller="wholeAppController">
 
 	<div class="header">
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.99</span>
+	        <span class="footer">v0.0.100</span>
 	    </div>
 	</div>
 
@@ -91,9 +92,12 @@
 			<jsp:include page="accordion.app.jsp" />
 		</div>
 		<div id="contentDiv">
-
-			<jsp:include page="form_content.template.jsp" />
-
+			<div ng-if="actualSelection == 'CRUD'">
+				<jsp:include page="form_content.template.jsp" />
+			</div>
+			<div ng-if="actualSelection == 'NEW_FORM'">
+				<jsp:include page="new_form.template.jsp" />
+			</div>			
 		</div>
 	</div>
 

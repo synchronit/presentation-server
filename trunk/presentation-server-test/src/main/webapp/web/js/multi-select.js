@@ -1,3 +1,4 @@
+
 angular.module('modalWindow', ['ngAnimate', 'ui.bootstrap', 'ui.grid', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.edit', 'broadcastService']);
 angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $modal, $log ) {
 
@@ -5,11 +6,13 @@ angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $mod
 
   $scope.$on('multipleResults', function() 
   {
+console.log("M3!");
 		$scope.open('lg');
   });    	
 	
   $scope.open = function (size) {
 
+console.log("M4!");
     var modalInstance = $modal.open({
       animation: $scope.animationsEnabled,
       templateUrl: 'myModalContent.html',
@@ -32,7 +35,7 @@ angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $mod
   $scope.toggleAnimation = function () {
     $scope.animationsEnabled = !$scope.animationsEnabled;
   };
-  
+
 });
 
 // Please note that $modalInstance represents a modal window (instance) dependency.

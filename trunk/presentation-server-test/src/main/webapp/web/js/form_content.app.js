@@ -25,7 +25,6 @@
     	( 'formSelectedController', 
     		['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
     			{
-
 				    $scope.formSelected = {};
 					$scope.gridOptions  = {};
 				    $scope.referenceValues = {};
@@ -277,7 +276,14 @@
 
 					$scope.afterExecuteFQL = function(response, stmt, params)
 					{
-						msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
+						if ($scope.fqlResultOK(response))
+						{
+							msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
+						}
+						else
+						{
+							msgError("ERROR: "+response.message);
+						}
 					}
 					
 					$scope.afterGetData = function(response, stmt)
@@ -296,7 +302,7 @@
 								if (returnedRows.length > 1)
 								{
 									// Multiple cases found ...
-
+console.log("M1!");
 									broadcastService.setResponse(response);
 
 									//**********************************************************************
@@ -585,7 +591,34 @@
 					        }
 					    });
 					}
-				
+
+					/**
+					 * TODO: this needs to be reconsidered, after having more knowledge about Angular
+					 *
+					 * Problem is a race condition between the broadcast and the controller not yet build.
+					 * When we move from a form data-entry to create a new form and come back to another 
+					 * form data-entry, the data is not rendered, because the event was broadcasted 
+					 * before the controller has completed. This means the event was not catched by the controller
+					 * and therefore, no data has been loaded to be rendered. 
+					 *
+					 * Probably a major re-factoring may solve this. Among other things, using a single App.
+					 * Consider also using different URLs for different parts of the App and also, 
+					 * points 3 and 4 of this link: https://leftshift.io/8-tips-for-angular-js-beginners/
+					 * (about using factory and also providers during app initizalization)
+					 *
+					 * But ... this is postponed, because it might well be, that is totally different in Angular 2.0
+					 *
+					 */
+					$scope.formSelected     = broadcastService.getFormSelected();
+					if ($scope.formSelected.label != '')
+					{
+						$scope.gridOptions      = $scope.generateGridOptions($scope.formSelected);
+						$scope.loadReferenceValues($scope.formSelected);
+					}
+					/** END OF INTERIM SOLUTION **
+					 ** (explicitly checks for a selected form, in case the event was missed) 
+					 **/
+									
 		    	}
 		    ]
 		)
