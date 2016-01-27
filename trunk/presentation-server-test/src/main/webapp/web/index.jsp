@@ -79,7 +79,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.100</span>
+	        <span class="footer">v0.0.102</span>
 	    </div>
 	</div>
 
