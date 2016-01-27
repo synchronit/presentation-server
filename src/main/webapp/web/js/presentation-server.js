@@ -78,13 +78,9 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 // TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined
 //
 	$scope.executeFQL = function(stmt, callback, params)
-	{
-
-console.log("Executing FQL: "+stmt);
-	
+	{	
 	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
-	    .success(function(response) {callback(response, stmt, params);});
-	    
+	    .success(function(response) {callback(response, stmt, params);});	    
 	}
 
 	$scope.clearInputs = function(response, stmt)
@@ -120,10 +116,48 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 		$scope.actualSelection = 'NEW_FORM';
 	}
 
+	$scope.deleteForm = function()
+	{
+		var formName = broadcastService.getFormSelected().label;
+		if (formName != '')
+		{
+			$scope.executeFQL("DELETE FORM "+formName, $scope.afterDeleteForm, {formName: formName} );
+		}
+		else
+		{
+			msgError("Please select the Form to be deleted and then press again the trash icon.");
+		}
+	}
+
+	$scope.afterDeleteForm = function(response, stmt, params)
+	{
+		// TODO: Look at form_content (and this same source file) and refactor to a common place
+		if (response.code > 99 && response.code < 200)
+		{
+			msgInfo("Form "+params.formName+" has been successfully deleted.");
+		}
+		else
+		{
+			msgError("ERROR when executing: <code>"+stmt+"</code> ("+response.message+")");
+		}
+	}
+
     $scope.$on('newFormSelected', function() 
     {
 		$scope.actualSelection = 'CRUD';
 	});    	
+
+//
+// TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined 
+//                    and   also in this same file, in newFormController ... 
+//       IDEA ... to upgrade the function to be used only from this controller (wholeAppController) and
+//                call it as $parent.executeFQL from the child ones ... 
+//
+	$scope.executeFQL = function(stmt, callback, params)
+	{	
+	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
+	    .success(function(response) {callback(response, stmt, params);});	    
+	}
 					
 }]);
 
