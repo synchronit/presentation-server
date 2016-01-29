@@ -47,6 +47,9 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 		$scope.newFormData.push( newData ); 
 		
 		$scope.newLabel = '';
+
+		$("#newDataLabel").focus();
+
 	}
 
 	$scope.deleteData = function()
@@ -529,3 +532,5 @@ toggleLefPane = function()
 	}
 	leftPanelOpened = !leftPanelOpened;
 }
+
+

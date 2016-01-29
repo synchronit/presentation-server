@@ -12,7 +12,7 @@
 			</div>
 			
 			<div style="float: left; margin-top: 5px; display: inline;">
-				<input type="text"     ng-model="newLabel"> 
+				<input type="text" id="newDataLabel" ng-model="newLabel"> 
 			</div>
 
 		</div>
@@ -60,16 +60,22 @@
 		</select>
 	</div>
 	
-	<div id="createFormStmt" class="createFormStmt">
-		CREATE FORM {{newFormName}} 
-		(
-			<span ng-repeat="formData in newFormData">
-				<span ng-if="!$first">,</span>
-				{{formData.label}} {{formData.type}}
-				<span ng-if="formData.notNull"> NOT NULL </span>
-				<span ng-if="formData.unique" > UNIQUE   </span>
-			</span>			
-		)
+	<div class="createFormStmt">
+		<div class="collapseTab" onclick="$('#createFormStmt').slideToggle('slow');">
+			<span style="font-size: 9px; font-weight: bold; ">FQL</span>
+		</div>
+
+		<div id="createFormStmt" style="padding: 6px;">
+			CREATE FORM {{newFormName}} 
+			(
+				<span ng-repeat="formData in newFormData">
+					<span ng-if="!$first">,</span>
+					{{formData.label}} {{formData.type}}
+					<span ng-if="formData.notNull"> NOT NULL </span>
+					<span ng-if="formData.unique" > UNIQUE   </span>
+				</span>			
+			)
+		</div>
 	</div>
 	
   </div>

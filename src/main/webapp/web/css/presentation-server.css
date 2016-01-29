@@ -24,6 +24,23 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 	font-size: 30px;
 }
 
+.collapseTab
+{
+	height: 25px; 
+	width: 50px; 
+	margin: auto; 
+	border: 1px solid grey; 
+	margin-top: -21px; 
+	text-align: center; 
+	cursor: pointer; 
+	border-radius: 5px 5px 0px 0px; 
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#EFEFEF));
+	background-image: -webkit-linear-gradient(top, #FEFEFE, #EFEFEF); 
+	background-image: -moz-linear-gradient(top, #FEFEFE, #EFEFEF); 
+	background-image: -ms-linear-gradient(top, #FEFEFE, #EFEFEF); 
+	background-image: -o-linear-gradient(top, #FEFEFE, #EFEFEF); 
+}
+
 #.my-placeholder { color: #aaa; }
 
 .toolBar {
@@ -218,7 +235,7 @@ code
 {
 	background:#F0F0F7; 
 	border:black dashed 1px; 
-	padding:6px; 
+	padding:0px; 
 	color:#000070;
 	bottom: 20px;
 	position: absolute;
