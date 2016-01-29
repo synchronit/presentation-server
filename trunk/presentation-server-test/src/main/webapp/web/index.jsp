@@ -2,6 +2,10 @@
 <html lang="en">
   <head>
 
+    <meta charset="utf-8"> 
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<link rel="stylesheet" type="text/css" href="css/fontello/style.css">  
 
 	<link rel="stylesheet" type="text/css" href="css/fontello/form-actions-embedded.css">
@@ -27,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="css/resizable/resizable.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/select.min.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/jquery.contextMenu.min.css">
- 
+
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
     <script src="js/angular/angular.animate.1.4.0.min.js"></script>
@@ -64,9 +68,7 @@
 		{
 			$("#msgFooter").hide();
 //			console.log("OK");
-
 		});
-		
 	</script>
 
 </head>
