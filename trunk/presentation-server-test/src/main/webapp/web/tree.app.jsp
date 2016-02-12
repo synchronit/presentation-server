@@ -12,7 +12,6 @@
 			        <div class="col-md-6 show-grid">
 			            <div class="panel panel-default" style="width:70%">
 			                <div class="panel-body">
-<!--		                    <div class="example-caption">FORMS DEFINED:</div>  -->
 			                    <div save-content="classic-html">
 			                        <treecontrol class="tree-classic"
 			                                     tree-model="treedata"
