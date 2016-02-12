@@ -2,6 +2,21 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 
 	var service  = {};
 	
+	service.formsTree = [];
+	
+	/***************************************************/
+	/*******  THE LEFT-SIDE TREE WITH ALL FORMS  *******/
+	service.getFormsTree = function()
+	{
+		return service.formsTree;
+	}
+	
+	service.setFormsTree = function(formsTree)
+	{
+		service.formsTree = formsTree;
+	}
+
+
 	service.formSelected = {label: ''};
 
 	/***************************************************/

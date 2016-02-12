@@ -34,7 +34,35 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 
 	if (!$scope.dataTypes)		$scope.dataTypes = ['Text', 'Number', 'Boolean'];
 	if (!$scope.newType)		$scope.newType   =  'Text';
+	
+	$scope.getFormData = function (formName)
+	{
+		var formData = {};
+		for (var i=0; i<$scope.formsTree.length; i++)
+		{
+			if ($scope.formsTree[i].label == formName)
+			{
+				for (var c=0; c<$scope.formsTree[i].children.length; c++)
+				{
+					var dataLabel = $scope.formsTree[i].children[c].label;
+					formData[ dataLabel ] = false;
+				}
+			}
+		}
+		return formData;
+	}	
 
+	$scope.formsTree = broadcastService.getFormsTree();
+	
+	$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
+
+	$scope.linkedFormChanged = function()
+	{
+		$scope.linkedFormData = $scope.getFormData( $scope.linkedForm.label );
+		$scope.refMinimum = 0;
+		$scope.refMaximum = 1;
+	}
+	
 	$scope.newData = function()
 	{
 		var newData = {
@@ -50,6 +78,64 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 
 		$("#newDataLabel").focus();
 
+	}
+	
+	$scope.newReference = function()
+	{
+		var newData = {
+						label         : $scope.newReferenceName, 
+						referenceForm : $scope.linkedForm.label,
+						type          : "REFERENCE",
+						min           : $scope.refMinimum,
+						max           : $scope.refMaximum,
+						refData       : $scope.getRefData(),
+						unique        : $scope.refUnique
+					  };
+
+		$scope.newFormData.push( newData ); 
+		
+		// Resets the UI 
+		$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
+		$scope.linkedFormChanged();
+	}
+
+	$scope.getRefData = function()
+	{
+		var dataReferenced = [];
+		for (var data in $scope.linkedFormData)
+		{
+			if ($scope.linkedFormData[data])
+			{
+				dataReferenced.push(data);
+			}
+		}
+		return dataReferenced;
+	}
+	
+	$scope.linkForms = function()
+	{
+		if ($scope.onLinkForms)
+		{
+			$scope.onLinkForms = false;
+			$("#lnkButton").toggleClass('icon-th-list icon-link');
+			$('#lnkButton').prop('title', 'Include Data from another Form');
+			$('#datButton').show();
+			$('#delButton').show();
+			$('#tecButton').show();
+			$('#runButton').show();
+			$('#refButton').hide();
+		}
+		else
+		{
+			$scope.onLinkForms = true;
+			$("#lnkButton").toggleClass('icon-link icon-th-list');
+			$('#lnkButton').prop('title', 'BACK: define new (native) Data in the Form');
+			$('#datButton').hide();
+			$('#delButton').hide();
+			$('#tecButton').hide();
+			$('#runButton').hide();
+			$('#refButton').show();
+		}
 	}
 
 	$scope.deleteData = function()
@@ -68,9 +154,19 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 		var comma = '';
 		for (var i=0; i<$scope.newFormData.length; i++)
 		{
-			createFormStmt += comma+$scope.newFormData[i].label+' '+$scope.newFormData[i].type;
-			createFormStmt += ($scope.newFormData[i].notNull) ? ' NOT NULL ' : '';
-			createFormStmt += ($scope.newFormData[i].unique ) ? ' UNIQUE '   : '';
+			var formData = $scope.newFormData[i];
+			if (formData.type != "REFERENCE")
+			{
+				createFormStmt += comma+formData.label+' '+formData.type;
+				createFormStmt += (formData.notNull) ? ' NOT NULL ' : '';
+				createFormStmt += (formData.unique ) ? ' UNIQUE '   : '';
+			}
+			else
+			{
+				createFormStmt += comma+formData.label+' REFERENCES ';
+				createFormStmt += (formData.min == 0 && formData.max == 1) ? '' : formData.min+'..'+formData.max;
+				createFormStmt += formData.referenceForm + '.( ' + formData.refData.join() + ' ) ';
+			}
 			comma = ', ';
 		}
 		createFormStmt += ')';
@@ -250,6 +346,10 @@ function parse_forms_response(response)
 
     for (var i=0; i < response.resultSet.rows.length; i++)
     {
+//           0     1    2      3       4    5       6        7      8    9 
+//        Form    Ver Label   Type  Order  isRef  refForm  refdata min  max
+//		["PERSON","1","SEX", "TEXT",  "3","true","GENDER","GENDER","0", "1"]
+
     	var formName     =  response.resultSet.rows[i][0];
     	var label        =  response.resultSet.rows[i][2];
     	var type         =  response.resultSet.rows[i][3];
@@ -261,10 +361,9 @@ function parse_forms_response(response)
     	
     	var wasReference = false;
     
-		// If it was in a Reference and (is not a reference any more OR is a different reference                   OR form) 
-		if (previousRefLabel != " " &&  (!isReference                || isReference && (label != previousRefLabel || formName != formNamePrev) ))
+		// If it was in a Reference and (is not a reference any more OR is a different reference                        OR form) 
+		if (previousRefLabel != " " &&  (!isReference                || isReference && (label != previousLabel || formName != formNamePrev) ))
 		{
-// console.log("1. loads a Data in the tree, with "+refData.length+" REF children");
 	        formData.push({ "label"    : previousLabel, 
 	        				"type"     : "REFERENCE", 
 	        				"refForm"  : previousRefForm,
@@ -364,7 +463,7 @@ function parse_forms_response(response)
 // console.log("7. loads a Form in the tree, with "+formData.length+" children");
 
 // ******************* SHOWS THE LOADED TREE STRUCTURE **************
-   console.log(forms);
+//   console.log(forms);
 // ******************************************************************
 
 	return forms;
@@ -374,36 +473,37 @@ function parse_forms_response(response)
 
  {
  	"code":100,
- 	"message":"4 forms found.",
+ 	"message":"3 forms found.",
  	"resultSet":
 	{
 		"headers":
 		[
-			{"label":"FormName","type":"TEXT"},
-			{"label":"FormVersion","type":"NUMBER"},
-			{"label":"DataLabel","type":"TEXT"},
-			{"label":"DataType","type":"TEXT"},
-			{"label":"DataOrder","type":"NUMBER"},
-			{"label":"FormReferenced","type":"TEXT"},
-			{"label":"DataReferenced","type":"TEXT"}
+			{"label":"FormName","type":"TEXT","referencedData":[]},
+			{"label":"FormVersion","type":"NUMBER","referencedData":[]},
+			{"label":"DataLabel","type":"TEXT","referencedData":[]},
+			{"label":"DataType","type":"TEXT","referencedData":[]},
+			{"label":"DataOrder","type":"NUMBER","referencedData":[]},
+			{"label":"IsReference","type":"BOOLEAN","referencedData":[]},
+			{"label":"FormReferenced","type":"TEXT","referencedData":[]},
+			{"label":"DataReferenced","type":"TEXT","referencedData":[]},
+			{"label":"Min","type":"NUMBER","referencedData":[]},
+			{"label":"Max","type":"NUMBER","referencedData":[]}
+
+
 		],
 		"rows":
 		[
-			["MYTEST","1","MYNUM","NUMBER","0",null],
-			["MYTEST","1","MYTEXT","TEXT","1",null],
-			["MYTEST","1","MYBOOL","BOOLEAN","2",null],
+			["MYTEST","1","MYNUM","NUMBER","0","false",null,null,null,null],
+			["MYTEST","1","MYTEXT","TEXT","1","false",null,null,null,null],
+			["MYTEST","1","MYBOOL","BOOLEAN","2","false",null,null,null,null],
+
+			["GENDER","1","ID","NUMBER","0","false",null,null,null,null],
+			["GENDER","1","GENDER","TEXT","1","false",null,null,null,null],
 			
-			["MYTEST2","1","A","NUMBER","0",null],
-			["MYTEST2","1","B","TEXT","1",null],
-			["MYTEST2","1","C","BOOLEAN","2",null],
-			
-			["SEX","1","ID","NUMBER","0",null],
-			["SEX","1","SEX","TEXT","1",null],
-			
-			["PERSON","1","ID","NUMBER","0",null],
-			["PERSON","1","NAME","TEXT","1",null],
-			["PERSON","1","GENDER","REFERENCE","2","SEX", "ID"],
-			["PERSON","1","GENDER","REFERENCE","3","SEX", "SEX"]
+			["PERSON","1","ID",  "NUMBER","0","false",null,    null,   null,null],
+			["PERSON","1","NAME","TEXT",  "1","false",null,    null,   null,null],
+			["PERSON","1","SEX", "NUMBER","2","true","GENDER","ID",    "0", "1"],
+			["PERSON","1","SEX", "TEXT",  "3","true","GENDER","GENDER","0", "1"]
 
 		]
 	},

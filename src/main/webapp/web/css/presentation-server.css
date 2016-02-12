@@ -17,11 +17,88 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .type-hint-number {background:rgb(189, 63, 66);}
 .footer {color: #aaaaaa;}
 .formTitle {float: left; }
+
 .newFormTitle
 {
 	border: 0px;
 	float: left;
-	font-size: 30px;
+	font-size: 2.5em;
+}
+
+.newReferenceName
+{
+	border: 0px;
+	font-size: 1em;
+	vertical-align: top;
+}
+
+.newFormToolBar
+{
+    min-width: 100%;
+    float: right;
+    text-align: right;
+}
+
+.formData, .formRef
+{
+	float:left; 
+	width: 100%; 
+	clear: both; 
+	margin-top: 10px;
+	white-space: nowrap;
+}
+
+.formDataLeft, .formDataRight
+{
+	float: left; 
+	margin-top: 5px; 
+	display: inline;
+}
+
+.formDataLeft
+{
+	width: 30%; 
+}
+
+.formRef.ng-hide-add, 
+.formData.ng-hide-add, 
+{
+	transition: all linear 0.7s;
+    -webkit-transition-delay: 0.7s; /* Safari */
+    transition-delay: 0.7s;
+}
+
+.formRef.ng-hide-remove, 
+.formData.ng-hide-remove 
+{
+	transition: all linear 0.7s;
+}
+
+.formRef.ng-hide, 
+.formData.ng-hide
+{
+  width: 0px;
+  opacity: 0;
+}
+
+.formSubTitle
+{
+	color: #777777;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.newReferenceFieldset
+{
+	font-size: 12px; 
+	text-decoration: 
+	none; margin: 0px; 
+	border: 0px; 
+	padding-left: 5px; 
+	padding-right: 5px; 
+	width: auto; 
+	font-weight: bold; 
+	color: grey;
 }
 
 .collapseTab
@@ -75,7 +152,6 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
       text-shadow: 0 1px 0 #fafafa; 
       z-index: 0;
 }
-
 
 .msgFooter {
   display: block;

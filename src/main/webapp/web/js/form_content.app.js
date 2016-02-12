@@ -16,7 +16,10 @@
 		return  { 
 					link: 	function($scope, elem, attrs) 
 							{ 
-								$scope.defineContextMenu($scope, elem, attrs);
+								if ($scope.actualSelection != "NEW_FORM" )
+								{
+									$scope.defineContextMenu($scope, elem, attrs);
+								}
 							}  
 				}
 	});

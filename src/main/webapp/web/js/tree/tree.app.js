@@ -81,7 +81,11 @@
 //								console.log("Requesting form data ...");
 							
 							    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command=show%20forms")
-							    .success(function(response) {$scope.treedata = parse_forms_response(response);});
+							    .success(function(response) 
+							    {
+							    	$scope.treedata = parse_forms_response(response);
+							    	broadcastService.setFormsTree($scope.treedata);
+							    });
 				
 				/**  
 				 *				$.ajax({
