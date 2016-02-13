@@ -97,6 +97,8 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 		// Resets the UI 
 		$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
 		$scope.linkedFormChanged();
+		
+		$scope.toggleLinkForms();
 	}
 
 	$scope.getRefData = function()
@@ -112,30 +114,10 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 		return dataReferenced;
 	}
 	
-	$scope.linkForms = function()
+	$scope.toggleLinkForms = function()
 	{
-		if ($scope.onLinkForms)
-		{
-			$scope.onLinkForms = false;
-			$("#lnkButton").toggleClass('icon-th-list icon-link');
-			$('#lnkButton').prop('title', 'Include Data from another Form');
-			$('#datButton').show();
-			$('#delButton').show();
-			$('#tecButton').show();
-			$('#runButton').show();
-			$('#refButton').hide();
-		}
-		else
-		{
-			$scope.onLinkForms = true;
-			$("#lnkButton").toggleClass('icon-link icon-th-list');
-			$('#lnkButton').prop('title', 'BACK: define new (native) Data in the Form');
-			$('#datButton').hide();
-			$('#delButton').hide();
-			$('#tecButton').hide();
-			$('#runButton').hide();
-			$('#refButton').show();
-		}
+		$scope.onLinkForms = ($scope.onLinkForms) ? false : true;
+		$scope.newReferenceName = "";
 	}
 
 	$scope.deleteData = function()

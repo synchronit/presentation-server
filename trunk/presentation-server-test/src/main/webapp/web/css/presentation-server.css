@@ -354,7 +354,7 @@ HTML, BODY
    -webkit-padding-end: 20px;
    -webkit-padding-start: 2px;
    -webkit-user-select: none;
-   background-image: url(../images/down.png), -webkit-linear-gradient(#FEFEFE, #FAFAFA 40%, #EFEFEF);
+   background-image: url(../images/down.png), -webkit-linear-gradient(#FEFEFE, #FAFAFA 40%, #EFEFEF) !important;;
    background-position: 97% center;
    background-repeat: no-repeat;
    border: 1px solid #AAA;
