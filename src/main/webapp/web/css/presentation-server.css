@@ -366,6 +366,7 @@ HTML, BODY
    text-overflow: ellipsis;
    white-space: nowrap;
    width: 300px;
+   outline: 0;
 }
 
 .dropDown-white
