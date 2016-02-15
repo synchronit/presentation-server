@@ -53,6 +53,7 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 	}	
 
 	$scope.formsTree = broadcastService.getFormsTree();
+	$scope.$on('newFormsTree', function() {$scope.formsTree = broadcastService.getFormsTree();})
 	
 	$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
 
@@ -82,23 +83,38 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 	
 	$scope.newReference = function()
 	{
-		var newData = {
-						label         : $scope.newReferenceName, 
-						referenceForm : $scope.linkedForm.label,
-						type          : "REFERENCE",
-						min           : $scope.refMinimum,
-						max           : $scope.refMaximum,
-						refData       : $scope.getRefData(),
-						unique        : $scope.refUnique
-					  };
+		if ($scope.newReferenceCheckOK())
+		{
+			var newData = {
+							label         : $scope.newReferenceName, 
+							referenceForm : $scope.linkedForm.label,
+							type          : "REFERENCE",
+							min           : $scope.refMinimum,
+							max           : $scope.refMaximum,
+							refData       : $scope.getRefData(),
+							unique        : $scope.refUnique
+						  };
+	
+			$scope.newFormData.push( newData ); 
+			
+			// Resets the UI 
+			$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
+			$scope.linkedFormChanged();
+			
+			$scope.toggleLinkForms();
+		}
+	}
 
-		$scope.newFormData.push( newData ); 
-		
-		// Resets the UI 
-		$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
-		$scope.linkedFormChanged();
-		
-		$scope.toggleLinkForms();
+	$scope.newReferenceCheckOK = function()
+	{
+		checkOK = true;
+		if ($scope.newReferenceName.trim().length == 0)
+		{
+			checkOK = false;
+			$("#newReferenceName").css("border", "1px dashed red");
+			$("#newReferenceName").effect("shake", {distance: 10}, 500, function() {$("#newReferenceName").css("border", "0px")});
+		}
+		return checkOK;
 	}
 
 	$scope.getRefData = function()
@@ -130,30 +146,46 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 		}		
 	}
 	
-	$scope.createNewForm = function()
+	$scope.createForm = function()
 	{
-		var createFormStmt = 'CREATE FORM '+$scope.newFormName+' ( '; 
-		var comma = '';
-		for (var i=0; i<$scope.newFormData.length; i++)
+		if ($scope.createFormCheckOK())
 		{
-			var formData = $scope.newFormData[i];
-			if (formData.type != "REFERENCE")
+			var createFormStmt = 'CREATE FORM '+$scope.newFormName+' ( '; 
+			var comma = '';
+			for (var i=0; i<$scope.newFormData.length; i++)
 			{
-				createFormStmt += comma+formData.label+' '+formData.type;
-				createFormStmt += (formData.notNull) ? ' NOT NULL ' : '';
-				createFormStmt += (formData.unique ) ? ' UNIQUE '   : '';
+				var formData = $scope.newFormData[i];
+				if (formData.type != "REFERENCE")
+				{
+					createFormStmt += comma+formData.label+' '+formData.type;
+					createFormStmt += (formData.notNull) ? ' NOT NULL ' : '';
+					createFormStmt += (formData.unique ) ? ' UNIQUE '   : '';
+				}
+				else
+				{
+					createFormStmt += comma+formData.label+' REFERENCES ';
+					var max = (formData.max) ? formData.max : "MANY";
+					createFormStmt += (formData.min == 0 && formData.max == 1) ? '' : formData.min+'..'+max;
+					createFormStmt += formData.referenceForm + '.( ' + formData.refData.join() + ' ) ';
+				}
+				comma = ', ';
 			}
-			else
-			{
-				createFormStmt += comma+formData.label+' REFERENCES ';
-				createFormStmt += (formData.min == 0 && formData.max == 1) ? '' : formData.min+'..'+formData.max;
-				createFormStmt += formData.referenceForm + '.( ' + formData.refData.join() + ' ) ';
-			}
-			comma = ', ';
+			createFormStmt += ')';
+			$scope.executeFQL( createFormStmt, $scope.clearInputs );
 		}
-		createFormStmt += ')';
-		$scope.executeFQL( createFormStmt, $scope.clearInputs );
 	}	
+	
+	$scope.createFormCheckOK = function()
+	{
+		checkOK = true;
+		if ($scope.newFormName.trim().length == 0)
+		{
+			checkOK = false;
+			$("#newFormName").css("border", "1px dashed red");
+			$("#newFormName").effect("shake", {distance: 10}, 500, function() {$("#newFormName").css("border", "0px")});
+		}
+		return checkOK;
+	}
 
 //
 // TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined
@@ -215,6 +247,7 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 		// TODO: Look at form_content (and this same source file) and refactor to a common place
 		if (response.code > 99 && response.code < 200)
 		{
+			broadcastService.setFormSelected(null);
 			msgInfo("Form "+params.formName+" has been successfully deleted.");
 		}
 		else

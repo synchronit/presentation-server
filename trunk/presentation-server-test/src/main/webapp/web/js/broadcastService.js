@@ -14,6 +14,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	service.setFormsTree = function(formsTree)
 	{
 		service.formsTree = formsTree;
+		$rootScope.$broadcast("newFormsTree");
 	}
 
 
