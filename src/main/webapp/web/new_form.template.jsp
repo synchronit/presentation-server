@@ -3,21 +3,19 @@
 	<!-- The New Form Toolbar -->
 	<jsp:include page="new_form.toolbar.jsp" />
 	<br/>
-	<input type="text" id="formName" ng-model="newFormName" class="newFormTitle" placeholder="[enter new form title here]" size=30/>
+	<input type="text" id="newFormName" ng-model="newFormName" class="newFormTitle" placeholder="[enter new form title here]" size=30/>
 
 	<div ng-show="onLinkForms"  class="formRef">
-		<span class="formSubTitle">Include Data from another Form as <input type="text" ng-model="newReferenceName" class="newReferenceName" placeholder="[enter a name for this reference]" size=30 /></span>
-		<br/>
-		<br/>
-		Please choose the Form to include data from: 
-		
-		<select  ng-model="linkedForm" ng-change="linkedFormChanged()"  class="dropDown"
-		     data-ng-options="form as form.label for form in formsTree track by form.label">
-		</select>
+		<span class="formSubTitle">
+		Include Data from 
 
-		<br/>
+				<select  ng-model="linkedForm" ng-change="linkedFormChanged()"  class="dropDown-white"
+				     data-ng-options="form as form.label for form in formsTree track by form.label">
+				</select>
+				
+		as <input type="text" id="newReferenceName" ng-model="newReferenceName" class="newReferenceName" placeholder="[enter a name for this reference]" size=30 /></span>
 
-		<fieldset class="singleReferenceFieldset" context-menu style="width: 60%; float: left;"> 
+		<fieldset class="singleReferenceFieldset" context-menu style="width: 60%; float: left; margin-top: 20px;"> 
 			<legend class="newReferenceFieldset">Data from {{linkedForm.label}} to be included: </legend> 
 
 			<div style="border: 3px solid #ffffff; border-raius: 10px; padding: 10px; overflow: auto; height: 130px; width: 40%; margin-left: 5%;">
@@ -30,14 +28,14 @@
 			</div>
 		</fieldset>
 		
-		<div style="display: inline; font-size: 1em; float: left; border: 1px solid grey; border-radius: 10px; margin-top: 15px; width:39%; margin-left: 1%; padding: 7px; ">
+		<div style="display: inline; font-size: 1em; float: left; border: 1px solid grey; border-radius: 10px; margin-top: 30px; width:39%; margin-left: 1%; padding: 7px; ">
 			<div style="clear: both;">
 				<div style="width: 40%; float: left;">Minimum</div>
 				<div style="width: 60%; float: left;"><input type="number" ng-model="refMinimum" size="7" style="width: 90%" /></div>
 			</div>
 			<div style="clear: both; padding-top: 5px;">
 				<div style="width: 40%; float: left;">Maximum</div>
-				<div style="width: 60%; float: left;"><input type="number" ng-model="refMaximum" size="7" style="width: 90%" /></div>
+				<div style="width: 60%; float: left;"><input type="number" ng-model="refMaximum" size="7" style="width: 90%" placeholder="Many" /></div>
 			</div>
 			<div style="clear: both;">
 				<div style="width: 40%; float: left;">Non-Unique</div>
@@ -110,7 +108,10 @@
 					</span>
 
 					<span ng-if="formData.type == 'REFERENCE'">
-						{{formData.label}} REFERENCES {{formData.min}}..{{formData.max}} 
+						{{formData.label}} REFERENCES 
+						<span ng-if="formData.min != 0 || formData.max != 1">
+						{{formData.min}}..{{formData.max}}<span ng-if="!formData.max">MANY</span>
+						</span>
 						{{formData.referenceForm}}.( {{ formData.refData.join() }} )
 					</span>
 				</span>			
