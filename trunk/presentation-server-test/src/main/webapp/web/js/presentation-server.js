@@ -549,7 +549,7 @@ var webSocket;
 
 $(function() {
 
-	webSocket = new WebSocket('ws://localhost:8080/presentation-server-test/wsocket');
+	webSocket = new WebSocket('ws://'+window.location.host+'/presentation-server-test/wsocket');
 	
 	webSocket.onerror = function(event) {  
 	  alert("Error in WebSocket call: " + event.data);
