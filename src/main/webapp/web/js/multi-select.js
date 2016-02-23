@@ -6,13 +6,13 @@ angular.module('modalWindow').controller('ModalDemoCtrl', function ($scope, $mod
 
   $scope.$on('multipleResults', function() 
   {
-console.log("M3!");
+// console.log("M3!");
 		$scope.open('lg');
   });    	
 	
   $scope.open = function (size) {
 
-console.log("M4!");
+// console.log("M4!");
     var modalInstance = $modal.open({
       animation: $scope.animationsEnabled,
       templateUrl: 'myModalContent.html',

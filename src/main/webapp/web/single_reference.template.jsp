@@ -22,7 +22,7 @@
 				
 				<div  ng-if="ctrlDefaults.refAsDropDown()" style="margin-top: 0px; float: left; max-width: 70%; width: 50%;"> 
 					<select ng-model="ref.value" class="dropDown">
-						<option ng-repeat="option in referenceValues[ref.refLabel]" ng-selected="option == ref.value" value="{{option}}" >
+						<option ng-repeat="option in referenceValues[data.refForm+':'+ref.refLabel]" ng-selected="option == ref.value" value="{{option}}" >
 							{{option}}
 						</option>
 					</select>
