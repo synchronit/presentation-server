@@ -111,8 +111,7 @@
 
 					$scope.afterLoadReferences = function(response, stmt, params)
 					{
-						var options = [""];
-						var alreadyThere = function(value)
+						var alreadyThere = function(value, options)
 											{
 												var alreadyThere = false;
 												for (var i=0; i<options.length; i++)
@@ -125,17 +124,23 @@
 						if ($scope.fqlResultOK(response))
 						{
 							var returnedRows = response.resultSet.rows;
-							var columnIndex  = $scope.getColumnIndex(response.resultSet.headers, params.reference.refLabel);
-							for (var i=0; i<returnedRows.length; i++)
+
+							for (var c=0; c<params.reference.children.length; c++)
 							{
-								var value = returnedRows[i][columnIndex];
-								if (!alreadyThere(value))
+								var options = [""];
+								var columnIndex  = $scope.getColumnIndex(response.resultSet.headers, params.reference.children[c].refLabel);
+								for (var i=0; i<returnedRows.length; i++)
 								{
-									options.push(value);
+									var value = returnedRows[i][columnIndex];
+									if (!alreadyThere(value, options))
+									{
+										options.push(value);
+									}
 								}
+								$scope.referenceValues[params.reference.refForm+":"+params.reference.children[c].refLabel] = options;
 							}
 						}
-						$scope.referenceValues[params.reference.refLabel] = options;
+
 					}
 
 					$scope.getColumnIndex = function(headers, label)
@@ -305,7 +310,7 @@
 								if (returnedRows.length > 1)
 								{
 									// Multiple cases found ...
-console.log("M1!");
+// console.log("M1!");
 									broadcastService.setResponse(response);
 
 									//**********************************************************************

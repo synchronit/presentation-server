@@ -47,7 +47,7 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 	{
 		service.response = response;
 		$rootScope.$broadcast("multipleResults");
-console.log("M2!");
+// console.log("M2!");
 	}
 	
 	
