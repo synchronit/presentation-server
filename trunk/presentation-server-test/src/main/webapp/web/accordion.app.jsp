@@ -31,10 +31,6 @@
                         <div ng-switch-default>{{ pane.content }}</div>
 					  </div> <!-- SWITCH -->
 
-				<!-- Original Code before including the Tree
-                <p>{{ pane.content }}</p>
-				-->
-
                 <v-accordion ng-if="pane.subpanes">
                   <v-pane ng-repeat="subpane in pane.subpanes" expanded="$first">
                     <v-pane-header id="pane1{{$index}}-header" aria-controls="pane1{{$index}}-content">

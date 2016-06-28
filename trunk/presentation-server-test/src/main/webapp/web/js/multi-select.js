@@ -75,10 +75,10 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	/** Generates the label for the Grid, adding the reference path **/
   	$scope.generateLabel = function(response, h) 
   	{
-		var result = response.resultSet.headers[h].label;
-		if (response.resultSet.headers[h].referencedData.length > 0)
+		var result = response.data.resultSet.headers[h].label;
+		if (response.data.resultSet.headers[h].referencedData.length > 0)
 		{
-			result += '_' + response.resultSet.headers[h].referencedData.join('_');
+			result += '_' + response.data.resultSet.headers[h].referencedData.join('_');
 		}
 		return result;
   	}
@@ -88,14 +88,14 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
   	$scope.generateDisplayLabel = function(response, h) 
   	{
 		var result = '';
-		if (response.resultSet.headers[h].referencedData.length == 0)
+		if (response.data.resultSet.headers[h].referencedData.length == 0)
 		{
-			result = response.resultSet.headers[h].label;
+			result = response.data.resultSet.headers[h].label;
 		}
 		else
 		{
-			var last = response.resultSet.headers[h].referencedData.length - 1;
-			result  += response.resultSet.headers[h].referencedData[last];
+			var last = response.data.resultSet.headers[h].referencedData.length - 1;
+			result  += response.data.resultSet.headers[h].referencedData[last];
 		}
 		return result;
   	}
@@ -132,12 +132,12 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 
 	  	var responseData = [];
 	  	
-	  	for (var r=0; r < response.resultSet.rows.length; r++)
+	  	for (var r=0; r < response.data.resultSet.rows.length; r++)
 	  	{
 	  		var rowData = {};
-	  		for (var h=0; h < response.resultSet.headers.length; h++)
+	  		for (var h=0; h < response.data.resultSet.headers.length; h++)
 	  		{
-	  			rowData[ $scope.generateLabel(response, h) ] = response.resultSet.rows[r][h];
+	  			rowData[ $scope.generateLabel(response, h) ] = response.data.resultSet.rows[r][h];
 	  		}
 	  		rowData["internal_row_id"] = r;	// Internal ID to keep track of the rows
 	  		responseData.push(rowData);
@@ -155,7 +155,7 @@ angular.module('modalWindow').controller('ModalInstanceCtrl', function ($scope, 
 	$scope.gridOptions.data = responseData;
 
 	$scope.gridOptions.columnDefs = [];
-	for (var h=0; h < $scope.response.resultSet.headers.length; h++)
+	for (var h=0; h < $scope.response.data.resultSet.headers.length; h++)
 	{
 		$scope.gridOptions.columnDefs.push( { field:       $scope.generateLabel($scope.response, h), 
 											  displayName: $scope.generateDisplayLabel($scope.response, h) } );
