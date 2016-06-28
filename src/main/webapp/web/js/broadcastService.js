@@ -2,6 +2,20 @@ angular.module('broadcastService', []).factory('broadcastService', function($roo
 
 	var service  = {};
 	
+	service.barChartColors = [];
+	
+	service.getBarChartColors = function()
+	{
+		return $.extend(true, [], service.barChartColors);
+	}
+	
+	service.setBarChartColors = function(barChartColors)
+	{
+		service.barChartColors = barChartColors;
+		$rootScope.$broadcast("newBarChartColors");
+	}
+
+	
 	service.formsTree = [];
 	
 	/***************************************************/

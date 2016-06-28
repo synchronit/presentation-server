@@ -31,12 +31,15 @@
     <link rel="stylesheet" type="text/css" href="css/resizable/resizable.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/select.min.css">
     <link rel="stylesheet" type="text/css" href="css/angular-ui/jquery.contextMenu.min.css">
+    <link rel="stylesheet" type="text/css" href="css/angular-ui/angular-chart.min.css">
+    <link rel="stylesheet" type="text/css" href="css/angular-ui/colorpicker.min.css">
 
     <!-- Scripts -->
     <script src="js/angular/angular.1.4.0.min.js"></script> 
     <script src="js/angular/angular.animate.1.4.0.min.js"></script>
 
     <script src="js/broadcastService.js"></script>
+    <script src="js/FQLService.js"></script>
 
     <script src="js/accordion/v-accordion.js"></script>
     <script src="js/accordion/accordion.app.js"></script>
@@ -59,9 +62,16 @@
     <script src="js/angular-ui/select.min.js"></script>
     <script src="js/angular-ui/jquery.contextMenu.min.js"></script>
     <script src="js/angular-ui/jquery.ui.position.min.js"></script>
+    <script src="js/angular-ui/chart.min.js"></script>
+    <script src="js/angular-ui/angular-chart.min.js"></script>
+    <script src="js/angular-ui/bootstrap-colorpicker-module.min.js"></script>
 
     <script src="js/presentation-server.js"></script>
     <script src="js/form_content.app.js"></script>
+
+    <script src="js/form_content.ctrl.js"></script>
+    <script src="js/newForm.ctrl.js"></script>
+    <script src="js/graphics.ctrl.js"></script>
 
 	<script>
 		$(function()
@@ -81,7 +91,7 @@
 	    <div class="head-container">
 	        <h1>Application Base</h1>
 	        <h2>The Presentation Server Component</h2>
-	        <span class="footer">v0.0.104</span>
+	        <span class="footer">v0.0.107</span>
 	    </div>
 	</div>
 
@@ -99,6 +109,9 @@
 			</div>
 			<div ng-if="actualSelection == 'NEW_FORM'">
 				<jsp:include page="new_form.template.jsp" />
+			</div>			
+			<div ng-if="actualSelection == 'GRAPHICS' || actualSelection == 'CHART_EDIT' ">
+				<jsp:include page="graphics.template.jsp" />
 			</div>			
 		</div>
 	</div>

@@ -4,7 +4,7 @@ $(function() {
 
 });
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'broadcastService' ]);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'broadcastService', 'FQLService', 'chart.js', 'colorpicker.module' ]);
 
 /****************************
 	var dynControllers = angular.module('dynControllers',[]);
@@ -25,202 +25,7 @@ var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content
 				]);
 ****************************/
 
-
-wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
-{
-
-	if (!$scope.newFormName) 	$scope.newFormName = "";
-	if (!$scope.newFormData)	$scope.newFormData = [];	
-
-	if (!$scope.dataTypes)		$scope.dataTypes = ['Text', 'Number', 'Boolean'];
-	if (!$scope.newType)		$scope.newType   =  'Text';
-	
-	$scope.getFormData = function (formName)
-	{
-		var formData = {};
-		for (var i=0; i<$scope.formsTree.length; i++)
-		{
-			if ($scope.formsTree[i].label == formName)
-			{
-				for (var c=0; c<$scope.formsTree[i].children.length; c++)
-				{
-					var dataLabel = $scope.formsTree[i].children[c].label;
-					formData[ dataLabel ] = false;
-				}
-			}
-		}
-		return formData;
-	}	
-
-	$scope.formsTree = broadcastService.getFormsTree();
-	$scope.$on('newFormsTree', function() {$scope.formsTree = broadcastService.getFormsTree();})
-	
-	$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
-
-	$scope.linkedFormChanged = function()
-	{
-		$scope.linkedFormData = $scope.getFormData( $scope.linkedForm.label );
-		$scope.refMinimum = 0;
-		$scope.refMaximum = 1;
-	}
-	
-	$scope.newData = function()
-	{
-		var newData = {
-						label  : $scope.newLabel, 
-						type   : $scope.newType,
-						notNull: $scope.notNull,
-						unique : $scope.unique
-					  };
-		
-		$scope.newFormData.push( newData ); 
-		
-		$scope.newLabel = '';
-
-		$("#newDataLabel").focus();
-
-	}
-	
-	$scope.newReference = function()
-	{
-		if ($scope.newReferenceCheckOK())
-		{
-			var newData = {
-							label         : $scope.newReferenceName, 
-							referenceForm : $scope.linkedForm.label,
-							type          : "REFERENCE",
-							min           : $scope.refMinimum,
-							max           : $scope.refMaximum,
-							refData       : $scope.getRefData(),
-							unique        : $scope.refUnique
-						  };
-	
-			$scope.newFormData.push( newData ); 
-			
-			// Resets the UI 
-			$scope.linkedForm = ($scope.formsTree.length > 0) ? $scope.formsTree[0] : null;
-			$scope.linkedFormChanged();
-			
-			$scope.toggleLinkForms();
-		}
-	}
-
-	$scope.newReferenceCheckOK = function()
-	{
-		checkOK = true;
-		if ($scope.newReferenceName.trim().length == 0)
-		{
-			checkOK = false;
-			$("#newReferenceName").css("border", "1px dashed red");
-			$("#newReferenceName").effect("shake", {distance: 10}, 500, function() {$("#newReferenceName").css("border", "0px")});
-		}
-		return checkOK;
-	}
-
-	$scope.getRefData = function()
-	{
-		var dataReferenced = [];
-		for (var data in $scope.linkedFormData)
-		{
-			if ($scope.linkedFormData[data])
-			{
-				dataReferenced.push(data);
-			}
-		}
-		return dataReferenced;
-	}
-	
-	$scope.toggleLinkForms = function()
-	{
-		$scope.onLinkForms = ($scope.onLinkForms) ? false : true;
-		$scope.newReferenceName = "";
-	}
-
-	$scope.deleteData = function()
-	{
-		var dataLabel = $("#definedData").val();
-		if (dataLabel) 
-		{
-			// Removes [dataLabel] from [newFormData]
-			$scope.newFormData = jQuery.grep($scope.newFormData, function(formData) { return formData.label != dataLabel; });
-		}		
-	}
-	
-	$scope.createForm = function()
-	{
-		if ($scope.createFormCheckOK())
-		{
-			var createFormStmt = 'CREATE FORM '+$scope.newFormName+' ( '; 
-			var comma = '';
-			for (var i=0; i<$scope.newFormData.length; i++)
-			{
-				var formData = $scope.newFormData[i];
-				if (formData.type != "REFERENCE")
-				{
-					createFormStmt += comma+formData.label+' '+formData.type;
-					createFormStmt += (formData.notNull) ? ' NOT NULL ' : '';
-					createFormStmt += (formData.unique ) ? ' UNIQUE '   : '';
-				}
-				else
-				{
-					createFormStmt += comma+formData.label+' REFERENCES ';
-					var max = (formData.max) ? formData.max : "MANY";
-					createFormStmt += (formData.min == 0 && formData.max == 1) ? '' : formData.min+'..'+max;
-					createFormStmt += formData.referenceForm + '.( ' + formData.refData.join() + ' ) ';
-				}
-				comma = ', ';
-			}
-			createFormStmt += ')';
-			$scope.executeFQL( createFormStmt, $scope.clearInputs );
-		}
-	}	
-	
-	$scope.createFormCheckOK = function()
-	{
-		checkOK = true;
-		if ($scope.newFormName.trim().length == 0)
-		{
-			checkOK = false;
-			$("#newFormName").css("border", "1px dashed red");
-			$("#newFormName").effect("shake", {distance: 10}, 500, function() {$("#newFormName").css("border", "0px")});
-		}
-		return checkOK;
-	}
-
-//
-// TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined
-//
-	$scope.executeFQL = function(stmt, callback, params)
-	{	
-	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
-	    .success(function(response) {callback(response, stmt, params);});	    
-	}
-
-	$scope.clearInputs = function(response, stmt)
-	{
-		// TODO: Look at form_content and refactor to a common place
-		if (response.code > 99 && response.code < 200)
-		{
-			msgInfo("Result: "+response.code+"\nwhen executing: <code>"+stmt+"</code>");
-		}
-		else
-		{
-			msgError("ERROR when executing: <code>"+stmt+"</code> ("+response.message+")");
-		}
-
-		$scope.newFormName = "";
-		$scope.newFormData = [];	
-	
-		$scope.newType   =  'Text';
-		$scope.notNull   = false;
-		$scope.unique    = false;
-	}
-	
-}]);
-
-
-
-wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService', function($scope, $http, broadcastService) 
+wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService', 'FQLService', function($scope, $http, broadcastService, FQLService) 
 {
 	$scope.actualSelection = 'CRUD';
 	
@@ -229,12 +34,27 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 		$scope.actualSelection = 'NEW_FORM';
 	}
 
+	$scope.graphics = function()
+	{
+		$scope.actualSelection = 'GRAPHICS';
+	}
+
+	$scope.crud = function()
+	{
+		$scope.actualSelection = "CRUD";
+	}
+
+	$scope.chartEdit = function()
+	{
+		$scope.actualSelection = "CHART_EDIT";
+	}
+	
 	$scope.deleteForm = function()
 	{
 		var formName = broadcastService.getFormSelected().label;
 		if (formName != '')
 		{
-			$scope.executeFQL("DELETE FORM "+formName, $scope.afterDeleteForm, {formName: formName} );
+			FQLService.executeFQL("DELETE FORM "+formName, $scope.afterDeleteForm, {formName: formName} );
 		}
 		else
 		{
@@ -245,14 +65,14 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 	$scope.afterDeleteForm = function(response, stmt, params)
 	{
 		// TODO: Look at form_content (and this same source file) and refactor to a common place
-		if (response.code > 99 && response.code < 200)
+		if (FQLService.fqlResultOK(response))
 		{
 			broadcastService.setFormSelected(null);
 			msgInfo("Form "+params.formName+" has been successfully deleted.");
 		}
 		else
 		{
-			msgError("ERROR when executing: <code>"+stmt+"</code> ("+response.message+")");
+			msgError("ERROR when executing: <code>"+stmt+"</code> ("+response.data.message+")");
 		}
 	}
 
@@ -260,18 +80,6 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
     {
 		$scope.actualSelection = 'CRUD';
 	});    	
-
-//
-// TODO: REFACTOR ... in 	form_content.controller (form_content.app.js) the same function is defined 
-//                    and   also in this same file, in newFormController ... 
-//       IDEA ... to upgrade the function to be used only from this controller (wholeAppController) and
-//                call it as $parent.executeFQL from the child ones ... 
-//
-	$scope.executeFQL = function(stmt, callback, params)
-	{	
-	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
-	    .success(function(response) {callback(response, stmt, params);});	    
-	}
 					
 }]);
 
@@ -359,20 +167,20 @@ function parse_forms_response(response)
 	var isDataFunction      = function() {  return this.type != "FORM" && this.type != "REFERENCE";  }	
 	var isReferenceFunction = function() {  return this.type == "REFERENCE";  }
 
-    for (var i=0; i < response.resultSet.rows.length; i++)
+    for (var i=0; i < response.data.resultSet.rows.length; i++)
     {
 //           0     1    2      3       4    5       6        7      8    9 
 //        Form    Ver Label   Type  Order  isRef  refForm  refdata min  max
 //		["PERSON","1","SEX", "TEXT",  "3","true","GENDER","GENDER","0", "1"]
 
-    	var formName     =  response.resultSet.rows[i][0];
-    	var label        =  response.resultSet.rows[i][2];
-    	var type         =  response.resultSet.rows[i][3];
-    	var isReference  = (response.resultSet.rows[i][5] == "true");
-    	var refForm      =  response.resultSet.rows[i][6];
-    	var refLabel     =  response.resultSet.rows[i][7];
-    	var refMin       =  response.resultSet.rows[i][8];
-    	var refMax       =  response.resultSet.rows[i][9];
+    	var formName     =  response.data.resultSet.rows[i][0];
+    	var label        =  response.data.resultSet.rows[i][2];
+    	var type         =  response.data.resultSet.rows[i][3];
+    	var isReference  = (response.data.resultSet.rows[i][5] == "true");
+    	var refForm      =  response.data.resultSet.rows[i][6];
+    	var refLabel     =  response.data.resultSet.rows[i][7];
+    	var refMin       =  response.data.resultSet.rows[i][8];
+    	var refMax       =  response.data.resultSet.rows[i][9];
     	
     	var wasReference = false;
     

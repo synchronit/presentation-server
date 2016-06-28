@@ -39,6 +39,13 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
     text-align: right;
 }
 
+.graphicsToolBar
+{
+    min-width: 50%;
+    float: right;
+    text-align: right;
+}
+
 .formData, .formRef
 {
 	float:left; 
@@ -417,11 +424,6 @@ HTML, BODY
    outline: 0;
 }
 
-# removes Chrome blue border
-*:focus {
-    outline: 0;
-}
-
 .menu
 {
 	position: absolute;
@@ -465,4 +467,25 @@ HTML, BODY
 .ui-effects-wrapper {
     display:inline;
 }
-    
+
+.chartEditColorpicker
+{
+	border-radius: 35px; 
+	cursor: pointer; 
+	height: 70px; 
+	width: 70px; 
+	margin-top: 20px; 
+	margin-left: 30px; 
+	margin-right: -20px; 
+	clear: both; 
+	vertical-algin: middle; 
+	float: left; 
+	font-size: smaller; 
+	text-align: center; 
+	line-height: 70px; 
+}
+
+/* Removes Chrome blue border */
+*:focus {
+    outline: none;
+}
