@@ -1,0 +1,113 @@
+
+
+.toolBar {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  outline: none; 
+  #
+      -moz-box-shadow: inset 0 0 0 1px #63ad0d;
+      -webkit-box-shadow: inset 0 0 0 1px #63ad0d;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      background: #eee;
+      background: -webkit-gradient(linear, 0 0, 0 bottom, from(#eee), to(#e2e2e2));
+      background: -moz-linear-gradient(#eee, #e2e2e2);
+      background: linear-gradient(#eee, #e2e2e2);
+      border: solid 1px #d0d0d0;
+      border-bottom: solid 3px #b2b1b1;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px #f5f5f5;
+      color: #555;
+#      display: inline-block;
+      font: bold 12px Arial, Helvetica, Clean, sans-serif;
+#      margin: 0 25px 25px 0;
+      position: relative;
+      text-align: center;
+      text-decoration: none;
+      text-shadow: 0 1px 0 #fafafa; 
+      z-index: 0;
+}
+
+
+.msgFooter {
+  display: block;
+  position: fixed;
+  width: 100%;
+  height: 50px;
+  opacity: 0.7;
+  bottom: 0px;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  outline: none; 
+  #
+      -moz-box-shadow: inset 0 0 0 1px #63ad0d;
+      -webkit-box-shadow: inset 0 0 0 1px #63ad0d;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      background: #eee;
+      background: -webkit-gradient(linear, 0 0, 0 bottom, from(#eee), to(#e2e2e2));
+      background: -moz-linear-gradient(#eee, #e2e2e2);
+      background: linear-gradient(#eee, #e2e2e2);
+      border: solid 1px #d0d0d0;
+      border-bottom: solid 3px #b2b1b1;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px #f5f5f5;
+      color: #555;
+#      display: inline-block;
+      font: bold 12px Arial, Helvetica, Clean, sans-serif;
+#      margin: 0 25px 25px 0;
+#      position: relative;
+      text-align: left;
+      vertical-align: middle;
+      text-decoration: none;
+      text-shadow: 0 1px 0 #fafafa; 
+      z-index: 0;
+}
+  
+.msgFooter a
+{
+  display: inline-block;
+  background-color: #f7f7f7;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#36E45B), to(#328243));
+  background-image: -webkit-linear-gradient(top, #36E45B, #328243); 
+  background-image: -moz-linear-gradient(top, #36E45B, #328243); 
+  background-image: -ms-linear-gradient(top, #36E45B, #328243); 
+  background-image: -o-linear-gradient(top, #36E45B, #328243); 
+  # values were:  #f7f7f7, #e7e7e7
+  
+  # color: #a7a7a7;
+  color: #FFFFFF;
+  
+  margin: 12px;
+  margin-top: -15px;
+  width: 54px;
+  height: 54px;
+  position: relative;
+  text-align: center;
+  line-height: 54px;
+  border-radius: 50%;
+  box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+}  
+
+/************
+.msgFooter a:hover 
+{
+  text-decoration: none;
+  color: #555;
+  background: #f5f5f5;
+}
+*************/
+
+.msgFooter:hover 
+{
+  opacity: 1.0;
+}
+
