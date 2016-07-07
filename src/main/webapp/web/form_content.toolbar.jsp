@@ -6,4 +6,5 @@
 			<span><a style="font-size: 2em;" ng-href="{{hash}}" class="icon-delete"></a></span>
 			<span><a style="font-size: 2em;" ng-href="{{hash}}" class="icon-marquee"    ng-click="clearForm();" title="Clear screen values"></a></span>
 			<span><a style="font-size: 2em;" ng-href="{{hash}}" class="icon-chart-bar"  ng-click="graphics();"  title="Graphics"></a></span>
+			<span><a style="font-size: 2em;" ng-href="{{hash}}" class="icon-upload"     ng-click="importer();"  title="Import Data"></a></span>
 		</nav>
