@@ -62,8 +62,8 @@ $(document).ready(function() {
             rowData.attr('data-index', i.toString());
             var del_button = $('<td><a style="cursor:pointer" data-toggle="tooltip" data-placement="left" data-index="' + i.toString() + '" title="Delete this Row"><span class="glyphicon glyphicon-remove text-danger"><span></a></td>');
             del_button.children('a').on('click', function(e) {
-                let data_index = $(this).attr('data-index');
-                let row_index = $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').index();
+                var data_index = $(this).attr('data-index');
+                var row_index = $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').index();
                 $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').remove();
                 $.json_array.data.splice(row_index, 1);
             });
@@ -127,7 +127,7 @@ $(document).ready(function() {
         var row = $('<tr></tr>');
         var emptycell = $('<th></th>');
         emptycell.appendTo(row);
-        let count = columnCount();
+        var count = columnCount();
         for (var j = 0; j < count; j++) {
             var headingCell = $('<th></th>');
             var select = $('<select></select>', {

@@ -196,11 +196,10 @@ $.extend({
                                     value = getValueForReferenceColumn(mappingItem.formColumn.type, dataColumn);
                                 }
 
-                            } else {
+                            }else{
 
                                 value = getValueForReferenceColumn(mappingItem.formColumn.type, dataColumn);
                             }
-
                             if (value != null) {
                                 storeDataArray.splice(mappingItem.formColumn.order, 0, value);
                             }

@@ -44,7 +44,7 @@
                             <div class="col-lg-6 col-md-6">
 
                                 <label>Select FORM to send data:</label>
-                                <select class="form-control form-control" style='max-width:500px;' id="form_names">
+                                <select class="form-control form-control" style='max-width:300px;' id="form_names">
                                                 <option id="0">Select...</option>
                                                 </select>
                                 <br>
@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-6 col-md-6"></div>
                             <label>Select a saved mapping for this FORM</label>
-                            <select class="form-control form-control" style='max-width:500px;' id="mapping_names">
+                            <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
                                                 <option id="0">Select...</option>
                                                 </select>
                         </div>
@@ -118,3 +118,13 @@
         </div>
     </div>
 </div>
+        
+         <!--importer stuff-->
+    <script src="js/importer/papaparse.min.js"></script>
+    <!--<script src="js/mocks.js"></script>-->
+    <script src="js/importer/appBaseService.js"></script>
+
+    <script src="js/importer/indexImport.js">        
+    </script>
+    <script src="js/importer/csv_importer.js"></script>
+     <!--importer stuff-->
