@@ -51,6 +51,17 @@
     <script src="js/bootstrap/bootstrap.3.1.1.js"></script>
     <script src="js/bootstrap/ui-bootstrap-tpls.0.11.2.js"></script>
     <script src="js/prettify/prettify.1.0.1.js"></script>
+    
+    <!--importer stuff-->
+    <script src="js/importer/csv_loader.js"></script>
+    <script src="js/importer/papaparse.min.js"></script>
+    <!--<script src="js/mocks.js"></script>-->
+    <script src="js/importer/appBaseService.js"></script>
+
+    <script src="js/importer/indexImport.js">        
+    </script>
+    <script src="js/importer/csv_importer.js"></script>
+     <!--importer stuff-->
 
     <script src="js/multi-select.js"></script> 
     <script src="js/angular-ui/ui-bootstrap0.13.4.js"></script>
