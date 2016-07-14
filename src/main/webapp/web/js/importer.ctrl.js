@@ -7,7 +7,7 @@
 wholeApp.controller('importerController', ['$scope', '$http', function ($scope, $http)
     {
         $scope.init = function () {
-            alert('esto pincha')
+            
         };
         $scope.init();
     }]);

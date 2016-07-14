@@ -46,6 +46,12 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
     text-align: right;
 }
 
+.importerToolBar {
+    min-width: 50%;
+    float: right;
+    text-align: right;
+}
+
 .formData, .formRef
 {
 	float:left; 
