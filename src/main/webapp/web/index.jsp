@@ -72,6 +72,7 @@
     <script src="js/form_content.ctrl.js"></script>
     <script src="js/newForm.ctrl.js"></script>
     <script src="js/graphics.ctrl.js"></script>
+    <script src="js/importer.ctrl.js"></script>
 
 	<script>
 		$(function()

@@ -38,6 +38,11 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 	{
 		$scope.actualSelection = 'GRAPHICS';
 	}
+        
+        $scope.importer = function()
+	{
+		$scope.actualSelection = 'IMPORTER';
+	}
 
 	$scope.crud = function()
 	{
