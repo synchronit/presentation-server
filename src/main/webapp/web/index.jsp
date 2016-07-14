@@ -113,7 +113,11 @@
 			</div>			
 			<div ng-if="actualSelection == 'GRAPHICS' || actualSelection == 'CHART_EDIT' ">
 				<jsp:include page="graphics.template.jsp" />
-			</div>			
+			</div>		
+            <div ng-if="actualSelection == 'IMPORTER'">
+                <jsp:include page="importer.template.jsp" />
+				
+			</div>		
 		</div>
 	</div>
 

@@ -39,7 +39,7 @@ wholeApp.controller('wholeAppController', ['$scope', '$http', 'broadcastService'
 		$scope.actualSelection = 'GRAPHICS';
 	}
         
-        $scope.importer = function()
+    $scope.importer = function()
 	{
 		$scope.actualSelection = 'IMPORTER';
 	}

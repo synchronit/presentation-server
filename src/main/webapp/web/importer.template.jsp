@@ -5,12 +5,10 @@
 --%>
 
 <div id="importer" ng-controller="importerController">
-
-    <div ng-if="actualSelection == 'IMPORTER'">
-
-        <!-- The New Form Toolbar -->
+       <!-- The New Form Toolbar -->
         <jsp:include page="importer.toolbar.jsp"/>
         <br/>         
-
-    </div>
+        <div ng-include="importer.html">
+          Hola desde importer.html
+        </div>
 </div>
