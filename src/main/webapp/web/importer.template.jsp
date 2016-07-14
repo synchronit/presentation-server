@@ -123,8 +123,5 @@
     <script src="js/importer/papaparse.min.js"></script>
     <!--<script src="js/mocks.js"></script>-->
     <script src="js/importer/appBaseService.js"></script>
-
-    <script src="js/importer/indexImport.js">        
-    </script>
     <script src="js/importer/csv_importer.js"></script>
      <!--importer stuff-->

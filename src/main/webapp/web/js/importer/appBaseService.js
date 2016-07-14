@@ -189,7 +189,7 @@ $.extend({
                                     /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
                                     dataColumn = Array();
                                     dataTypes = Array();
-                                    for (let multiItemIndex in multiRefItem) {
+                                    for (var multiItemIndex in multiRefItem) {
                                         dataColumn.push(dataRow[multiRefItem[multiItemIndex].fileColumn.index]);
                                         dataTypes.push(multiRefItem[multiItemIndex].formColumn.type);
                                     }
@@ -225,7 +225,7 @@ $.extend({
                                     /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
                                     dataColumn = Array();
                                     dataTypes = Array();
-                                    for (let multiItemIndex in multiRefItem) {
+                                    for (var multiItemIndex in multiRefItem) {
                                         dataColumn.push('');
                                         dataTypes.push(multiRefItem[multiItemIndex].formColumn.type);
                                     }
@@ -328,9 +328,9 @@ $.extend({
                 return item.formColumn.isReference == true
             });
 
-            for (let i = 0; i < filterRef.length - 1; i++) {
+            for (var i = 0; i < filterRef.length - 1; i++) {
 
-                for (let j = i + 1; j < filterRef.length; j++) {
+                for (var j = i + 1; j < filterRef.length; j++) {
                     if (filterRef[i].formColumn.name == filterRef[j].formColumn.name) {
                         var exist = multiReferences[filterRef[i].formColumn.name];
                         if (exist == undefined) {
