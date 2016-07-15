@@ -218,11 +218,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 prepData();
             });
 
-
-
-        };
-
-        var prepData = function() {
+       var prepData = function() {
             //opening modal
             $('#modal-progress').modal('show');
             $('#currentItem').html('');
@@ -367,6 +363,6 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 alert('Ups, seems like you haven\'t choosed any Form to map');
                 return;
             }
-
+        };
        
     }]);
