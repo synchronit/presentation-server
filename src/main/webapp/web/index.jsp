@@ -21,7 +21,7 @@
 
 	<link rel="stylesheet" type="text/css" href="css/ui-grid/ui-grid.min.css">
 
-    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.3.1.1.css" >
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.3.1.1.css" >
     <link rel="stylesheet" type="text/css" href="css/prettify/prettify-style.css" >
 
     <link rel="stylesheet" type="text/css" href="css/tree/tree-control.css">
