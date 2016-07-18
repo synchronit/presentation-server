@@ -41,6 +41,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         del_button.children('a').on('click', function(e) {
                             var data_index = $(this).attr('data-index');
                             var row_index = $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').index();
+                            $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').tooltip('destroy');
                             $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').remove();
                             $.json_array.data.splice(row_index, 1);
                         });
@@ -312,6 +313,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
 
                 var total = $.json_array.data.length + 1;
                 var progressValue = 0;
+                $('#stackTrace').children().remove();
                 $('#sendingProgress').attr('max', total);
                 $('#sendingProgress').attr('value', progressValue);
 
@@ -334,19 +336,38 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                                 for (var i in endCallbackData.stackTrace) {
                                     var litem = '<li>' + endCallbackData.stackTrace[i] + '</li>'
                                     $('#stackTrace').append(litem);
+                                    $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                                 }
                             }
 
-                            $('#sendingProgress').attr('value', ++progressValue);
+                            $('#sendingProgress').attr('value', ++progressValue).end();
                             $.appBaseService.saveFormData($.mappingObj, $.json_array.data, function(data) {
+                                if(data.code == 300){
+                                    $('tr[data-index='+data.rowKey+']').addClass('danger').attr('title', 'Error: '+data.message).attr('data-toggle', 'tooltip').attr('data-placement', 'bottom');
+                                    $('tr[data-index='+data.rowKey+']').tooltip({container:'body'});
 
-                                $('#sendingProgress').attr('value', ++progressValue);
-                                current++;
-                                $('#currentItem').html(current + ' of ' + total);
-                                var litem = '<li>' + data.message + '</li>'
-                                $('#stackTrace').append(litem);
+                                }else{
+                                    $('#sendingProgress').attr('value', ++progressValue).end();
+                                    current++;
+                                    $('#currentItem').html(current + ' of ' + total);
+                                    var litem = '<li>' + data.message + '</li>'
+                                    $('#stackTrace').append(litem);
+                                    $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
+                                }
+                              
                             }, function() {
-                                //alert('listo!');
+                               var badrows = $('tr.danger'); 
+                               if(badrows.length>0){
+                                   $('#divBadRowsFilter').removeClass('hidden').addClass('show');
+                                   $('#checkBadRowsFilter').on('change', function(){
+                                       var $this = $(this);
+                                       if ($this.is(':checked')) {
+                                            $("tbody tr:not(.danger)").addClass('hidden');
+                                        } else {
+                                            $("tbody tr:not(.danger)").removeClass('hidden');
+                                           }
+                                   })
+                               }
                             });
                         }
                     }
