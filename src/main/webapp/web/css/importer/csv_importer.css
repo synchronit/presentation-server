@@ -1,6 +1,5 @@
 div#table_container {
     max-height: 400px;
-    overflow: scroll;
 }
 
 .btn-circle {
@@ -36,3 +35,25 @@ div#table_container {
 .info-danger{
     border-color: #a94442 !important;
 }
+
+
+    tbody, thead {
+        display:block;
+    }
+
+    tr:after {
+        content: ' ';
+        display: block;
+        visibility: hidden;
+        clear: both;
+    }
+
+       tbody {
+        height: 300px;
+        overflow-y: scroll !important;
+        max-height: 300px;
+    }
+
+    thead {
+        /* fallback */
+    }
