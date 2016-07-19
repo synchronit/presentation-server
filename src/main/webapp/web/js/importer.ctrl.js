@@ -6,9 +6,11 @@
 
 wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService', function ($scope, $http, broadcastService)
     {
-
+        $scope.formSelected = broadcastService.getFormSelected();
+            
         $scope.initialize = function () {
             $scope.attachBehavior();
+            
         }
 
         $scope.attachBehavior = function () {
@@ -377,7 +379,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
 
         $scope.$on('newFormSelected', function ()
         {
-            $scope.formSelected = broadcastService.getFormSelected();
+            
 
         });
         
