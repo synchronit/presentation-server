@@ -3,10 +3,10 @@
     Created on : Jul 14, 2016, 1:38:42 PM
     Author     : jvega
 --%>
-
+<link rel="stylesheet" type="text/css" href="css/importer/csv_importer.css" >
 <div id="importer" ng-controller="importerController">
        <!-- The New Form Toolbar -->
-              <jsp:include page="importer.toolbar.jsp"/>
+        <jsp:include page="importer.toolbar.jsp"/>
         <br/>         
        <div class="container-fluid">
         <h1>Loading CSV</h1>
@@ -40,27 +40,41 @@
                      
                    <div class="panel-heading form-group">
                         <h3>Mapping</h3>
-                        <div class="row">
+                        <div class="row clearfix">
                             <div class="col-lg-6 col-md-6">
 
                                 <label>Select FORM to send data:</label>
                                 <select class="form-control form-control" style='max-width:300px;' id="form_names">
                                                 <option id="0">Select...</option>
-                                                </select>
+                                                </select><br>
+                                                            
+                            <label>Write a name for this mapping.</label><br>
+                            <input id="mapNameText" type="text" class="form-control" style='max-width:300px;' required/><br>
+                        
+     
                                 <br>
                                 <input id="first_row_checker" type="checkbox" text="" /> <span> Is first row columns names?</span>
 
                             </div>
-                            <div class="col-lg-6 col-md-6"></div>
-                            <label>Select a saved mapping for this FORM</label>
-                            <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
-                                                <option id="0">Select...</option>
-                                                </select>
+                            <div class="col-lg-6 col-md-6">
+                                    <label>Select a saved mapping for this FORM</label>
+                                    <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
+                                                                                <option id="0">Select...</option>
+                                                                                </select>
+                            </div>
+                           
+                        </div><br>
+                        <div>
+                            <button id="send_data_btn" class="btn btn-primary">Send Data to App Base</button>
                         </div>
+                        
                     </div>
-                       
+                        <div id="divBadRowsFilter" class="info-div info-danger bg-danger hidden">
+                             <label>Ups, It looks like there are some bad rows.</label><br>
+                             <input type="checkbox" id="checkBadRowsFilter"/> <span> See bad rows only!</span>
+                        </div>
                     <div id="table_container" class="panel-body">
-                        <table id="table_mapping" class="table">
+                       <table id="table_mapping" class="table">
                             <thead>
 
                             </thead>
@@ -76,11 +90,7 @@
 
                 </div>
             </div>
-            <div class="panel-footer">
-                <label>Write a name for this mapping.</label><br>
-                <input id="mapNameText" type="text" class="form-control" style='max-width:500px;' required/><br>
-                <button id="send_data_btn" class="btn btn-primary">Send Data to App Base</button>
-            </div>
+           
 
         </div>
     </div>
@@ -94,7 +104,7 @@
                     <h4 class="modal-title">Sending data to AppBase</h4>
                 </div>
                 <div class="modal-body">
-                    <progress id="sendingProgress" class="form-control"></progress>
+                    <progress id="sendingProgress" class="form-control" ng-non-bindable></progress>
                     <div id="saving-trace">
                         <div style="margin:10px ">
                             <span id="currentItem"></span>
@@ -119,9 +129,9 @@
     </div>
 </div>
         
-         <!--importer stuff-->
-    <script src="js/importer/papaparse.min.js"></script>
-    <!--<script src="js/mocks.js"></script>-->
-    <script src="js/importer/appBaseService.js"></script>
-    <script src="js/importer/csv_importer.js"></script>
+        <!--importer stuff-->
+<script src="js/importer/papaparse.min.js"></script>
+<script src="js/importer/mocks.js"></script>
+<script src="js/importer/appBaseService.js"></script>
+<script src="js/importer/csv_importer.js"></script>
      <!--importer stuff-->

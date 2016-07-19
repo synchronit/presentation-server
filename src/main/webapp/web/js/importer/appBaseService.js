@@ -248,23 +248,28 @@ $.extend({
                 var formQuery = storeDataArray.join(',');
                 var rowKey = i;
                 if (self.options.useMock) {
-                    executed++;
                     if (callback != undefined && callback != null) {
-                        setTimeout(
-                            callback({
-                                current: i,
-                                total: dataLength,
-                                code: 100,
-                                message: 'Data saved succesfuly --MOCK--',
-                                rowKey: rowKey
-                            }), 500);
+                         
+                        setTimeout(function(key) {
+                                            executed++;
+                                            var data = {
+                                                current: i,
+                                                total: dataLength,
+                                                code: 100,
+                                                message: 'Data saved succesfuly --MOCK--'+executed.toString(),
+                                                rowKey: key
+                                            };
+                                            if(key==6||key==12){data.code = 300}
+                                            callback(data); 
+                                            if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
+                                                endCallback({
+                                                    code: 200,
+                                                    message: 'All items were saved successfuly'
+                                                });
+                                            }
+                                        }, 50*rowKey, rowKey);
                     }
-                    if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
-                        endCallback({
-                            code: 200,
-                            message: 'All items were saved successfuly'
-                        });
-                    }
+                    
                 } else {
                     var command = 'Create New ' + mappingObj.formName + '(' + formQuery + ')';
                     self.serverRequest(command, function(result, key) {
@@ -947,6 +952,6 @@ $.extend({
 $(function() {
     $.appBaseService.initialize({
         requestForm: true,
-        useMock: false
+        useMock: true
     });
 })

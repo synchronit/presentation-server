@@ -4,57 +4,198 @@
  * and open the template in the editor.
  */
 
-wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService', function ($scope, $http, broadcastService)
+wholeApp.controller('importerController', ['$scope', '$http', function ($scope, $http)
     {
-        $scope.formSelected = broadcastService.getFormSelected();
             
-        $scope.initialize = function () {
-            $scope.attachBehavior();
-            
-        }
+                $.appBaseService.getMappings(function(result){$.savedMappings = result;});
+                //datos parseados a JSON
+                var formObject = null;
+                $.json_array = [];
+                //function parser del texto CSV a un objeto JSON
+                var parseCSVtoJSON = function(content) {
+                    $.json_array = Papa.parse(content, {
+                        dynamicTyping: true,
+                        header: false
+                    });
+                };
 
-        $scope.attachBehavior = function () {
-            //event handler para el select form
-            $('select#form_names').on('change', function () {
-                var selectElement = this;
-                var selectedValue = selectElement.options[selectElement.selectedIndex].value;
-                $.appBaseService.getForms(function (result) {
-                    formObject = result[selectedValue];
-                    $.selectedForm = formObject;
-                    seedHeadingMaps();
+                //llena la tabla del mapping
+                var seedTableData = function() {
+                    $("table#table_mapping tbody").children().remove();
+                    $("table#table_mapping thead").children().remove();
+                    $('select#form_names option:selected').removeAttr('selected');
+
+                    if ($.json_array.length == 0) {
+                        parseCSVtoJSON();
+                    }
+
+                    var counter = rowCount();
+                    //if(rowCount() < 10) {counter = rowCount();}
+
+                    var a = 0;
+
+                    for (i = a; i < counter; i++) {
+                        var rowData = $('<tr></tr>');
+                        rowData.attr('data-index', i.toString());
+                        var del_button = $('<td><a style="cursor:pointer" data-toggle="tooltip" data-placement="left" data-index="' + i.toString() + '" title="Delete this Row"><span class="glyphicon glyphicon-remove text-danger"><span></a></td>');
+                        del_button.children('a').on('click', function(e) {
+                            var data_index = $(this).attr('data-index');
+                            var row_index = $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').index();
+                            $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').tooltip('destroy');
+                            $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').remove();
+                            $.json_array.data.splice(row_index, 1);
+                        });
+                        del_button.appendTo(rowData);
+                        for (var k = 0; k < columnCount(); k++) {
+                            $('<td>' + $.json_array.data[i][k] + '</td>').appendTo(rowData);
+                        }
+                        $("table#table_mapping tbody").append(rowData);
+                    }
+                };
+
+                //event handler para el select form
+                $('select#form_names').on('change', function() {
+                    var selectElement = this;
+                    var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+                    $.appBaseService.getForms(function(result) {
+                        formObject = result[selectedValue];
+                        $.selectedForm = formObject;
+                        seedHeadingMaps();
+                    });
+
+                    if($.savedMappings.length == 0 ){
+                        loadMappings(updateMappingSelect, selectedValue);
+                    }else{
+                        updateMappingSelect(selectedValue);    
+                    }   
+
                 });
 
-                if ($.savedMappings.length == 0) {
-                    loadMappings(updateMappingSelect, selectedValue);
-                } else {
-                    updateMappingSelect(selectedValue);
+                //event handler para el select maping
+                 var updateMappingSelect = function(formName){
+                    var drop_forms = document.getElementById('mapping_names');
+                    $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>').end();
+
+                    var filtered = $.savedMappings.filter(function(item) {return item.formName == formName});
+                    if (filtered.length == 0) {
+                        $(drop_forms).find('option').text('Not mapping found for '+formName);
+                    }else{
+                        $(drop_forms).find('option').text('Select mapping');
+                    }
+                    for (item in filtered) {
+                        var option = document.createElement('option');
+                        option.text = filtered[item].sourceName;
+                        drop_forms.add(option);
+
+                    }
                 }
 
-            });
+                //event handler para cuando el usuario edita el texto
+                $("#file_content").on("input", function(event) {
+                    parseCSVtoJSON.applyAsync([], seedTableData);
+                });
 
-            $("#file_content").on("input", function (event) {
-                parseCSVtoJSON.applyAsync([], seedTableData);
-            });
+                var seedHeadingMaps = function() {
+                    if (formObject == null) {
+                        return;
+                    }
+                    var columnProperties = formObject.properties;
+                    //clean datatable
+                    $("table#table_mapping thead").children().remove();
+                    var row = $('<tr></tr>');
+                    var emptycell = $('<th></th>');
+                    emptycell.appendTo(row);
+                    var count = columnCount();
+                    for (var j = 0; j < count; j++) {
+                        var headingCell = $('<th></th>');
+                        var select = $('<select></select>', {
+                            id: "select_" + j.toString(),
+                            'class': 'form-control form_columns'
+                        });
+                        var ignore = $('<option>ignore</option>', {
+                            'data-value': 'ignore'
+                        });
+                        ignore.appendTo(select);
+                        for (var k = 0; k < columnProperties.length; k++) {
+                            var option = $('<option>' + columnProperties[k].name + '</option>');
+                            option.attr('data-name', columnProperties[k].name);
+                            option.attr('data-order', columnProperties[k].order);
+                            option.attr('data-type', columnProperties[k].type);
+                            option.attr('data-isReference', columnProperties[k].isReference);
+                            if (columnProperties[k].isReference == "true") {
+                                option.attr('data-formReferenced', columnProperties[k].formReferenced);
+                                option.attr('data-dataReferenced', columnProperties[k].dataReferenced);
+                            }
+                            option.appendTo(select);
+                        }
+                        select.appendTo(headingCell);
+                        headingCell.appendTo(row);
+                    }
+                    $('table#table_mapping thead').append(row);
+                };
 
-            //carga fichero y contenido en el textarea
-            $('#csv_file_input').bind('change', function (event) {
-                var input = event.target;
+                var columnCount = function() {
+                    if ($.json_array != null) {
+                        if ($.json_array.data != null) {
+                            var max;
+                            max = Math.max.apply(null, $.json_array.data.map(function(item) {
+                                return item.length
+                            }));
+                            return max;
+                        } else {
+                            return 0;
+                        }
+                    } else {
+                        return 0;
+                    }
+                };
 
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var text = reader.result.split(' ').filter(function (n) {
-                        return n
-                    }).join(' ');
-                    var content = document.getElementById('file_content');
-                    content.value = text;
-                    parseCSVtoJSON.applyAsync([text], seedTableData);
-                }
-                reader.readAsText(input.files[0]);
-                $.mappingObj.fileType = input.files[0].type;
+                var rowCount = function() {
+                    if ($.json_array != null) {
+                        return $.json_array.data.length;
+                    } else {
+                        return 0;
+                    }
+                };
 
-            });
+                //carga fichero y contenido en el textarea
+                $('#csv_file_input').bind('change', function(event) {
+                    var input = event.target;
 
-            $('#see_source_btn').on('click', function () {
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        var text = reader.result.split(' ').filter(function(n) {
+                            return n
+                        }).join(' ');
+                        var content = document.getElementById('file_content');
+                        content.value = text;
+                        parseCSVtoJSON.applyAsync([text], seedTableData);
+                    }
+                    reader.readAsText(input.files[0]);
+                    $.mappingObj.fileType = input.files[0].type;
+
+                });
+
+                //busca los datos desde el appbase
+                $.appBaseService.getForms(function(result) {
+                    var keys = Object.keys(result);
+                    keys.forEach(function(key) {
+                        var drop_forms = document.getElementById('form_names');
+                        var option = document.createElement('option');
+                        option.text = key;
+                        drop_forms.add(option);
+                    });
+                });
+
+                var loadMappings = function(callback, params){
+                        $.appBaseService.getMappings(function(result){
+                        $.savedMappings = result;
+                        callback(params);
+                    });
+            };
+            
+            
+            $('#see_source_btn').on('click', function() {
                 if (!$('#div_file_content').hasClass('in')) {
                     $(this).children('span').removeClass('glyphicon-chevron-down');
                     $(this).children('span').addClass('glyphicon-chevron-up');
@@ -64,7 +205,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 }
             });
 
-            $('#btn-expand').on('click', function () {
+            $('#btn-expand').on('click', function() {
                 if (!$('#stackTraceContiner').hasClass('in')) {
                     $(this).children('span').removeClass('glyphicon-chevron-down');
                     $(this).children('span').addClass('glyphicon-chevron-up');
@@ -74,163 +215,11 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 }
             });
 
-            $('#send_data_btn').on('click', function () {
+            $('#send_data_btn').on('click', function() {
                 prepData();
             });
-        }
 
-        $.appBaseService.getMappings(function (result) {
-            $.savedMappings = result;
-        });
-        //datos parseados a JSON
-        var formObject = null;
-        $.json_array = [];
-        //function parser del texto CSV a un objeto JSON
-        var parseCSVtoJSON = function (content) {
-            $.json_array = Papa.parse(content, {
-                dynamicTyping: true,
-                header: false
-            });
-        };
-
-        //llena la tabla del mapping
-        var seedTableData = function () {
-            $("table#table_mapping tbody").children().remove();
-            $("table#table_mapping thead").children().remove();
-            $('select#form_names option:selected').removeAttr('selected');
-
-            if ($.json_array.length == 0) {
-                parseCSVtoJSON();
-            }
-
-            var counter = rowCount();
-            //if(rowCount() < 10) {counter = rowCount();}
-
-            var a = 0;
-
-            for (i = a; i < counter; i++) {
-                var rowData = $('<tr></tr>');
-                rowData.attr('data-index', i.toString());
-                var del_button = $('<td><a style="cursor:pointer" data-toggle="tooltip" data-placement="left" data-index="' + i.toString() + '" title="Delete this Row"><span class="glyphicon glyphicon-remove text-danger"><span></a></td>');
-                del_button.children('a').on('click', function (e) {
-                    var data_index = $(this).attr('data-index');
-                    var row_index = $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').index();
-                    $('table#table_mapping tr[data-index="' + data_index.toString() + '"]').remove();
-                    $.json_array.data.splice(row_index, 1);
-                });
-                del_button.appendTo(rowData);
-                for (var k = 0; k < columnCount(); k++) {
-                    $('<td>' + $.json_array.data[i][k] + '</td>').appendTo(rowData);
-                }
-                $("table#table_mapping tbody").append(rowData);
-            }
-        };
-
-        //event handler para el select maping
-        var updateMappingSelect = function (formName) {
-            var drop_forms = document.getElementById('mapping_names');
-            $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>').end();
-
-            var filtered = $.savedMappings.filter(function (item) {
-                return item.formName == formName
-            });
-            if (filtered.length == 0) {
-                $(drop_forms).find('option').text('Not mapping found for ' + formName);
-            } else {
-                $(drop_forms).find('option').text('Select mapping');
-            }
-            for (item in filtered) {
-                var option = document.createElement('option');
-                option.text = filtered[item].sourceName;
-                drop_forms.add(option);
-
-            }
-        }
-
-        //event handler para cuando el usuario edita el texto
-
-        var seedHeadingMaps = function () {
-            if (formObject == null) {
-                return;
-            }
-            var columnProperties = formObject.properties;
-            //clean datatable
-            $("table#table_mapping thead").children().remove();
-            var row = $('<tr></tr>');
-            var emptycell = $('<th></th>');
-            emptycell.appendTo(row);
-            var count = columnCount();
-            for (var j = 0; j < count; j++) {
-                var headingCell = $('<th></th>');
-                var select = $('<select></select>', {
-                    id: "select_" + j.toString(),
-                    'class': 'form-control form_columns'
-                });
-                var ignore = $('<option>ignore</option>', {
-                    'data-value': 'ignore'
-                });
-                ignore.appendTo(select);
-                for (var k = 0; k < columnProperties.length; k++) {
-                    var option = $('<option>' + columnProperties[k].name + '</option>');
-                    option.attr('data-name', columnProperties[k].name);
-                    option.attr('data-order', columnProperties[k].order);
-                    option.attr('data-type', columnProperties[k].type);
-                    option.attr('data-isReference', columnProperties[k].isReference);
-                    if (columnProperties[k].isReference == "true") {
-                        option.attr('data-formReferenced', columnProperties[k].formReferenced);
-                        option.attr('data-dataReferenced', columnProperties[k].dataReferenced);
-                    }
-                    option.appendTo(select);
-                }
-                select.appendTo(headingCell);
-                headingCell.appendTo(row);
-            }
-            $('table#table_mapping thead').append(row);
-        };
-
-        var columnCount = function () {
-            if ($.json_array != null) {
-                if ($.json_array.data != null) {
-                    var max;
-                    max = Math.max.apply(null, $.json_array.data.map(function (item) {
-                        return item.length
-                    }));
-                    return max;
-                } else {
-                    return 0;
-                }
-            } else {
-                return 0;
-            }
-        };
-
-        var rowCount = function () {
-            if ($.json_array != null) {
-                return $.json_array.data.length;
-            } else {
-                return 0;
-            }
-        };
-
-        //busca los datos desde el appbase
-        $.appBaseService.getForms(function (result) {
-            var keys = Object.keys(result);
-            keys.forEach(function (key) {
-                var drop_forms = document.getElementById('form_names');
-                var option = document.createElement('option');
-                option.text = key;
-                drop_forms.add(option);
-            });
-        });
-
-        var loadMappings = function (callback, params) {
-            $.appBaseService.getMappings(function (result) {
-                $.savedMappings = result;
-                callback(params);
-            });
-        };
-
-        var prepData = function () {
+       var prepData = function() {
             //opening modal
             $('#modal-progress').modal('show');
             $('#currentItem').html('');
@@ -243,7 +232,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
             $.mappingObj.mappingProperties = [];
             if (selectedOptions.length > 0) {
                 //pushing selected columns
-                selectedOptions.each(function (item) {
+                selectedOptions.each(function(item) {
                     var fileColumn = {
                         colStart: 0,
                         colEnd: 0,
@@ -284,14 +273,14 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 });
 
                 //pushing missing data-columns
-                var mapped = $.mappingObj.mappingProperties.map(function (item) {
+                var mapped = $.mappingObj.mappingProperties.map(function(item) {
                     return item.formColumn.name
                 });
-                var nonMapProperties = $.selectedForm.properties.filter(function (item) {
+                var nonMapProperties = $.selectedForm.properties.filter(function(item) {
                     return !mapped.includes(item.name);
                 });
 
-                $(nonMapProperties).each(function (i) {
+                $(nonMapProperties).each(function(i) {
                     var fileColumn = {
                         colStart: 0,
                         colEnd: 0,
@@ -324,6 +313,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
 
                 var total = $.json_array.data.length + 1;
                 var progressValue = 0;
+                $('#stackTrace').children().remove();
                 $('#sendingProgress').attr('max', total);
                 $('#sendingProgress').attr('value', progressValue);
 
@@ -333,7 +323,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 var current = 1;
                 $('#currentItem').html(current + ' of ' + total);
 
-                $.appBaseService.saveMapping($.mappingObj, function (endCallbackData) {
+                $.appBaseService.saveMapping($.mappingObj, function(endCallbackData) {
                     if (endCallbackData != undefined && endCallbackData != null) {
                         if (endCallbackData.code == 300) {
                             alert(endCallbackData.message);
@@ -346,24 +336,43 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                                 for (var i in endCallbackData.stackTrace) {
                                     var litem = '<li>' + endCallbackData.stackTrace[i] + '</li>'
                                     $('#stackTrace').append(litem);
+                                    $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                                 }
                             }
 
-                            $('#sendingProgress').attr('value', ++progressValue);
-                            $.appBaseService.saveFormData($.mappingObj, $.json_array.data, function (data) {
+                            $('#sendingProgress').attr('value', ++progressValue).end();
+                            $.appBaseService.saveFormData($.mappingObj, $.json_array.data, function(data) {
+                                if(data.code == 300){
+                                    $('tr[data-index='+data.rowKey+']').addClass('danger').attr('title', 'Error: '+data.message).attr('data-toggle', 'tooltip').attr('data-placement', 'bottom');
+                                    $('tr[data-index='+data.rowKey+']').tooltip({container:'body'});
 
-                                $('#sendingProgress').attr('value', ++progressValue);
-                                current++;
-                                $('#currentItem').html(current + ' of ' + total);
-                                var litem = '<li>' + data.message + '</li>'
-                                $('#stackTrace').append(litem);
-                            }, function () {
-                                //alert('listo!');
+                                }else{
+                                    $('#sendingProgress').attr('value', ++progressValue).end();
+                                    current++;
+                                    $('#currentItem').html(current + ' of ' + total);
+                                    var litem = '<li>' + data.message + '</li>'
+                                    $('#stackTrace').append(litem);
+                                    $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
+                                }
+                              
+                            }, function() {
+                               var badrows = $('tr.danger'); 
+                               if(badrows.length>0){
+                                   $('#divBadRowsFilter').removeClass('hidden').addClass('show');
+                                   $('#checkBadRowsFilter').on('change', function(){
+                                       var $this = $(this);
+                                       if ($this.is(':checked')) {
+                                            $("tbody tr:not(.danger)").addClass('hidden');
+                                        } else {
+                                            $("tbody tr:not(.danger)").removeClass('hidden');
+                                           }
+                                   })
+                               }
                             });
                         }
                     }
                     /**  Revisar en el appBaseService que la funcion endCallback siempre devuelva un objeto
-                     con un codigo y un mesaje para que pueda ser empleado como forma de validacion en el cliente  */
+                                        con un codigo y un mesaje para que pueda ser empleado como forma de validacion en el cliente  */
 
                     /** Aqui hay que validar el codigo de retorno del callback y mostrar el mensaje adecuadamente en la pantalla
                      * Revisar que funcione bien el progressbar con respecto a lo que esta sucediendo en el service
@@ -376,13 +385,5 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 return;
             }
         };
-
-        $scope.$on('newFormSelected', function ()
-        {
-            
-
-        });
-        
-        $scope.initialize();
-
+       
     }]);
