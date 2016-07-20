@@ -70,6 +70,7 @@
                         
                     </div>
                         <div id="divBadRowsFilter" class="info-div info-danger bg-danger hidden">
+                            <button id="closeBadRowsDiv" type="button" class="close" aria-hidden="true">&times;</button>
                              <label>Ups, It looks like there are some bad rows.</label><br>
                              <input type="checkbox" id="checkBadRowsFilter"/> <span> See bad rows only!</span>
                         </div>
