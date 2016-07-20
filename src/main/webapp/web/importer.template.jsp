@@ -59,7 +59,7 @@
                             <div class="col-lg-6 col-md-6">
                                     <label>Select a saved mapping for this FORM</label>
                                     <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
-                                                                                <option id="0">Select...</option>
+                                                                                <option id="0">Select mapping</option>
                                                                                 </select>
                             </div>
                            
@@ -70,6 +70,7 @@
                         
                     </div>
                         <div id="divBadRowsFilter" class="info-div info-danger bg-danger hidden">
+                            <button id="closeBadRowsDiv" type="button" class="close" aria-hidden="true">&times;</button>
                              <label>Ups, It looks like there are some bad rows.</label><br>
                              <input type="checkbox" id="checkBadRowsFilter"/> <span> See bad rows only!</span>
                         </div>
