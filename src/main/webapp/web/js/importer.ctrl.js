@@ -107,7 +107,9 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                     emptycell.appendTo(row);
                     var count = columnCount();
                     for (var j = 0; j < count; j++) {
+                        var rowWidth = $($('table#table_mapping tbody').children('tr')[0]).children('td')[j+1].offsetWidth;
                         var headingCell = $('<th></th>');
+                        $(headingCell).css('width', rowWidth);
                         var select = $('<select></select>', {
                             id: "select_" + j.toString(),
                             'class': 'form-control form_columns'
@@ -188,10 +190,15 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 });
 
                 var loadMappings = function(callback, params){
+                    if($.appBaseService.options.useMock){
+                        $.savedMappings = mockingsMock();
+                        callback(params);
+                    }else{
                         $.appBaseService.getMappings(function(result){
                         $.savedMappings = result;
                         callback(params);
-                    });
+                        });     
+                    }
             };
             
             
@@ -384,6 +391,18 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 alert('Ups, seems like you haven\'t choosed any Form to map');
                 return;
             }
+        };
+
+        var hasValueNewMapText = function(){
+            return ($('input#mapNameText').text()=='')? false : true 
+        };
+
+        var saveMappingData = function(){
+
+        };
+
+        var saveDataToAppBase = function(){
+
         };
        
     }]);

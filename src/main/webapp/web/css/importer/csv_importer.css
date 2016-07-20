@@ -1,5 +1,6 @@
 div#table_container {
     max-height: 400px;
+    overflow-x: scroll;
 }
 
 .btn-circle {
@@ -47,9 +48,8 @@ div#table_container {
         visibility: hidden;
         clear: both;
     }
-
        tbody {
-        height: 300px;
+        height: 270px;
         overflow-y: scroll !important;
         max-height: 300px;
     }
