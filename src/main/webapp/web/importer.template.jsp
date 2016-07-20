@@ -59,7 +59,7 @@
                             <div class="col-lg-6 col-md-6">
                                     <label>Select a saved mapping for this FORM</label>
                                     <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
-                                                                                <option id="0">Select...</option>
+                                                                                <option id="0">Select mapping</option>
                                                                                 </select>
                             </div>
                            

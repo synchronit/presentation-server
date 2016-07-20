@@ -71,22 +71,25 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
 
                 });
 
+                $('select#mapping_names').on('change', function(){
+                    var selectElement = this;
+                    var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+                    if(selectedValue!='Select mapping'){
+                        loadExistingMapping(selectedValue);
+                    }
+                });
+
                 //event handler para el select maping
                  var updateMappingSelect = function(formName){
                     var drop_forms = document.getElementById('mapping_names');
-                    $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>').end();
+                    $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>');
 
                     var filtered = $.savedMappings.filter(function(item) {return item.formName == formName});
-                    if (filtered.length == 0) {
-                        $(drop_forms).find('option').text('Not mapping found for '+formName);
-                    }else{
-                        $(drop_forms).find('option').text('Select mapping');
-                    }
+                    $(drop_forms).find('option').text('Select mapping');
                     for (item in filtered) {
                         var option = document.createElement('option');
                         option.text = filtered[item].sourceName;
                         drop_forms.add(option);
-
                     }
                 }
 
@@ -439,6 +442,27 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
 
         var checkExistingMap = function(mapName){
            return $.savedMappings.filter(function(item){return item.sourceName==mapName? true: false}).length==0? false: true;
+        };
+
+        var loadExistingMapping= function(selectedMapping){
+            var map = $.savedMappings.filter(function(item) {return item.sourceName==selectedMapping?true: false})[0];
+            var props = map.mappingProperties; 
+            var selectCount = $('table#table_mapping select').length;
+            if(selectCount>0){
+                for(item in props){
+                    if(props[item].fileColumn.isIgnored!="true"){
+                        var index = props[item].fileColumn.index;
+                        var column = props[item].formColumn.name; 
+                        if(selectCount>index){
+                            var select = $('table#table_mapping select')[index];
+                            if(select){
+                                $(select).val(column);
+                            }
+                        }       
+                    }                      
+                }
+            }
+            
         };
 
        
