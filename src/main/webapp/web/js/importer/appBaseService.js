@@ -923,6 +923,14 @@ $.extend({
                 }
             });
         };
+        
+        self.compareMappings = function(mappingObject1, mappingObject2){
+            if(mappingObject1 == undefined && mappingObject2 == undefined){
+                throw new Error("Mapping must be defined");
+            }
+            
+            
+        }
 
         /** Este metodo es generico sirve para hacer las request al application base*/
         self.serverRequest = function(commandText, successCallback, errorCallback, callbackData) {
