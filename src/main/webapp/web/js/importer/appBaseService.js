@@ -2,6 +2,12 @@ $.extend({
     appBaseService: new function() {
         var appBaseUrl = 'http://dev.synchronit.com/appbase-webconsole/json';
         var self = this;
+        self.HttpVerb = {
+          POST: 'POST',
+          GET: 'GET',
+          PUT: 'PUT',
+          DELETE: 'DELETE'
+        };
         var formsArray = null;
         self.options = null;
 
@@ -272,7 +278,7 @@ $.extend({
                     
                 } else {
                     var command = 'Create New ' + mappingObj.formName + '(' + formQuery + ')';
-                    self.serverRequest(command, function(result, key) {
+                    self.serverRequest(self.HttpVerb.POST, command, function(result, key) {
                         executed++;
                         if (callback != undefined && callback != null) {
                             callback({
@@ -402,7 +408,7 @@ $.extend({
             } else {
                 formsArray = Array();
                 var command = 'SHOW FORMS';
-                self.serverRequest(command, function(result) {
+                self.serverRequest(self.HttpVerb.GET,command, function(result) {
                     parseFormRows(result, callback)
                 }, function() {
 
@@ -506,7 +512,7 @@ $.extend({
                     }
                 }
 
-                self.serverRequest(command, function(result, data) {
+                self.serverRequest(self.HttpVerb.GET,command, function(result, data) {
                     if (result.code == 100) {
                         var headers = result.resultSet.headers;
                         var rows = result.resultSet.rows;
@@ -933,9 +939,9 @@ $.extend({
         }
 
         /** Este metodo es generico sirve para hacer las request al application base*/
-        self.serverRequest = function(commandText, successCallback, errorCallback, callbackData) {
+        self.serverRequest = function(httpVerb, commandText, successCallback, errorCallback, callbackData) {
             $.ajax({
-                type: 'GET',
+                type: (httpVerb == undefined || httpVerb == null)? 'GET' : httpVerb,
                 url: appBaseUrl,
                 cache: false,
                 dataType: 'json',
