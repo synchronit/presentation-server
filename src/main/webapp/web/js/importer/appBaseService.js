@@ -952,6 +952,6 @@ $.extend({
 $(function() {
     $.appBaseService.initialize({
         requestForm: true,
-        useMock: false
+        useMock: true
     });
 })
