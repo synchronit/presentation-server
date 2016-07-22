@@ -82,14 +82,20 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         loadExistingMapping(selectedValue);
                         isUsingExistingMap=true;
                     }
+                    $('div#savingExistingMapping').addClass('hidden');
                   });
 
 
-                 $('table#table_mapping select').on('change', function(){
-                     if(isUsingExistingMap){
-                         isUsingExistingMapEdited = true;
-                     }
-                 });
+                //cuando el usuario edita los select
+                var registerSelectChange = function(){
+                     $('table#table_mapping select').on('change', function(){
+                        if(isUsingExistingMap){
+                            isUsingExistingMapEdited = true;
+                            $('div#savingExistingMapping').removeClass('hidden');
+                        }
+                    });
+                };
+                
 
                 //event handler para el select maping
                  var updateMappingSelect = function(formName){
@@ -149,6 +155,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         headingCell.appendTo(row);
                     }
                     $('table#table_mapping thead').append(row);
+                    registerSelectChange();
                 };
 
                 var columnCount = function() {
