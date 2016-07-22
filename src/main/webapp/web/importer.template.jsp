@@ -59,8 +59,13 @@
                             <div class="col-lg-6 col-md-6">
                                     <label>Select a saved mapping for this FORM</label>
                                     <select class="form-control form-control" style='max-width:300px;' id="mapping_names">
-                                                                                <option id="0">Select mapping</option>
-                                                                                </select>
+                                        <option id="0">Select mapping</option>
+                                    </select>
+                                    <br><br>
+                                    <div id="savingExistingMapping" class="hidden">
+                                           <label class="text-danger">Do want to save this modifications to this mapping?</label>
+                                           <input type="checkbox"><span class="text-danger">Yes, save this modifications.</span>
+                                    </div>
                             </div>
                            
                         </div><br>
