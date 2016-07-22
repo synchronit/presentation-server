@@ -66,7 +66,14 @@ $.extend({
         self.saveMapping = function (mappingObj, endCallback) {
 
             /*************BEGIN FUNCTION**************/
-            self.getFormData('MAPPING', null, function (resultSet) {
+            /**Aqui se puede hacer una consulta mas eficiente para saber si existe el mapping.
+             * Se puede consultar haciendo un filtro*/
+            var mappingFilter = {
+                fieldName: 'SOURCE_NAME',
+                fieldValue: mappingObj.sourceName,
+                fieldType: 'TEXT'
+            };
+            self.getFormData('MAPPING', mappingFilter, function (resultSet) {
 
                 if (!self.existDataInForm('SOURCE_NAME', mappingObj.sourceName, resultSet)) {
                     var mappingFormMap = getMappingFormMap();
@@ -115,7 +122,19 @@ $.extend({
 
         /**Actualiza una definicion de mapping*/
         self.updateMapping = function (sourceName, mappingObj, endCallback) {
+            var mappingFilter = {
+                fieldName: 'SOURCE_NAME',
+                fieldValue: sourceName,
+                fieldType: 'TEXT'
+            };
 
+            self.getFormData('MAPPING', mappingFilter, function (resultSet) {
+
+                if (!self.existDataInForm('SOURCE_NAME', mappingObj.sourceName, resultSet)) {
+                    /**Para actualizar el mappingProperties utilizar la referencia del Source_Name
+                     * mas la columna como identificadores para el filtro*/
+                }
+            });
         }
 
         /** Este metodo permite hacer el store del maping siguiendo el esquema de ejemplo. No esta totalmente funcional pues hay 
@@ -232,15 +251,15 @@ $.extend({
                 }
             }
         };
-        
+
         /**Actualiza los datos de un formulario basado en la definicion de un mapping y un filtro definido
          * la especificacion de un objeto de filtro que puede ser tanto un array como un objeto simple.
          * La especificacion del filtro es la siguiente:
-         * filter= [{
+         * filter= [[{
          *  colName: '',
          *  value: ''
-         * }]*/
-        self.updateFormData = function (filterObj, mappingObj, dataArray, itemCallback, endCallback) {
+         * }]]*/
+        self.updateFormData = function (filterObjArray, mappingObj, dataArray, itemCallback, endCallback) {
             var isFirstColumnHeading = mappingObj.isFirstColumnHeading;
             var dataMapping = mappingObj.mappingProperties;
             var dataLength = dataArray.length;
@@ -283,8 +302,8 @@ $.extend({
                     }
 
                 } else {
-                    var commandFiter = getCommandFilter(filterObj, index);
-                    var command = 'Modify Case ' + mappingObj.formName + '(' + formQuery + ') With ';
+                    var commandFiter = getCommandFilter(filterObjArray, index);
+                    var command = 'Modify Case ' + mappingObj.formName + '(' + formQuery + ') With ' + commandFiter;
                     self.serverRequest(self.HttpVerb.POST, command, function (result, key) {
                         executed++;
                         if (itemCallback != undefined && itemCallback != null) {
@@ -317,14 +336,27 @@ $.extend({
                 }
             }
         }
-        
-        var getCommandFilter = function(filterObj, index){
+
+        /**Obtiene la especificacion del filtro para ser utilizada en el comando enviado al appBase*/
+        var getCommandFilter = function (filterObj, index) {
             /**El objeto de filtro puede venir como un filtro para todos los items que se quieran
              * actualizar o como un array de filtros en donde cada pocision corresponde con el filtro
              * asociado a cada item del arreglo de datos*/
-            if(Array.isArray(filterObj)){
-                
+
+            if (!Array.isArray(filterObj) && filterObj.length < index) {
+                throw Error("Object is not an array or is out of range");
             }
+            var filterStm = '';
+            var itemFilterArray = filterObj[index];
+
+            for (var filterItem in itemFilterArray) {
+                if (filterItem > 0) {
+                    filterStm += ' and ';
+                }
+                filterStm += itemFilterArray[filterItem].colName + '=' + itemFilterArray[filterItem].value;
+            }
+
+            return filterStm;
         }
 
         /**Prepara el arreglo de valores que con el que se armara el parametro command enviado al appBase*/
@@ -633,7 +665,7 @@ $.extend({
          * filterPropertyArray = [{
          *      fieldName: 'TEXT',
          *      fieldValue: value,
-         *      fieldType: 'TEXT, NUMBER, BOOLEAN'
+         *      fieldType: 'TEXT, NUMBER, BOOLEAN, IMAGE'
          * }]
          */
         self.getFormData = function (formName, filterPropertyArray, callback, callbackData) {
