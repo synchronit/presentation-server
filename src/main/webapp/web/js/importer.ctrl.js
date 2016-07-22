@@ -61,6 +61,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         formObject = result[selectedValue];
                         $.selectedForm = formObject;
                         seedHeadingMaps();
+                        isUsingExistingMap=false;
                     });
 
                     if($.savedMappings.length == 0 ){
@@ -74,10 +75,21 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 $('select#mapping_names').on('change', function(){
                     var selectElement = this;
                     var selectedValue = selectElement.options[selectElement.selectedIndex].value;
-                    if(selectedValue!='Select mapping'){
+                    if(selectedValue=='Select mapping'){
+                        $('table#table_mapping select').each(function(index, elem) {$(this).val('ignore')});
+                        isUsingExistingMap=false;
+                    }else{
                         loadExistingMapping(selectedValue);
+                        isUsingExistingMap=true;
                     }
-                });
+                  });
+
+
+                 $('table#table_mapping select').on('change', function(){
+                     if(isUsingExistingMap){
+                         isUsingExistingMapEdited = true;
+                     }
+                 });
 
                 //event handler para el select maping
                  var updateMappingSelect = function(formName){
@@ -447,6 +459,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
         var loadExistingMapping= function(selectedMapping){
             var map = $.savedMappings.filter(function(item) {return item.sourceName==selectedMapping?true: false})[0];
             var props = map.mappingProperties; 
+            $('table#table_mapping select').val('ignore');
             var selectCount = $('table#table_mapping select').length;
             if(selectCount>0){
                 for(item in props){
@@ -465,6 +478,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
             
         };
 
+       
        
     }]);
 
