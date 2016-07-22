@@ -263,8 +263,12 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                 if(isUsingExistingMap){
                     if(isUsingExistingMapEdited){
                         //logica para cuando use un mapping existente y haya cambiado algo.
+                        prepMapping();
+                        importData(); 
                     }else{
                         //logica para cuando este usando un mapping existente sin cambiar nada
+                        prepMapping();
+                        importData();  
                     } 
                 }else{
                     //logica para cuando cree su propio mapping
