@@ -63,7 +63,7 @@
                                     </select>
                                     <br><br>
                                     <div id="savingExistingMapping" class="hidden">
-                                           <label class="text-danger">Do want to save this modifications to this mapping?</label>
+                                           <label class="text-danger">Do want to save this modifications to this mapping?</label><br>
                                            <input type="checkbox"><span class="text-danger">Yes, save this modifications.</span>
                                     </div>
                             </div>
@@ -76,8 +76,8 @@
                     </div>
                         <div id="divBadRowsFilter" class="info-div info-danger bg-danger hidden">
                             <button id="closeBadRowsDiv" type="button" class="close" aria-hidden="true">&times;</button>
-                             <label>Ups, It looks like there are some bad rows.</label><br>
-                             <input type="checkbox" id="checkBadRowsFilter"/> <span> See bad rows only!</span>
+                             <label>Ups, It looks like some rows failed.</label><br>
+                             <input type="checkbox" id="checkBadRowsFilter"/> <span> See failed rows only!</span>
                         </div>
                     <div id="table_container" class="panel-body">
                        <table id="table_mapping" class="table">
@@ -113,7 +113,7 @@
                     <progress id="sendingProgress" class="form-control" ng-non-bindable></progress>
                     <div id="saving-trace">
                         <div style="margin:10px ">
-                            <span id="currentItem"></span>
+                            <span id="currentItem"></span>&nbsp;&nbsp;<span id="currentFailure" class="text-danger"></span>
                         </div>
                         <button id="btn-expand" class="btn btn-default btn-circle" type="button" data-toggle="collapse" data-target="#stackTraceContiner" aria-expanded="false" aria-controls="stackTraceContiner">
                         <span class="glyphicon glyphicon-chevron-down"></span>

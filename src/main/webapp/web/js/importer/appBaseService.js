@@ -225,7 +225,7 @@ $.extend({
                             itemCallback({
                                 current: executed,
                                 total: dataLength,
-                                code: 100,
+                                code: result.code >= 500 ? 300 : 100,
                                 message: result.message,
                                 rowKey: key
                             });
@@ -310,7 +310,7 @@ $.extend({
                             itemCallback({
                                 current: executed,
                                 total: dataLength,
-                                code: 100,
+                                code: result.code >= 500 ? 300 : 100,
                                 message: result.message,
                                 rowKey: key
                             });
@@ -647,9 +647,9 @@ $.extend({
 
             switch (dataType) {
                 case 'TEXT':
-                    return '"' + value + '"';
+                    return value === null ? value : '"' + value + '"';
                 case 'NUMBER':
-                    return value == null ? 10000 : value;
+                    return value > 0 ? value : 0;
                 case 'BOOLEAN':
                     return value;
                 case 'IMAGE':

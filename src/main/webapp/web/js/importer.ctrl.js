@@ -429,24 +429,24 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
             $('#stackTrace').html('');
 
             var total = $.json_array.data.length;
-            var progressValue = 1;
+            var progressValue = 0;
+            var failureCount = 0;
             $('#stackTrace').children().remove();
             $('#sendingProgress').attr('max', total);
             $('#sendingProgress').attr('value', progressValue);
 
-             $('#sendingProgress').attr('value', ++progressValue).end();
                 $.appBaseService.saveFormData($.mappingObj, $.json_array.data, function(data) {
                     if(data.code == 300){
                         $('tr[data-index='+data.rowKey+']').addClass('danger').attr('title', 'Error: '+data.message).attr('data-toggle', 'tooltip').attr('data-placement', 'bottom');
                         $('tr[data-index='+data.rowKey+']').tooltip({container:'body'});
-
-                    }else{
-                        $('#sendingProgress').attr('value', ++progressValue).end();
-                        $('#currentItem').html(progressValue + ' of ' + total);
-                        var litem = '<li>' + data.message + '</li>'
-                        $('#stackTrace').append(litem);
-                        $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
+                        failureCount++;
+                        $('#currentFailure').html('('+failureCount + " failures)");
                     }
+                    $('#sendingProgress').attr('value', ++progressValue).end();
+                    $('#currentItem').html(progressValue + ' of ' + total);
+                    var litem = data.code==300? '<li class="text-danger">' + data.message + '</li>' :'<li class="text-success">' + data.message + '</li>';
+                    $('#stackTrace').append(litem);
+                    $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                     
                 }, function() {
                     var badrows = $('tr.danger'); 
