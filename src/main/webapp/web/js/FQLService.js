@@ -14,16 +14,38 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
     }
 
     service.executePostFQL = function (stmt, callback, params) {
-        $http.post("http://dev.synchronit.com/appbase-webconsole/json",
-                {
-                    command: stmt
-                }
-        ).then(function (response) {
-            callback(response, stmt, params);
-        },
-                function (response) {
-                    callback(response, stmt, params);
-                });
+
+        $.ajax({
+            type: 'POST',
+            url: "http://dev.synchronit.com/appbase-webconsole/json",
+            cache: false,
+            data: {command: stmt},
+            success: function (response) {
+                callback(response, stmt, params);
+            },
+            error: function (response) {
+                callback(response, stmt, params);
+            }
+        });
+
+        /*var config = {
+         headers: {
+         'Content-Type': 'application/json;charset=utf-8;'
+         }
+         }
+         var data = $.param({
+         json: JSON.stringify({
+         command: stmt
+         })
+         });
+         
+         $http.post("http://dev.synchronit.com/appbase-webconsole/json", data, config)
+         .then(function (response) {
+         callback(response, stmt, params);
+         },
+         function (response) {
+         callback(response, stmt, params);
+         });*/
     }
 
     service.fqlResultOK = function (response)

@@ -132,7 +132,7 @@ $.extend({
 
                 if (!self.existDataInForm('SOURCE_NAME', mappingObj.sourceName, resultSet)) {
                     /**Para actualizar el mappingProperties utilizar la referencia del Source_Name
-                     * mas la columna como identificadores para el filtro*/
+                     * mas la columna del formulario como identificadores para el filtro*/
                 }
             });
         }
