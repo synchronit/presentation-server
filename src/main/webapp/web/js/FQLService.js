@@ -21,25 +21,30 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
             cache: false,
             data: {command: stmt},
             success: function (response) {
-                callback(response, stmt, params);
+                callback({data: response}, stmt, params);
             },
             error: function (response) {
-                callback(response, stmt, params);
+                callback({data: response}, stmt, params);
             }
         });
 
-        /*var config = {
+        /*var request = $http({
+         method: "POST",
+         url: "http://dev.synchronit.com/appbase-webconsole/json",
          headers: {
-         'Content-Type': 'application/json;charset=utf-8;'
-         }
-         }
-         var data = $.param({
-         json: JSON.stringify({
+         'Content-Type': 'application/x-www-form-urlencoded'
+         },
+         data: {
          command: stmt
-         })
+         }
          });
-         
-         $http.post("http://dev.synchronit.com/appbase-webconsole/json", data, config)
+         request.success(
+         function (response) {
+         callback(response, stmt, params);
+         }
+         );*/
+
+        /* $http.post("http://dev.synchronit.com/appbase-webconsole/json", {command: stmt})
          .then(function (response) {
          callback(response, stmt, params);
          },
@@ -54,6 +59,6 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
     }
 
 
-    return service;
 
+    return service;
 });
