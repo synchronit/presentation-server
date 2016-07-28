@@ -141,3 +141,5 @@
 <script src="js/importer/appBaseService.js"></script>
 <script src="js/importer/csv_importer.js"></script>
      <!--importer stuff-->
+
+<script src="js/tables/colResizable-1.6.min.js"></script>

@@ -42,6 +42,10 @@ div#table_container {
         display:block;
     }
 
+    thead > tr > th {
+        margin-left: -5px;
+    }
+
     tr:after {
         content: ' ';
         display: block;
@@ -55,5 +59,7 @@ div#table_container {
     }
 
     thead {
-        /* fallback */
+       
     }
+
+    

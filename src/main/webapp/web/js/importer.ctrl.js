@@ -51,6 +51,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         }
                         $("table#table_mapping tbody").append(rowData);
                     }
+
                 };
 
                 //event handler para el select form
@@ -95,6 +96,22 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                         }
                     });
                 };
+
+                //arreglar los width de columnas o cabeceras
+                var fixTableWidths = function() {
+                    var headings = $($('table#table_mapping thead tr')[0]).children('th');
+                    var columns = $($('table#table_mapping tbody tr')[0]).children('td');
+
+                    for (var i = 0 ; i < headings.length ; i++) {
+                        var headWidth = headings[i].offsetWidth;
+                        var colWidth = columns[i].offsetWidth;
+                        if (headWidth>colWidth){
+                            $(columns[i]).css('width', headWidth);
+                        }else{
+                            $(headings[i]).css('width', colWidth);
+                        }
+                    }
+                }; 
                 
 
                 //event handler para el select maping
@@ -128,9 +145,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                     emptycell.appendTo(row);
                     var count = columnCount();
                     for (var j = 0; j < count; j++) {
-                        var rowWidth = $($('table#table_mapping tbody').children('tr')[0]).children('td')[j+1].offsetWidth;
                         var headingCell = $('<th></th>');
-                        $(headingCell).css('width', rowWidth);
                         var select = $('<select></select>', {
                             id: "select_" + j.toString(),
                             'class': 'form-control form_columns'
@@ -156,6 +171,7 @@ wholeApp.controller('importerController', ['$scope', '$http', function ($scope, 
                     }
                     $('table#table_mapping thead').append(row);
                     registerSelectChange();
+                    fixTableWidths();
                 };
 
                 var columnCount = function() {
