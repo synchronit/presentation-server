@@ -649,7 +649,7 @@ $.extend({
                 case 'TEXT':
                     return value === null ? value : '"' + value + '"';
                 case 'NUMBER':
-                    return value > 0 ? value : 0;
+                    return value >= 0 ? value : null;
                 case 'BOOLEAN':
                     return value;
                 case 'IMAGE':
