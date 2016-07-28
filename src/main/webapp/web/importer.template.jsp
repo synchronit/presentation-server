@@ -80,7 +80,7 @@
                              <input type="checkbox" id="checkBadRowsFilter"/> <span> See failed rows only!</span>
                         </div>
                     <div id="table_container" class="panel-body">
-                       <table id="table_mapping" class="table">
+                       <table id="table_mapping" class="table table-bordered table-hover"  data-resizable-columns-id="table-mapping">
                             <thead>
 
                             </thead>
@@ -141,5 +141,5 @@
 <script src="js/importer/appBaseService.js"></script>
 <script src="js/importer/csv_importer.js"></script>
      <!--importer stuff-->
-
+<script src="js/tables/store.min.js"></script>
 <script src="js/tables/colResizable-1.6.min.js"></script>

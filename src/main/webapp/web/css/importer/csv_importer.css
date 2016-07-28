@@ -1,5 +1,5 @@
 div#table_container {
-    max-height: 400px;
+    max-height: 300px;
     overflow-x: scroll;
 }
 
@@ -23,7 +23,6 @@ div#table_container {
 
 .error-background{
     background-color: #a94442;
-
 }
 
 .info-div{
@@ -38,28 +37,23 @@ div#table_container {
 }
 
 
-    tbody, thead {
-        display:block;
-    }
-
-    thead > tr > th {
-        margin-left: -5px;
-    }
-
-    tr:after {
-        content: ' ';
-        display: block;
-        visibility: hidden;
-        clear: both;
-    }
-       tbody {
-        height: 270px;
-        overflow-y: scroll !important;
-        max-height: 300px;
-    }
-
-    thead {
-       
-    }
+.rc-handle-container {
+  position: relative;
+}
+.rc-handle {
+  position: absolute;
+  width: 7px;
+  cursor: ew-resize;
+  margin-left: -3px;
+  z-index: 2;
+}
+table.rc-table-resizing {
+  cursor: ew-resize;
+}
+table.rc-table-resizing thead,
+table.rc-table-resizing thead > th,
+table.rc-table-resizing thead > th > a {
+  cursor: ew-resize;
+}
 
     

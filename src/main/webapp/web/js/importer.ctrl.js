@@ -5,12 +5,15 @@
  */
 
 wholeApp.controller('importerController', ['$scope', '$http','broadcastService', function ($scope, $http,$broadcastService)
-    {
-            
+    {           
+                           
                 $.appBaseService.getMappings(function(result){$.savedMappings = result;});
                 //datos parseados a JSON
                 var formObject = null;
                 $.json_array = [];
+
+                //revisa si hay algun FORM seleccionado en el PS
+                var selectedFormPS = $broadcastService.getFormSelected()["label"];
                 //function parser del texto CSV a un objeto JSON
                 var parseCSVtoJSON = function(content) {
                     $.json_array = Papa.parse(content, {
@@ -21,9 +24,20 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
 
                 //llena la tabla del mapping
                 var seedTableData = function() {
+                    $("table#table_mapping").colResizable({disable:true});
                     $("table#table_mapping tbody").children().remove();
                     $("table#table_mapping thead").children().remove();
-                    $('select#form_names option:selected').removeAttr('selected');
+                    //$('select#form_names option:selected').removeAttr('selected');
+
+                    if($('select#form_names option:selected').val()!="Select..."){
+                        $.appBaseService.getForms(function(result) {
+                            formObject = result[$('select#form_names option:selected').val()];
+                            $.selectedForm = formObject;
+                            seedHeadingMaps();
+                            isUsingExistingMap=false;
+                            searchMappings($('select#form_names option:selected').val());
+                        });
+                    }
 
                     if ($.json_array.length == 0) {
                         parseCSVtoJSON();
@@ -51,7 +65,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         }
                         $("table#table_mapping tbody").append(rowData);
                     }
-
+                    $("table#table_mapping").colResizable({resizeMode:'overflow'});
+                    //fixTableWidths();
                 };
 
                 //event handler para el select form
@@ -64,14 +79,17 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         seedHeadingMaps();
                         isUsingExistingMap=false;
                     });
+                    searchMappings(selectedValue);
+                    removeBadRowsStyles();
+                });
 
+                var searchMappings = function(selectedValue){
                     if($.savedMappings.length == 0 ){
                         loadMappings(updateMappingSelect, selectedValue);
                     }else{
                         updateMappingSelect(selectedValue);    
                     }   
-
-                });
+                };
 
                 $('select#mapping_names').on('change', function(){
                     var selectElement = this;
@@ -84,6 +102,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         isUsingExistingMap=true;
                     }
                     $('div#savingExistingMapping').addClass('hidden');
+                    removeBadRowsStyles();
                   });
 
 
@@ -99,7 +118,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
 
                 //arreglar los width de columnas o cabeceras
                 var fixTableWidths = function() {
-                    var headings = $($('table#table_mapping thead tr')[0]).children('th');
+                    $($('table tbody tr td')[0]).css('width', 30);
+                    /*var headings = $($('table#table_mapping thead tr')[0]).children('th');
                     var columns = $($('table#table_mapping tbody tr')[0]).children('td');
 
                     for (var i = 0 ; i < headings.length ; i++) {
@@ -107,14 +127,15 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         var colWidth = columns[i].offsetWidth;
                         if (headWidth>colWidth){
                             $(columns[i]).css('width', headWidth);
+
                         }else{
                             $(headings[i]).css('width', colWidth);
                         }
-                    }
+                    }*/
                 }; 
                 
 
-                //event handler para el select maping
+                //event handler para el select mapping
                  var updateMappingSelect = function(formName){
                     var drop_forms = document.getElementById('mapping_names');
                     $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>');
@@ -171,7 +192,6 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }
                     $('table#table_mapping thead').append(row);
                     registerSelectChange();
-                    fixTableWidths();
                 };
 
                 var columnCount = function() {
@@ -213,18 +233,27 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }
                     reader.readAsText(input.files[0]);
                     $.mappingObj.fileType = input.files[0].type;
-                    $('#divBadRowsFilter').addClass('hidden');
+                    removeBadRowsStyles();
                 });
+
+                var removeBadRowsStyles = function(){
+                    $('#divBadRowsFilter').addClass('hidden');
+                    $('table#table_mapping tr.danger').removeClass('danger');
+                };
 
                 //busca los datos desde el appbase
                 $.appBaseService.getForms(function(result) {
                     var keys = Object.keys(result);
+                    var selectedFormPS = $broadcastService.getFormSelected()["label"];
+                    var drop_forms = document.getElementById('form_names');
                     keys.forEach(function(key) {
-                        var drop_forms = document.getElementById('form_names');
                         var option = document.createElement('option');
                         option.text = key;
                         drop_forms.add(option);
                     });
+                    if(selectedFormPS!="" && selectedFormPS!=null && selectedFormPS!=undefined){
+                        $(drop_forms).val(selectedFormPS);
+                    }
                 });
 
                 var loadMappings = function(callback, params){
