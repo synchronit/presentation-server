@@ -2,6 +2,17 @@ $.extend({
     appBaseService: new function () {
         var appBaseUrl = 'http://dev.synchronit.com/appbase-webconsole/json';
         var self = this;
+        self.HttpVerb = {
+            POST: 'POST',
+            GET: 'GET',
+            PUT: 'PUT',
+            DELETE: 'DELETE'
+        };
+        self.CrudType = {
+            CREATE: 'CREATE',
+            UPDATE: 'UPDATE',
+            DELETE: 'DELETE'
+        };
         var formsArray = null;
         self.options = null;
 
@@ -55,7 +66,14 @@ $.extend({
         self.saveMapping = function (mappingObj, endCallback) {
 
             /*************BEGIN FUNCTION**************/
-            self.getFormData('MAPPING', null, function (resultSet) {
+            /**Aqui se puede hacer una consulta mas eficiente para saber si existe el mapping.
+             * Se puede consultar haciendo un filtro*/
+            var mappingFilter = {
+                fieldName: 'SOURCE_NAME',
+                fieldValue: mappingObj.sourceName,
+                fieldType: 'TEXT'
+            };
+            self.getFormData('MAPPING', mappingFilter, function (resultSet) {
 
                 if (!self.existDataInForm('SOURCE_NAME', mappingObj.sourceName, resultSet)) {
                     var mappingFormMap = getMappingFormMap();
@@ -102,6 +120,23 @@ $.extend({
 
         }
 
+        /**Actualiza una definicion de mapping*/
+        self.updateMapping = function (sourceName, mappingObj, endCallback) {
+            var mappingFilter = {
+                fieldName: 'SOURCE_NAME',
+                fieldValue: sourceName,
+                fieldType: 'TEXT'
+            };
+
+            self.getFormData('MAPPING', mappingFilter, function (resultSet) {
+
+                if (!self.existDataInForm('SOURCE_NAME', mappingObj.sourceName, resultSet)) {
+                    /**Para actualizar el mappingProperties utilizar la referencia del Source_Name
+                     * mas la columna del formulario como identificadores para el filtro*/
+                }
+            });
+        }
+
         /** Este metodo permite hacer el store del maping siguiendo el esquema de ejemplo. No esta totalmente funcional pues hay 
          * 
          * 
@@ -132,18 +167,18 @@ $.extend({
          *    }
          * --Ejemplo del dataArray 
          *  data = [
-                 ["M"],
-                 ["F"],
-                 ["F"],
-                 ["F"]
-             ]
+         ["M"],
+         ["F"],
+         ["F"],
+         ["F"]
+         ]
          *  ejemplo del callback
          *  object = {
-                  current: item actual que se inserto, esto pensando en poder poner una barra de progreso,
-                  total: total de elementos a almacenar
-                    }
-        */
-        self.saveFormData = function (mappingObj, dataArray, callback, endCallback) {
+         current: item actual que se inserto, esto pensando en poder poner una barra de progreso,
+         total: total de elementos a almacenar
+         }
+         */
+        self.saveFormData = function (mappingObj, dataArray, itemCallback, endCallback) {
 
             var isFirstColumnHeading = mappingObj.isFirstColumnHeading;
             var dataMapping = mappingObj.mappingProperties;
@@ -152,103 +187,13 @@ $.extend({
             var multiRefArr = findSameReferenceForm(dataMapping);
             var executed = isFirstColumnHeading == true ? 1 : 0;
             for (var i = isFirstColumnHeading == true ? 1 : 0; i < dataArray.length; i++) {
-                var storeDataArray = Array();
                 var dataRow = dataArray[i];
-
-                for (var item in dataMapping) {
-                    var mappingItem = dataMapping[item];
-                    if (!mappingItem.fileColumn.isIgnored) {
-                        /** Aqui tener en cuenta que en el array de maping pueden venir 2 items que sean parte de 
-                         * la misma columna en el formulario debido a que esa columna es una referencia doble por lo
-                         * que al crear el comando del objeto esa columna se crea asi: (,). En el algoritmo actual el mapping 
-                         * y los datos vienen en indices separados eso implica que se tengan que unir y garantizar 
-                         * que no se repitan en el ciclo cuando se itere hacia un indice superior.
-                         * VARIANTES
-                         * 1- Detectar cuales de los items en el maping son columnas referencias DOBLES. En el ciclo tener
-                         * esta caracteristica en cuenta para agrupar esos items e ignorarlos en posteriores iteraciones
-                         * 
-                         */
-                        var dataColumn = dataRow[mappingItem.fileColumn.index];
-
-                        if (mappingItem.formColumn.isReference) {
-                            /** Aqui si la columna es una referencia trato obtengo 
-                             * si la columna actual esta en el arreglo de multireferencias */
-                            var multiRefItem = Object.keys(multiRefArr).length > 0 ? multiRefArr[mappingItem.formColumn.name] : null;
-                            var value = null;
-
-
-                            if (multiRefItem != null && multiRefItem != undefined) {
-                                /** Saber el indice que la columna actual ocupa en el arreglo de multireferencia determina
-                                 * si ya se ha procesado o no
-                                 */
-                                var isFirst = multiRefItem.indexOf(multiRefItem.find(function (itemFind) {
-                                    return mappingItem.formColumn.reference.fieldName === itemFind.formColumn.reference.fieldName;
-                                })) == 0;
-
-                                if (isFirst) {
-                                    /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
-                                    dataColumn = Array();
-                                    dataTypes = Array();
-                                    for (var multiItemIndex in multiRefItem) {
-                                        dataColumn.push(dataRow[multiRefItem[multiItemIndex].fileColumn.index]);
-                                        dataTypes.push(multiRefItem[multiItemIndex].formColumn.type);
-                                    }
-                                    value = getValueForReferenceColumn(mappingItem.formColumn.type, dataColumn);
-                                }
-
-                            } else {
-
-                                value = getValueForReferenceColumn(mappingItem.formColumn.type, dataColumn);
-                            }
-                            if (value != null) {
-                                storeDataArray.splice(mappingItem.formColumn.order, 0, value);
-                            }
-
-
-                        } else {
-                            storeDataArray.splice(mappingItem.formColumn.order, 0, getStoreDataFormat(mappingItem.formColumn.type, dataColumn));
-                        }
-
-                    } else {
-                        if (mappingItem.formColumn.isReference) {
-                            var multiRefItem = Object.keys(multiRefArr).length > 0 ? multiRefArr[mappingItem.formColumn.name] : null;
-                            var value = null;
-                            if (multiRefItem != null && multiRefItem != undefined) {
-                                /** Saber el indice que la columna actual ocupa en el arreglo de multireferencia determina
-                                 * si ya se ha procesado o no
-                                 */
-                                var isFirst = multiRefItem.indexOf(multiRefItem.find(function (itemFind) {
-                                    return mappingItem.formColumn.reference.fieldName === itemFind.formColumn.reference.fieldName;
-                                })) == 0;
-
-                                if (isFirst) {
-                                    /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
-                                    dataColumn = Array();
-                                    dataTypes = Array();
-                                    for (var multiItemIndex in multiRefItem) {
-                                        dataColumn.push('');
-                                        dataTypes.push(multiRefItem[multiItemIndex].formColumn.type);
-                                    }
-                                    value = getValueForReferenceColumn(mappingItem.formColumn.type, dataColumn);
-                                }
-
-                            } else {
-                                value = getValueForReferenceColumn(mappingItem.formColumn.type, '');
-                            }
-                            if (value != null) {
-                                storeDataArray.splice(mappingItem.formColumn.order, 0, value);
-                            }
-
-                        } else {
-                            storeDataArray.splice(mappingItem.formColumn.order, 0, getStoreDataFormat(mappingItem.formColumn.type, ''));
-                        }
-                    }
-                }
+                var storeDataArray = prepareDataCommand(self.CrudType.CREATE, dataMapping, dataRow, multiRefArr);
 
                 var formQuery = storeDataArray.join(',');
                 var rowKey = i;
                 if (self.options.useMock) {
-                    if (callback != undefined && callback != null) {
+                    if (itemCallback != undefined && itemCallback != null) {
 
                         setTimeout(function (key) {
                             executed++;
@@ -259,8 +204,10 @@ $.extend({
                                 message: 'Data saved succesfuly --MOCK--' + executed.toString(),
                                 rowKey: key
                             };
-                            if (key == 6 || key == 12) { data.code = 300 }
-                            callback(data);
+                            if (key == 6 || key == 12) {
+                                data.code = 300
+                            }
+                            itemCallback(data);
                             if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
                                 endCallback({
                                     code: 200,
@@ -272,10 +219,10 @@ $.extend({
 
                 } else {
                     var command = 'Create New ' + mappingObj.formName + '(' + formQuery + ')';
-                    self.serverRequest(command, function (result, key) {
+                    self.serverRequest(self.HttpVerb.POST, command, function (result, key) {
                         executed++;
-                        if (callback != undefined && callback != null) {
-                            callback({
+                        if (itemCallback != undefined && itemCallback != null) {
+                            itemCallback({
                                 current: executed,
                                 total: dataLength,
                                 code: result.code >= 500 ? 300 : 100,
@@ -305,21 +252,259 @@ $.extend({
             }
         };
 
+        /**Actualiza los datos de un formulario basado en la definicion de un mapping y un filtro definido
+         * la especificacion de un objeto de filtro que puede ser tanto un array como un objeto simple.
+         * La especificacion del filtro es la siguiente:
+         * filter= [[{
+         *  colName: '',
+         *  value: ''
+         * }]]*/
+        self.updateFormData = function (filterObjArray, mappingObj, dataArray, itemCallback, endCallback) {
+            var isFirstColumnHeading = mappingObj.isFirstColumnHeading;
+            var dataMapping = mappingObj.mappingProperties;
+            var dataLength = dataArray.length;
+            /**Obtengo del mapping cuales son las columnas que son multireferencia */
+            var multiRefArr = findSameReferenceForm(dataMapping);
+            var executed = isFirstColumnHeading == true ? 1 : 0;
+
+            for (var index = isFirstColumnHeading == true ? 1 : 0; index < dataArray.length; index++) {
+                var dataRow = dataArray[index];
+                var storeDataArray = prepareDataCommand(self.CrudType.UPDATE, dataMapping, dataRow, multiRefArr);
+
+                var formQuery = storeDataArray.map(function (item) {
+                    return item.colName + ' = ' + item.value;
+                }).join(',');
+
+                var rowKey = index;
+                if (self.options.useMock) {
+                    if (itemCallback != undefined && itemCallback != null) {
+
+                        setTimeout(function (key) {
+                            executed++;
+                            var data = {
+                                current: index,
+                                total: dataLength,
+                                code: 100,
+                                message: 'Data updated succesfuly --MOCK--' + executed.toString(),
+                                rowKey: key
+                            };
+                            if (key == 6 || key == 12) {
+                                data.code = 300
+                            }
+                            itemCallback(data);
+                            if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
+                                endCallback({
+                                    code: 200,
+                                    message: 'All items were updated successfuly'
+                                });
+                            }
+                        }, 50 * rowKey, rowKey);
+                    }
+
+                } else {
+                    var commandFiter = getCommandFilter(filterObjArray, index);
+                    var command = 'Modify Case ' + mappingObj.formName + '(' + formQuery + ') With ' + commandFiter;
+                    self.serverRequest(self.HttpVerb.POST, command, function (result, key) {
+                        executed++;
+                        if (itemCallback != undefined && itemCallback != null) {
+                            itemCallback({
+                                current: executed,
+                                total: dataLength,
+                                code: result.code >= 500 ? 300 : 100,
+                                message: result.message,
+                                rowKey: key
+                            });
+                        }
+                        if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
+                            endCallback({
+                                code: 200,
+                                message: 'All items were updated successfuly'
+                            });
+                        }
+                    }, function (jqXHR, textStatus, errorThrown, key) {
+                        executed++;
+                        if (executed == dataArray.length && (endCallback != undefined && endCallback != null)) {
+                            endCallback({
+                                code: 300,
+                                message: errorThrown,
+                                status: textStatus,
+                                rowKey: key
+                            });
+                        }
+                    }, rowKey);
+
+                }
+            }
+        }
+
+        /**Obtiene la especificacion del filtro para ser utilizada en el comando enviado al appBase*/
+        var getCommandFilter = function (filterObj, index) {
+            /**El objeto de filtro puede venir como un filtro para todos los items que se quieran
+             * actualizar o como un array de filtros en donde cada pocision corresponde con el filtro
+             * asociado a cada item del arreglo de datos*/
+
+            if (!Array.isArray(filterObj) && filterObj.length < index) {
+                throw Error("Object is not an array or is out of range");
+            }
+            var filterStm = '';
+            var itemFilterArray = filterObj[index];
+
+            for (var filterItem in itemFilterArray) {
+                if (filterItem > 0) {
+                    filterStm += ' and ';
+                }
+                filterStm += itemFilterArray[filterItem].colName + '=' + itemFilterArray[filterItem].value;
+            }
+
+            return filterStm;
+        }
+
+        /**Prepara el arreglo de valores que con el que se armara el parametro command enviado al appBase*/
+        var prepareDataCommand = function (crudType, dataMapping, dataRow, multiRefArr) {
+
+            var storeDataArray = Array();
+
+            for (var item in dataMapping) {
+                var mappingItem = dataMapping[item];
+                if (!mappingItem.fileColumn.isIgnored) {
+                    /** Aqui tener en cuenta que en el array de maping pueden venir 2 items que sean parte de 
+                     * la misma columna en el formulario debido a que esa columna es una referencia doble por lo
+                     * que al crear el comando del objeto esa columna se crea asi: (,). En el algoritmo actual el mapping 
+                     * y los datos vienen en indices separados eso implica que se tengan que unir y garantizar 
+                     * que no se repitan en el ciclo cuando se itere hacia un indice superior.
+                     * VARIANTES
+                     * 1- Detectar cuales de los items en el maping son columnas referencias DOBLES. En el ciclo tener
+                     * esta caracteristica en cuenta para agrupar esos items e ignorarlos en posteriores iteraciones
+                     * 
+                     */
+                    var dataColumn = dataRow[mappingItem.fileColumn.index];
+
+                    if (mappingItem.formColumn.isReference) {
+                        /** Aqui si la columna es una referencia trato obtengo 
+                         * si la columna actual esta en el arreglo de multireferencias */
+                        var multiRefItem = Object.keys(multiRefArr).length > 0 ? multiRefArr[mappingItem.formColumn.name] : null;
+                        var value = null;
+
+
+                        if (multiRefItem != null && multiRefItem != undefined) {
+                            /** Saber el indice que la columna actual ocupa en el arreglo de multireferencia determina
+                             * si ya se ha procesado o no
+                             */
+                            var isFirst = multiRefItem.indexOf(multiRefItem.find(function (itemFind) {
+                                return mappingItem.formColumn.reference.fieldName === itemFind.formColumn.reference.fieldName;
+                            })) == 0;
+
+                            if (isFirst) {
+                                /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
+                                dataColumn = Array();
+                                //dataTypes = Array();
+                                for (var multiItemIndex in multiRefItem) {
+                                    var colData = {
+                                        data: dataRow[multiRefItem[multiItemIndex].fileColumn.index],
+                                        type: multiRefItem[multiItemIndex].formColumn.type
+                                    };
+                                    dataColumn.push(colData);
+                                }
+                                value = getValueForReferenceColumn(dataColumn);
+                            }
+
+                        } else {
+
+                            value = getValueForReferenceColumn({data: dataColumn, type: mappingItem.formColumn.type});
+                        }
+                        if (value != null) {
+                            var storeData = getStoredData(crudType, value, mappingItem.formColumn.name);
+                            storeDataArray.splice(mappingItem.formColumn.order, 0, storeData);
+                        }
+                    } else {
+                        var storeData = getStoredData(crudType, getStoreDataFormat(mappingItem.formColumn.type, dataColumn), mappingItem.formColumn.name);
+                        storeDataArray.splice(mappingItem.formColumn.order, 0, storeData);
+                    }
+
+                } else {
+                    if (mappingItem.formColumn.isReference) {
+                        var multiRefItem = Object.keys(multiRefArr).length > 0 ? multiRefArr[mappingItem.formColumn.name] : null;
+                        var value = null;
+                        if (multiRefItem != null && multiRefItem != undefined) {
+                            /** Saber el indice que la columna actual ocupa en el arreglo de multireferencia determina
+                             * si ya se ha procesado o no
+                             */
+                            var isFirst = multiRefItem.indexOf(multiRefItem.find(function (itemFind) {
+                                return mappingItem.formColumn.reference.fieldName === itemFind.formColumn.reference.fieldName;
+                            })) == 0;
+
+                            if (isFirst) {
+                                /**Luego si es la primera ves que se itera sobre estas referencias multiples se procesan */
+                                dataColumn = Array();
+                                //dataTypes = Array();
+                                for (var multiItemIndex in multiRefItem) {
+
+                                    var colData = {
+                                        data: '',
+                                        type: multiRefItem[multiItemIndex].formColumn.type
+                                    };
+                                    dataColumn.push(colData);
+                                    //dataTypes.push(multiRefItem[multiItemIndex].formColumn.type);
+                                }
+                                value = getValueForReferenceColumn(dataColumn);
+                            }
+
+                        } else {
+                            value = getValueForReferenceColumn({data: '', type: mappingItem.formColumn.type});
+                        }
+                        if (value != null) {
+                            var storeData = getStoredData(crudType, value, mappingItem.formColumn.name);
+                            storeDataArray.splice(mappingItem.formColumn.order, 0, storeData);
+                        }
+
+                    } else {
+                        var storeData = getStoredData(crudType, getStoreDataFormat(mappingItem.formColumn.type, ''), mappingItem.formColumn.name);
+                        storeDataArray.splice(mappingItem.formColumn.order, 0, storeData);
+                    }
+                }
+            }
+
+            return storeDataArray;
+        }
+
+        /**Crea una estructura de objeto en dependencia de la accion que se pretende realizar,
+         * Si la operacion es un update es necesario para crear el comando del appBase conocer 
+         * el nombre de las columnas a actualizar, pero si la operacion es solo create solo es necesario 
+         * el dato a salvar. Esta estructura es despues usada en los metodos especificos para conformar 
+         * el command adecuadamente */
+        var getStoredData = function (crudType, value, colName) {
+            var storeData;
+            switch (crudType) {
+                case self.CrudType.CREATE:
+                    storeData = value;
+                    break;
+                case self.CrudType.UPDATE:
+                    storeData = {
+                        value: value,
+                        colName: colName};
+                    break;
+                default :
+                    storeData = value;
+            }
+
+            return storeData;
+        }
+
         /**Esta funcion permite construir la estructura para los campos que son referencia*/
-        var getValueForReferenceColumn = function (dataType, dataColumn) {
+        var getValueForReferenceColumn = function (dataColumn) {
             var value = '(';
             if (Array.isArray(dataColumn)) {
                 for (var indexRef = 0; indexRef < dataColumn.length; indexRef++) {
                     value += indexRef > 0 ? ',' : '';
-                    if (Array.isArray(dataType)) {
-                        value += getStoreDataFormat(dataType[indexRef], dataColumn[indexRef]);
-                    } else {
-                        value += getStoreDataFormat(dataType, dataColumn[indexRef]);
-                    }
+                    /*if (Array.isArray(dataType)) {
+                     value += getStoreDataFormat(dataType[indexRef], dataColumn[indexRef]);
+                     } else {*/
+                    value += getStoreDataFormat(dataColumn[indexRef].type, dataColumn[indexRef].data);
+                    //}
                 }
                 value += ')';
             } else {
-                value += getStoreDataFormat(dataType, dataColumn) + ')';
+                value += getStoreDataFormat(dataColumn.type, dataColumn.data) + ')';
             }
 
             return value;
@@ -349,6 +534,7 @@ $.extend({
             return multiReferences;
         }
 
+        /**Verifica si un mapping property es referencia*/
         var isReference = function (item) {
             if (item.formColumn.isReference)
                 return true;
@@ -358,7 +544,7 @@ $.extend({
         /**Esta funcion busca en el appBase si existe el formulario,
          * y pasa al callback un objeto con la definicion del formulario
          * */
-        self.getFormObj = function (formName, getFormCallback) {
+        self.getForm = function (formName, getFormCallback) {
             if (formsArray == null) {
                 requestForms(function (formsArray) {
                     getFormCallback(formsArray[formName]);
@@ -402,7 +588,7 @@ $.extend({
             } else {
                 formsArray = Array();
                 var command = 'SHOW FORMS';
-                self.serverRequest(command, function (result) {
+                self.serverRequest(self.HttpVerb.GET, command, function (result) {
                     parseFormRows(result, callback)
                 }, function () {
 
@@ -430,13 +616,13 @@ $.extend({
                     formsArray[formName] = {
                         formName: formName,
                         properties: [{
-                            name: rows[index][2],
-                            type: rows[index][3],
-                            order: rows[index][4],
-                            isReference: rows[index][5],
-                            formReferenced: rows[index][6],
-                            dataReferenced: rows[index][7]
-                        }]
+                                name: rows[index][2],
+                                type: rows[index][3],
+                                order: rows[index][4],
+                                isReference: rows[index][5],
+                                formReferenced: rows[index][6],
+                                dataReferenced: rows[index][7]
+                            }]
                     }
                 } else {
                     formObj.properties.push({
@@ -463,10 +649,9 @@ $.extend({
                 case 'TEXT':
                     return value === null ? value : '"' + value + '"';
                 case 'NUMBER':
-                    return value > 0 ? value : null;
+                    return value > 0 ? value : 0;
                 case 'BOOLEAN':
                     return value;
-                    //implementar chequeo de valores boolean
                 case 'IMAGE':
                     return '"' + value + '"';
                 case 'DATE':
@@ -480,7 +665,7 @@ $.extend({
          * filterPropertyArray = [{
          *      fieldName: 'TEXT',
          *      fieldValue: value,
-         *      fieldType: 'TEXT, NUMBER, BOOLEAN'
+         *      fieldType: 'TEXT, NUMBER, BOOLEAN, IMAGE'
          * }]
          */
         self.getFormData = function (formName, filterPropertyArray, callback, callbackData) {
@@ -507,7 +692,7 @@ $.extend({
                     }
                 }
 
-                self.serverRequest(command, function (result, data) {
+                self.serverRequest(self.HttpVerb.GET, command, function (result, data) {
                     if (result.code == 100) {
                         var headers = result.resultSet.headers;
                         var rows = result.resultSet.rows;
@@ -583,20 +768,20 @@ $.extend({
                 formName: 'MAPPING',
                 isFirstColumnHeading: false,
                 mappingProperties: [{
-                    fileColumn: {
-                        colStart: -1,
-                        colEnd: -1,
-                        index: 0,
-                        isIgnored: false
-                    },
-                    formColumn: {
-                        name: 'SOURCE_NAME',
-                        type: 'TEXT',
-                        order: 0,
-                        isReference: false,
-                        referenced: null
-                    }
-                }, {
+                        fileColumn: {
+                            colStart: -1,
+                            colEnd: -1,
+                            index: 0,
+                            isIgnored: false
+                        },
+                        formColumn: {
+                            name: 'SOURCE_NAME',
+                            type: 'TEXT',
+                            order: 0,
+                            isReference: false,
+                            referenced: null
+                        }
+                    }, {
                         fileColumn: {
                             colStart: -1,
                             colEnd: -1,
@@ -648,20 +833,20 @@ $.extend({
                 formName: 'MAPPING_PROPERTIES',
                 isFirstColumnHeading: false,
                 mappingProperties: [{
-                    fileColumn: {
-                        colStart: -1,
-                        colEnd: -1,
-                        index: 0,
-                        isIgnored: false
-                    },
-                    formColumn: {
-                        name: 'FILE_COL_START',
-                        type: 'NUMBER',
-                        order: 0,
-                        isReference: false,
-                        reference: null
-                    }
-                }, {
+                        fileColumn: {
+                            colStart: -1,
+                            colEnd: -1,
+                            index: 0,
+                            isIgnored: false
+                        },
+                        formColumn: {
+                            name: 'FILE_COL_START',
+                            type: 'NUMBER',
+                            order: 0,
+                            isReference: false,
+                            reference: null
+                        }
+                    }, {
                         fileColumn: {
                             colStart: -1,
                             colEnd: -1,
@@ -830,8 +1015,8 @@ $.extend({
         self.getMappings = function (callback) {
             self.getFormData('MAPPING', null, function (resultSet) {
                 /*if (result.code != 100) {
-                    return;
-                }*/
+                 return;
+                 }*/
 
                 var headers = resultSet.headers;
                 var rows = resultSet.rows;
@@ -840,10 +1025,10 @@ $.extend({
                 for (var index in rows) {
                     //Aqui se puede consultar MAPPING_PROPERTIES para obtener las properties de cada definicion
                     var filterArray = [{
-                        fieldName: 'MAPPING.SOURCE_NAME',
-                        fieldValue: rows[index][0],
-                        fieldType: 'TEXT'
-                    }]
+                            fieldName: 'MAPPING.SOURCE_NAME',
+                            fieldValue: rows[index][0],
+                            fieldType: 'TEXT'
+                        }]
                     self.getFormData('MAPPING_PROPERTIES', filterArray, function (filterResult, data) {
                         counter++;
                         var mappingPropertiesResult = filterResult.rows;
@@ -901,18 +1086,18 @@ $.extend({
         /**Este metodo dado el nombre o identificador de una definicion de maping obtiene toda la definicion*/
         self.getMapping = function (mappingName, callback) {
             var filterArray = [{
-                fieldName: 'SOURCE_NAME',
-                fieldValue: mappingName
-            }]
+                    fieldName: 'SOURCE_NAME',
+                    fieldValue: mappingName
+                }]
             self.getFormData('MAPPING', filterArray, function (resultSet) {
                 var headers = resultSet.headers;
                 var rows = resultSet.rows;
                 if (rows.length > 0) {
                     var filterArray = [{
-                        fieldName: 'MAPPING.SOURCE_NAME',
-                        fieldValue: rows[0][0],
-                        fieldType: 'TEXT'
-                    }];
+                            fieldName: 'MAPPING.SOURCE_NAME',
+                            fieldValue: rows[0][0],
+                            fieldType: 'TEXT'
+                        }];
                     self.getFormData('MAPPING_PROPERTIES', filterArray, function (filterResult) {
                         var mappingPropertiesResult = filterResult.rows;
                         var mappingObj = getMappingObj(rows[index], filterResult.rows);
@@ -925,10 +1110,18 @@ $.extend({
             });
         };
 
+        self.compareMappings = function (mappingObject1, mappingObject2) {
+            if (mappingObject1 == undefined && mappingObject2 == undefined) {
+                throw new Error("Mapping must be defined");
+            }
+
+
+        }
+
         /** Este metodo es generico sirve para hacer las request al application base*/
-        self.serverRequest = function (commandText, successCallback, errorCallback, callbackData) {
+        self.serverRequest = function (httpVerb, commandText, successCallback, errorCallback, callbackData) {
             $.ajax({
-                type: 'GET',
+                type: (httpVerb == undefined || httpVerb == null) ? 'GET' : httpVerb,
                 url: appBaseUrl,
                 cache: false,
                 dataType: 'json',

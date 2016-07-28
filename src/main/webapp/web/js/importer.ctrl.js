@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-wholeApp.controller('importerController', ['$scope', '$http', function ($scope, $http)
+wholeApp.controller('importerController', ['$scope', '$http','broadcastService', function ($scope, $http,$broadcastService)
     {
             
                 $.appBaseService.getMappings(function(result){$.savedMappings = result;});
