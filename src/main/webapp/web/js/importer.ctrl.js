@@ -22,6 +22,19 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     });
                 };
 
+                //loadmappings
+                 var loadMappings = function(callback, params){
+                    if($.appBaseService.options.useMock){
+                        $.savedMappings = mockingsMock();
+                        callback(params);
+                    }else{
+                        $.appBaseService.getMappings(function(result){
+                        $.savedMappings = result;
+                        if(callback!=undefined){callback(params);}                   
+                        });     
+                    }
+                };
+
                 //llena la tabla del mapping
                 var seedTableData = function() {
                     $("table#table_mapping").colResizable({disable:true});
@@ -147,7 +160,29 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         option.text = filtered[item].sourceName;
                         drop_forms.add(option);
                     }
-                }
+                };
+
+                 var loadExistingMapping = function(selectedMapping){
+                    var map = $.savedMappings.filter(function(item) {return item.sourceName==selectedMapping?true: false})[0];
+                    var props = map.mappingProperties; 
+                    $('table#table_mapping select').val('ignore');
+                    var selectCount = $('table#table_mapping select').length;
+                    if(selectCount>0){
+                        for(item in props){
+                            if(props[item].fileColumn.isIgnored!="true"){
+                                var index = props[item].fileColumn.index;
+                                var column = props[item].formColumn.name; 
+                                if(selectCount>index){
+                                    var select = $('table#table_mapping select')[index];
+                                    if(select){
+                                        $(select).val(column);
+                                    }
+                                }       
+                            }                      
+                        }
+                    }
+                    
+                };
 
                 //event handler para cuando el usuario edita el texto
                 $("#file_content").on("input", function(event) {
@@ -258,19 +293,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }
                 });
 
-                var loadMappings = function(callback, params){
-                    if($.appBaseService.options.useMock){
-                        $.savedMappings = mockingsMock();
-                        callback(params);
-                    }else{
-                        $.appBaseService.getMappings(function(result){
-                        $.savedMappings = result;
-                        if(callback!=undefined){callback(params);}                   
-                        });     
-                    }
-            };
-            
-            
+       
             $('#see_source_btn').on('click', function() {
                 if (!$('#div_file_content').hasClass('in')) {
                     $(this).children('span').removeClass('glyphicon-chevron-down');
@@ -515,31 +538,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
 
         var checkExistingMap = function(mapName){
            return $.savedMappings.filter(function(item){return item.sourceName==mapName? true: false}).length==0? false: true;
-        };
-
-        var loadExistingMapping= function(selectedMapping){
-            var map = $.savedMappings.filter(function(item) {return item.sourceName==selectedMapping?true: false})[0];
-            var props = map.mappingProperties; 
-            $('table#table_mapping select').val('ignore');
-            var selectCount = $('table#table_mapping select').length;
-            if(selectCount>0){
-                for(item in props){
-                    if(props[item].fileColumn.isIgnored!="true"){
-                        var index = props[item].fileColumn.index;
-                        var column = props[item].formColumn.name; 
-                        if(selectCount>index){
-                            var select = $('table#table_mapping select')[index];
-                            if(select){
-                                $(select).val(column);
-                            }
-                        }       
-                    }                      
-                }
-            }
-            
-        };
-
-       
+        };      
        
     }]);
 
