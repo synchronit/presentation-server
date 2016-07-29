@@ -572,7 +572,7 @@ $.extend({
          */
         self.getForms = function (getFormsCallback) {
 
-            if (formsArray == null || formsArray.length == 0) {
+            if (formsArray == null || Object.keys(formsArray).length == 0) {
                 requestForms(getFormsCallback);
             } else {
                 getFormsCallback(formsArray);
