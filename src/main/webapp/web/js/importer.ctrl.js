@@ -5,12 +5,15 @@
  */
 
 wholeApp.controller('importerController', ['$scope', '$http','broadcastService', function ($scope, $http,$broadcastService)
-    {
-            
+    {           
+                           
                 $.appBaseService.getMappings(function(result){$.savedMappings = result;});
                 //datos parseados a JSON
                 var formObject = null;
                 $.json_array = [];
+
+                //revisa si hay algun FORM seleccionado en el PS
+                var selectedFormPS = $broadcastService.getFormSelected()["label"];
                 //function parser del texto CSV a un objeto JSON
                 var parseCSVtoJSON = function(content) {
                     $.json_array = Papa.parse(content, {
@@ -21,9 +24,20 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
 
                 //llena la tabla del mapping
                 var seedTableData = function() {
+                    $("table#table_mapping").colResizable({disable:true});
                     $("table#table_mapping tbody").children().remove();
                     $("table#table_mapping thead").children().remove();
-                    $('select#form_names option:selected').removeAttr('selected');
+                    //$('select#form_names option:selected').removeAttr('selected');
+
+                    if($('select#form_names option:selected').val()!="Select..."){
+                        $.appBaseService.getForms(function(result) {
+                            formObject = result[$('select#form_names option:selected').val()];
+                            $.selectedForm = formObject;
+                            seedHeadingMaps();
+                            isUsingExistingMap=false;
+                            searchMappings($('select#form_names option:selected').val());
+                        });
+                    }
 
                     if ($.json_array.length == 0) {
                         parseCSVtoJSON();
@@ -51,7 +65,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         }
                         $("table#table_mapping tbody").append(rowData);
                     }
-
+                    $("table#table_mapping").colResizable({resizeMode:'overflow'});
+                    //fixTableWidths();
                 };
 
                 //event handler para el select form
@@ -64,14 +79,17 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         seedHeadingMaps();
                         isUsingExistingMap=false;
                     });
+                    searchMappings(selectedValue);
+                    removeBadRowsStyles();
+                });
 
+                var searchMappings = function(selectedValue){
                     if($.savedMappings.length == 0 ){
                         loadMappings(updateMappingSelect, selectedValue);
                     }else{
                         updateMappingSelect(selectedValue);    
                     }   
-
-                });
+                };
 
                 $('select#mapping_names').on('change', function(){
                     var selectElement = this;
@@ -84,6 +102,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         isUsingExistingMap=true;
                     }
                     $('div#savingExistingMapping').addClass('hidden');
+                    removeBadRowsStyles();
                   });
 
 
@@ -99,7 +118,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
 
                 //arreglar los width de columnas o cabeceras
                 var fixTableWidths = function() {
-                    var headings = $($('table#table_mapping thead tr')[0]).children('th');
+                    $($('table tbody tr td')[0]).css('width', 30);
+                    /*var headings = $($('table#table_mapping thead tr')[0]).children('th');
                     var columns = $($('table#table_mapping tbody tr')[0]).children('td');
 
                     for (var i = 0 ; i < headings.length ; i++) {
@@ -107,14 +127,15 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         var colWidth = columns[i].offsetWidth;
                         if (headWidth>colWidth){
                             $(columns[i]).css('width', headWidth);
+
                         }else{
                             $(headings[i]).css('width', colWidth);
                         }
-                    }
+                    }*/
                 }; 
                 
 
-                //event handler para el select maping
+                //event handler para el select mapping
                  var updateMappingSelect = function(formName){
                     var drop_forms = document.getElementById('mapping_names');
                     $(drop_forms).find('option').remove().end().append('<option>loading mappings...</option>');
@@ -171,7 +192,6 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }
                     $('table#table_mapping thead').append(row);
                     registerSelectChange();
-                    fixTableWidths();
                 };
 
                 var columnCount = function() {
@@ -213,18 +233,29 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }
                     reader.readAsText(input.files[0]);
                     $.mappingObj.fileType = input.files[0].type;
-                    $('#divBadRowsFilter').addClass('hidden');
+                    removeBadRowsStyles();
                 });
+
+                var removeBadRowsStyles = function(){
+                    $('#divBadRowsFilter').addClass('hidden');
+                    $('table#table_mapping tr.danger').removeClass('danger');
+                    $('table#table_mapping tr.success').removeClass('success');
+                };
 
                 //busca los datos desde el appbase
                 $.appBaseService.getForms(function(result) {
                     var keys = Object.keys(result);
+                    var selectedFormPS = $broadcastService.getFormSelected()["label"];
+                    var drop_forms = document.getElementById('form_names');
                     keys.forEach(function(key) {
-                        var drop_forms = document.getElementById('form_names');
                         var option = document.createElement('option');
                         option.text = key;
                         drop_forms.add(option);
                     });
+                    if(selectedFormPS!="" && selectedFormPS!=null && selectedFormPS!=undefined){
+                        $(drop_forms).val(selectedFormPS);
+                        searchMappings(selectedFormPS);
+                    }
                 });
 
                 var loadMappings = function(callback, params){
@@ -234,7 +265,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }else{
                         $.appBaseService.getMappings(function(result){
                         $.savedMappings = result;
-                        callback(params);
+                        if(callback!=undefined){callback(params);}                   
                         });     
                     }
             };
@@ -275,37 +306,30 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
         };
 
         var saveDataToAppBase = function(){
+            removeBadRowsStyles();
             if(hasColumnMapped()){
-                if(isUsingExistingMap){
-                    if(isUsingExistingMapEdited){
-                        //logica para cuando use un mapping existente y haya cambiado algo.
-                        //se necesita optimizar esto con un update 
-                        prepMapping();
-                        importData(); 
-                    }else{
-                        //logica para cuando este usando un mapping existente sin cambiar nada
-                        prepMapping();
-                        importData();  
-                    } 
-                }else{
+
                     //logica para cuando cree su propio mapping
                     //si el textbox tiene valor, guardar el mapping sino, guardar solo los datos. 
                     if($('input#mapNameText').val()==""){
-                        //enviar solo los datos
                         prepMapping();
-                        importData();
+                        importData(); 
+                         if(isUsingExistingMap && isUsingExistingMapEdited && $('input#saveEditedMapping').is(':checked')){
+                           //actualizacion del mapping usado
+                         }                       
                     }else{
-                        //preparar y guardar mapping
-                        //y luego enviar los datos 
-                        prepMapping();
-                           if(!checkExistingMap($('input#mapNameText').val())){
+                        //checkeo si el mapping ya existe
+                         if(!checkExistingMap($('input#mapNameText').val())){
+                             //preparar y guardar mapping
+                            //y luego enviar los datos 
+                                prepMapping();
                                 saveMapping();
                                 importData();
                            }else{
                                alert('Ups, looks like there is already a saved Map with this name: '+$('input#mapNameText').val()+". Please try a diferent name." );
                            }
                     }
-                }
+             
             }else{
                 alert('Ups, seems like you haven\'t map any column. Please choose at least one column to map before importing!');
             }
@@ -409,23 +433,30 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
           $.appBaseService.saveMapping($.mappingObj, function(endCallbackData) {
                 if (endCallbackData != undefined && endCallbackData != null) {
                     if (endCallbackData.code == 300) {
-                        alert(endCallbackData.message);
-                        var errorSpan = '<span style="color:red;">Error: </span>'
-                        $('#currentItem').html(errorSpan + endCallbackData.message);
+                        var errorSpan = '<li class="text-danger">Error:' + 'Mapping couldn\'t be saved.';
+                        $('#stackTrace').append(errorSpan + endCallbackData.message + '</li>');
+                        $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                         return;
                     } else {
                      if (endCallbackData.stackTrace != undefined) {
                             for (var i in endCallbackData.stackTrace) {
-                                var litem = '<li>' + endCallbackData.stackTrace[i] + '</li>'
+                                var litem = '<li class="text-success">' + endCallbackData.stackTrace[i] + '</li>'
                                 $('#stackTrace').append(litem);
                                 $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                             }
                         }
- 
-                    }
+                        //actualizando los mappings y los select
+                        loadMappings(function(){
+                            updateMappingSelect($('select#form_names').val());
+                            $('select#mapping_names').val($.mappingObj.sourceName);
+                            $('input#mapNameText').val('');
+                        });
+                        
+                     }
                 }
+                
                 });
-        }
+        };
 
         var isUsingExistingMap = false;
 
@@ -457,6 +488,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         $('tr[data-index='+data.rowKey+']').tooltip({container:'body'});
                         failureCount++;
                         $('#currentFailure').html('('+failureCount + " failures)");
+                    }else{
+                         $('tr[data-index='+data.rowKey+']').addClass('success');
                     }
                     $('#sendingProgress').attr('value', ++progressValue).end();
                     $('#currentItem').html(progressValue + ' of ' + total);
