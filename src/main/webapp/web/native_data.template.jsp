@@ -8,8 +8,9 @@
         <div ng-switch-when="BOOLEAN"><input type="checkbox" ng-model="data.value"></div> 
         <div ng-switch-when="NUMBER"> <input type="number"   ng-model="data.value"></div>
         <div ng-switch-when="IMAGE"> 
-            <img src="{{data.value}}" alt="..." class="img-thumbnail"> 
-            <input type="file" id="InputFile">            
+            <input type="file" id="InputFile"> 
+            <img  src="{{data.value != null? data.value : 'cuco' }}" alt="..." class="img-thumbnail"> 
+                       
         </div>
         <div ng-switch-default>       <input type="text"     ng-model="data.value"></div> 
     </div>
