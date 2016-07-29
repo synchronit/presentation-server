@@ -239,6 +239,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                 var removeBadRowsStyles = function(){
                     $('#divBadRowsFilter').addClass('hidden');
                     $('table#table_mapping tr.danger').removeClass('danger');
+                    $('table#table_mapping tr.danger').removeClass('success');
                 };
 
                 //busca los datos desde el appbase
@@ -305,37 +306,30 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
         };
 
         var saveDataToAppBase = function(){
+            removeBadRowsStyles();
             if(hasColumnMapped()){
-                if(isUsingExistingMap){
-                    if(isUsingExistingMapEdited){
-                        //logica para cuando use un mapping existente y haya cambiado algo.
-                        //se necesita optimizar esto con un update 
-                        prepMapping();
-                        importData(); 
-                    }else{
-                        //logica para cuando este usando un mapping existente sin cambiar nada
-                        prepMapping();
-                        importData();  
-                    } 
-                }else{
+
                     //logica para cuando cree su propio mapping
                     //si el textbox tiene valor, guardar el mapping sino, guardar solo los datos. 
                     if($('input#mapNameText').val()==""){
-                        //enviar solo los datos
                         prepMapping();
-                        importData();
+                        importData(); 
+                         if(isUsingExistingMap && isUsingExistingMapEdited && $('input#saveEditedMapping').is(':checked')){
+                           //actualizacion del mapping usado
+                         }                       
                     }else{
-                        //preparar y guardar mapping
-                        //y luego enviar los datos 
-                        prepMapping();
-                           if(!checkExistingMap($('input#mapNameText').val())){
+                        //checkeo si el mapping ya existe
+                         if(!checkExistingMap($('input#mapNameText').val())){
+                             //preparar y guardar mapping
+                            //y luego enviar los datos 
+                                prepMapping();
                                 saveMapping();
                                 importData();
                            }else{
                                alert('Ups, looks like there is already a saved Map with this name: '+$('input#mapNameText').val()+". Please try a diferent name." );
                            }
                     }
-                }
+             
             }else{
                 alert('Ups, seems like you haven\'t map any column. Please choose at least one column to map before importing!');
             }
@@ -494,6 +488,8 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                         $('tr[data-index='+data.rowKey+']').tooltip({container:'body'});
                         failureCount++;
                         $('#currentFailure').html('('+failureCount + " failures)");
+                    }else{
+                         $('tr[data-index='+data.rowKey+']').addClass('success');
                     }
                     $('#sendingProgress').attr('value', ++progressValue).end();
                     $('#currentItem').html(progressValue + ' of ' + total);

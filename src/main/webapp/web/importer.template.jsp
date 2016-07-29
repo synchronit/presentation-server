@@ -64,7 +64,7 @@
                                     <br><br>
                                     <div id="savingExistingMapping" class="hidden">
                                            <label class="text-danger">Do want to save this modifications to this mapping?</label><br>
-                                           <input type="checkbox"><span class="text-danger">Yes, save this modifications.</span>
+                                           <input type="checkbox" id="saveEditedMapping"><span class="text-danger">Yes, save this modifications.</span>
                                     </div>
                             </div>
                            
