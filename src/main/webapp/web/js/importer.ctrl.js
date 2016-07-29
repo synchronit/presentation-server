@@ -239,7 +239,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                 var removeBadRowsStyles = function(){
                     $('#divBadRowsFilter').addClass('hidden');
                     $('table#table_mapping tr.danger').removeClass('danger');
-                    $('table#table_mapping tr.danger').removeClass('success');
+                    $('table#table_mapping tr.success').removeClass('success');
                 };
 
                 //busca los datos desde el appbase
