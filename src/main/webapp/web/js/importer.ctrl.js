@@ -253,6 +253,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     });
                     if(selectedFormPS!="" && selectedFormPS!=null && selectedFormPS!=undefined){
                         $(drop_forms).val(selectedFormPS);
+                        searchMappings(selectedFormPS);
                     }
                 });
 
@@ -263,7 +264,7 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
                     }else{
                         $.appBaseService.getMappings(function(result){
                         $.savedMappings = result;
-                        callback(params);
+                        if(callback!=undefined){callback(params);}                   
                         });     
                     }
             };
@@ -438,23 +439,30 @@ wholeApp.controller('importerController', ['$scope', '$http','broadcastService',
           $.appBaseService.saveMapping($.mappingObj, function(endCallbackData) {
                 if (endCallbackData != undefined && endCallbackData != null) {
                     if (endCallbackData.code == 300) {
-                        alert(endCallbackData.message);
-                        var errorSpan = '<span style="color:red;">Error: </span>'
-                        $('#currentItem').html(errorSpan + endCallbackData.message);
+                        var errorSpan = '<li class="text-danger">Error:' + 'Mapping couldn\'t be saved.';
+                        $('#stackTrace').append(errorSpan + endCallbackData.message + '</li>');
+                        $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                         return;
                     } else {
                      if (endCallbackData.stackTrace != undefined) {
                             for (var i in endCallbackData.stackTrace) {
-                                var litem = '<li>' + endCallbackData.stackTrace[i] + '</li>'
+                                var litem = '<li class="text-success">' + endCallbackData.stackTrace[i] + '</li>'
                                 $('#stackTrace').append(litem);
                                 $('#stackTrace').scrollTop($('#stackTrace')[0].scrollHeight);
                             }
                         }
- 
-                    }
+                        //actualizando los mappings y los select
+                        loadMappings(function(){
+                            updateMappingSelect($('select#form_names').val());
+                            $('select#mapping_names').val($.mappingObj.sourceName);
+                            $('input#mapNameText').val('');
+                        });
+                        
+                     }
                 }
+                
                 });
-        }
+        };
 
         var isUsingExistingMap = false;
 
