@@ -343,6 +343,8 @@ form_content.controller
 
                             if (type == "TEXT" && value)
                                 quotedValue = '"' + value + '"';  // if value is empty or null, instead of "" we return an empty value
+                            if (type == "IMAGE")//Aqui hacer el parser del objeto del input. Puede factorizarce si se pone en el modelo solo el codigo en base 64
+                                quotedValue = '"' + 'data:' + value.filetype + ';base64,' + value.base64 + '"';
 
                             return quotedValue;
                         }
@@ -364,8 +366,8 @@ form_content.controller
                                     typedValue = (value > 0); // Any number greater than 0 is true !!
                                 }
                             }
-                            
-                            if(type == "IMAGE" && (value === null || value === '')){
+
+                            if (type == "IMAGE" && (value === null || value === '')) {
                                 typedValue = 'images/image_file.png'
                             }
 
@@ -563,6 +565,17 @@ form_content.controller
                                                     }
                                         }
                             });
+                        }
+
+                        $scope.onInputLoad = function (o) {
+                            if (angular.isObject(o)) {
+                                var keys = Object.keys(o);
+                                if (keys.indexOf('filename') >= 0) {
+                                    o = 'data:' + o.filetype + ';base64,' + o.base64;
+                                }
+//console.info(this.userAvatar); 
+                            }
+                            return o;
                         }
 
                         /**
