@@ -12,7 +12,7 @@
             
                 <!--img  ng-src="{{'data:' + data.value.filetype + ';base64,' + data.value.base64}}" alt="{{data.value.filename}}" class="img-thumbnail"--> 
                 <!--input type='file' ng-model='data.value' base-sixty-four-input--> 
-                <img ng-src="{{onInputLoad(data.value)}}" alt="..." class="img-thumbnail">
+                <img ng-src="{{onInputLoad(data.value)}}" src="images/image_file.png" alt="{{data.value.filename}}" class="img-thumbnail">
                 <!--<div ng-if="data.value == null || data.value == ''">
                 <img  ng-src="{{data.value}}" alt="..." class="img-thumbnail">--> 
                 </div>
