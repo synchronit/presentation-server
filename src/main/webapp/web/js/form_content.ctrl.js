@@ -364,6 +364,10 @@ form_content.controller
                                     typedValue = (value > 0); // Any number greater than 0 is true !!
                                 }
                             }
+                            
+                            if(type == "IMAGE" && (value === null || value === '')){
+                                typedValue = 'images/image_file.png'
+                            }
 
                             return typedValue;
                         }
