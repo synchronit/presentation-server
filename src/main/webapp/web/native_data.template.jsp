@@ -8,10 +8,16 @@
         <div ng-switch-when="BOOLEAN"><input type="checkbox" ng-model="data.value"></div> 
         <div ng-switch-when="NUMBER"> <input type="number"   ng-model="data.value"></div>
         <div ng-switch-when="IMAGE"> 
-            <input type="file" id="InputFile"> 
-            <img  src="{{data.value != null? data.value : 'cuco' }}" alt="..." class="img-thumbnail"> 
-                       
+            <input type='file' ng-model='data.value' base-sixty-four-input>
+            <div ng-if="data.value != null && data.value != ''">
+                <img  ng-src="{{[data.value]}}" alt="..." class="img-thumbnail"> 
+            </div>
+            <div ng-if="data.value == null || data.value == ''">
+                <img  ng-src="images/image_file.png" alt="..." class="img-thumbnail"> 
+            </div>
         </div>
-        <div ng-switch-default>       <input type="text"     ng-model="data.value"></div> 
+        <div ng-switch-default>       
+            <input type="text"     ng-model="data.value">
+        </div> 
     </div>
 </div>

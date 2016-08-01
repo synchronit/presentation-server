@@ -4,7 +4,7 @@ $(function() {
 
 });
 
-var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'broadcastService', 'FQLService', 'chart.js', 'colorpicker.module' ]);
+var wholeApp = angular.module('wholeApp',['myTree', 'myAccordion', 'form_content', 'modalWindow', 'broadcastService', 'FQLService', 'chart.js', 'colorpicker.module', 'naif.base64' ]);
 
 /****************************
 	var dynControllers = angular.module('dynControllers',[]);

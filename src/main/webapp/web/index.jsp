@@ -37,6 +37,7 @@
         <!-- Scripts -->
         <script src="js/angular/angular.1.4.0.min.js"></script> 
         <script src="js/angular/angular.animate.1.4.0.min.js"></script>
+        <script src="js/angular/angular-base64-upload.min.js"></script>
 
         <script src="js/broadcastService.js"></script>
         <script src="js/FQLService.js"></script>
