@@ -135,7 +135,20 @@ form_content.controller
                             }
                             return columnIndex;
                         }
-
+                        
+                        $scope.fqlModify = function(){
+                            var form = $scope.formSelected;
+                            data = form.children;
+                            
+                            if (!form.label || form.label == '')
+                            {//Aqui mejorar la validacion para que sea cuando no este un item selecionado
+                                msgWarning("Please select a Form in order to enable this action.");
+                            }else{
+                                var fqlStmt = "Modify Case " + form.label + " ( " + $scope.getLabelDataValueList(data, "") + ' ) with ' + '';
+                                //FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
+                            }
+                        }
+                        
                         $scope.fqlCreate = function ()
                         {
                             var form = $scope.formSelected;
@@ -150,6 +163,32 @@ form_content.controller
 // console.log(fqlStmt);							
                                 FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
                             }
+                        }
+                        
+                        $scope.getLabelDataValueList = function (data, firstComma)
+                        {
+                            var dataValueList = "";
+                            var comma = firstComma;
+// console.log("getDataValueList: comes with "+data);						
+                            for (var i = 0; i < data.length; i++)
+                            {
+                                if (data[i].type != "REFERENCE")
+                                {
+                                    dataValueList += comma + data[i].label + "=" + $scope.getQuotedValue(data[i].type, data[i].value);
+                                } else
+                                {
+                                    if (data[i].refMax == 1)
+                                    {	// Ref. simple //aqui revisar los casos para el update
+                                        dataValueList += comma + "( " + $scope.getDataValueList(data[i].children, "") + " )";
+                                    } else
+                                    {	// Ref. multiple
+                                        dataValueList += comma + "( " + $scope.getValuesFromMultipleReference(data[i]) + " )";
+                                    }
+                                }
+                                comma = ', ';
+                            }
+// console.log("getDataValueList Returns : "+dataValueList);						
+                            return dataValueList;
                         }
 
                         $scope.getDataValueList = function (data, firstComma)
@@ -576,6 +615,10 @@ form_content.controller
 //console.info(this.userAvatar); 
                             }
                             return o;
+                        }
+                        
+                        $scope.clickImg = function (model){
+                            alert('Pincha');
                         }
 
                         /**

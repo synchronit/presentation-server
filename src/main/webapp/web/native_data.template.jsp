@@ -9,16 +9,11 @@
         <div ng-switch-when="NUMBER"> <input type="number"   ng-model="data.value"></div>
         <div ng-switch-when="IMAGE"> 
             <input type='file' ng-model='data.value' base-sixty-four-input>
-            
-                <!--img  ng-src="{{'data:' + data.value.filetype + ';base64,' + data.value.base64}}" alt="{{data.value.filename}}" class="img-thumbnail"--> 
-                <!--input type='file' ng-model='data.value' base-sixty-four-input--> 
-                <img ng-src="{{onInputLoad(data.value)}}" src="images/image_file.png" alt="{{data.value.filename}}" class="img-thumbnail">
-                <!--<div ng-if="data.value == null || data.value == ''">
-                <img  ng-src="{{data.value}}" alt="..." class="img-thumbnail">--> 
-                </div>
-            
-            <div ng-switch-default>       
-                <input type="text"     ng-model="data.value">
-            </div> 
+            <img ng-src="{{onInputLoad(data.value)}}" src="images/no-img.jpg" alt="{{data.value.filename}}" 
+                 ng-click="clickImg(data.value)" ng-model="data.value" class="img-thumbnail">
         </div>
+        <div ng-switch-default>       
+            <input type="text"     ng-model="data.value">
+        </div> 
     </div>
+</div>
