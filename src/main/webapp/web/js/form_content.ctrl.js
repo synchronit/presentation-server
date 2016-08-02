@@ -10,7 +10,7 @@ form_content.controller
                         {
                             $scope.formSelected = broadcastService.getFormSelected();
                             $scope.gridOptions = $scope.generateGridOptions($scope.formSelected);
-
+                            $scope.resizableElements();
                             $scope.loadReferenceValues($scope.formSelected);
                         });
 
@@ -135,20 +135,20 @@ form_content.controller
                             }
                             return columnIndex;
                         }
-                        
-                        $scope.fqlModify = function(){
+
+                        $scope.fqlModify = function () {
                             var form = $scope.formSelected;
                             data = form.children;
-                            
+
                             if (!form.label || form.label == '')
                             {//Aqui mejorar la validacion para que sea cuando no este un item selecionado
                                 msgWarning("Please select a Form in order to enable this action.");
-                            }else{
+                            } else {
                                 var fqlStmt = "Modify Case " + form.label + " ( " + $scope.getLabelDataValueList(data, "") + ' ) with ' + '';
                                 //FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
                             }
                         }
-                        
+
                         $scope.fqlCreate = function ()
                         {
                             var form = $scope.formSelected;
@@ -164,7 +164,7 @@ form_content.controller
                                 FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
                             }
                         }
-                        
+
                         $scope.getLabelDataValueList = function (data, firstComma)
                         {
                             var dataValueList = "";
@@ -616,9 +616,15 @@ form_content.controller
                             }
                             return o;
                         }
-                        
-                        $scope.clickImg = function (model){
-                            alert('Pincha');
+
+                        $scope.clickImg = function (label) {
+                            $('#' + label).click();
+                        }
+
+                        $scope.resizableElements = function () {
+                            setTimeout(function () {
+                                $('img[img-id]').resizable();
+                            }, 500);
                         }
 
                         /**

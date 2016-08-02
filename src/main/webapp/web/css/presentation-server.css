@@ -17,7 +17,13 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .type-hint-number {background:rgb(189, 63, 66);}
 .footer {color: #aaaaaa;}
 .formTitle {float: left; }
+.ui-icon, .ui-widget-content .ui-icon {
+    background-image: url("../images/ui-icons_444444_256x240.png");
+}
 
+.ui-icon-gripsmall-diagonal-se {
+    background-position: -64px -224px;
+}
 .newFormTitle
 {
     border: 0px;
@@ -104,8 +110,8 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 .newReferenceFieldset
 {
     font-size: 12px; 
-    text-decoration: 
-        none; margin: 0px; 
+    text-decoration: none;
+    margin: 0px; 
     border: 0px; 
     padding-left: 5px; 
     padding-right: 5px; 
@@ -113,13 +119,19 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
     font-weight: bold; 
     color: grey;
 }
-
-input[type="file"]{
-    display: none;
+.form-image{
+    max-width: 280px;
+    max-height: 248px;
 }
 
-img{
+img[img-id]{
     cursor: pointer;
+    width: 280px;
+    height: 248px;
+}
+
+img[img-id]::after{
+
 }
 
 .collapseTab

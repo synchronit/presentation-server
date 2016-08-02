@@ -8,9 +8,9 @@
         <div ng-switch-when="BOOLEAN"><input type="checkbox" ng-model="data.value"></div> 
         <div ng-switch-when="NUMBER"> <input type="number"   ng-model="data.value"></div>
         <div ng-switch-when="IMAGE"> 
-            <input type='file' ng-model='data.value' base-sixty-four-input>
-            <img ng-src="{{onInputLoad(data.value)}}" src="images/no-img.jpg" alt="{{data.value.filename}}" 
-                 ng-click="clickImg(data.value)" ng-model="data.value" class="img-thumbnail">
+            <input type='file' id="{{data.label}}" ng-model='data.value' class="hidden" base-sixty-four-input>
+            <img img-id="{{data.label}}" ng-src="{{onInputLoad(data.value)}}" src="images/no-img.jpg" alt="{{data.value.filename}}" 
+                 ng-click="clickImg(data.label)" ng-model="data.value" class="img-thumbnail">
         </div>
         <div ng-switch-default>       
             <input type="text"     ng-model="data.value">
