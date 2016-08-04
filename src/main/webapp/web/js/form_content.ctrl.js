@@ -135,6 +135,17 @@ form_content.controller
                             }
                             return columnIndex;
                         }
+                        
+                        $scope.modifyWithList = function (data){
+                            var dataValueList = "";
+                            var and = ' and ';
+                            
+                            dataValueList += data[0].label + "=" + $scope.getQuotedValue(data[0].type, data[0].value);
+                            dataValueList += and;
+                            dataValueList += data[1].label + "=" + $scope.getQuotedValue(data[1].type, data[1].value);
+                            
+                            return dataValueList;
+                        }
 
                         $scope.fqlModify = function () {
                             var form = $scope.formSelected;
@@ -144,8 +155,10 @@ form_content.controller
                             {//Aqui mejorar la validacion para que sea cuando no este un item selecionado
                                 msgWarning("Please select a Form in order to enable this action.");
                             } else {
-                                var fqlStmt = "Modify Case " + form.label + " ( " + $scope.getLabelDataValueList(data, "") + ' ) with ' + '';
-                                //FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
+                                var modifyWithList = $scope.modifyWithList(data);
+                                //Aquui esta faltando que en el data venga un identificador unico para el case
+                                var fqlStmt = "Modify Case " + form.label + " (" + $scope.getLabelDataValueList(data, "") + ' ) with ' + modifyWithList;
+                                FQLService.executePostFQL(fqlStmt, $scope.afterExecuteFQL);
                             }
                         }
 
@@ -172,8 +185,11 @@ form_content.controller
 // console.log("getDataValueList: comes with "+data);						
                             for (var i = 0; i < data.length; i++)
                             {
-                                if (data[i].type != "REFERENCE")
+                                if (data[i].type != "REFERENCE" )
                                 {
+                                    if(data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
+                                        continue;
+                                    
                                     dataValueList += comma + data[i].label + "=" + $scope.getQuotedValue(data[i].type, data[i].value);
                                 } else
                                 {
@@ -185,6 +201,20 @@ form_content.controller
                                         dataValueList += comma + "( " + $scope.getValuesFromMultipleReference(data[i]) + " )";
                                     }
                                 }
+                                comma = ', ';
+                            }
+// console.log("getDataValueList Returns : "+dataValueList);						
+                            return dataValueList;
+                        }
+
+                        $scope.getLabelDataList = function (data, firstComma)
+                        {
+                            var dataValueList = "";
+                            var comma = firstComma;
+// console.log("getDataValueList: comes with "+data);						
+                            for (var i = 0; i < data.length; i++)
+                            {
+                                dataValueList += comma + data[i].label;
                                 comma = ', ';
                             }
 // console.log("getDataValueList Returns : "+dataValueList);						
@@ -279,7 +309,9 @@ form_content.controller
                                 msgWarning("Please select a Form in order to enable this action");
                             } else
                             {
-                                var fqlStmt = "Get " + form.label;
+                                /**TODO: Aqui se puede hacer un Get case MyForm (Fql_Id, A, B, C, Fql_Version)*/
+                                var fqlStmt = "Get " + form.label + "(" + $scope.getLabelDataList(data, " ") + ")";
+                                //var fqlStmt = "Get " + form.label;
                                 var withCondition = $scope.getDataWithList(data, " ");
                                 fqlStmt += (withCondition) ? " with " + withCondition : "";
 // console.log(fqlStmt);							
