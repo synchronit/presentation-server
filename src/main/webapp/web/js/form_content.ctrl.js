@@ -230,6 +230,8 @@ form_content.controller
                             {
                                 if (data[i].type != "REFERENCE")
                                 {
+                                     if(data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
+                                        continue;
                                     dataValueList += comma + $scope.getQuotedValue(data[i].type, data[i].value);
                                 } else
                                 {
@@ -645,6 +647,9 @@ form_content.controller
                                     o = 'data:' + o.filetype + ';base64,' + o.base64;
                                 }
 //console.info(this.userAvatar); 
+                            }
+                            else{
+                                o = "images/no-img.jpg"
                             }
                             return o;
                         }

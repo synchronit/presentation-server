@@ -125,9 +125,11 @@ pre.code {border:none; background-color: #f8f8f8; padding: 10px; margin: 0; font
 }
 
 img[img-id]{
+    display: block;
     cursor: pointer;
-    width: 280px;
-    height: 248px;
+    
+    width: auto;
+    height: auto;
 }
 
 img[img-id]::after{
