@@ -135,15 +135,15 @@ form_content.controller
                             }
                             return columnIndex;
                         }
-                        
-                        $scope.modifyWithList = function (data){
+
+                        $scope.modifyWithList = function (data) {
                             var dataValueList = "";
                             var and = ' and ';
-                            
+
                             dataValueList += data[0].label + "=" + $scope.getQuotedValue(data[0].type, data[0].value);
                             dataValueList += and;
                             dataValueList += data[1].label + "=" + $scope.getQuotedValue(data[1].type, data[1].value);
-                            
+
                             return dataValueList;
                         }
 
@@ -185,11 +185,11 @@ form_content.controller
 // console.log("getDataValueList: comes with "+data);						
                             for (var i = 0; i < data.length; i++)
                             {
-                                if (data[i].type != "REFERENCE" )
+                                if (data[i].type != "REFERENCE")
                                 {
-                                    if(data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
+                                    if (data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
                                         continue;
-                                    
+
                                     dataValueList += comma + data[i].label + "=" + $scope.getQuotedValue(data[i].type, data[i].value);
                                 } else
                                 {
@@ -230,7 +230,7 @@ form_content.controller
                             {
                                 if (data[i].type != "REFERENCE")
                                 {
-                                     if(data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
+                                    if (data[i].label == "Fql_Id" || data[i].label == "Fql_Version")
                                         continue;
                                     dataValueList += comma + $scope.getQuotedValue(data[i].type, data[i].value);
                                 } else
@@ -640,18 +640,56 @@ form_content.controller
                             });
                         }
 
-                        $scope.onInputLoad = function (o) {
+                        $scope.onInputLoad = function (o, elemId) {
                             if (angular.isObject(o)) {
                                 var keys = Object.keys(o);
                                 if (keys.indexOf('filename') >= 0) {
                                     o = 'data:' + o.filetype + ';base64,' + o.base64;
+                                    $scope.setImageRatio(o, elemId);
                                 }
 //console.info(this.userAvatar); 
-                            }
-                            else{
-                                o = "images/no-img.jpg"
+                            } else {
+                                o = "images/no-img.jpg";
+                                var elem = $('img[img-id=' + elemId + ']')
+                                $(elem).css("width", 280);
+                                //$(elem).parent().css("width", 280);
+                                $(elem).css("height", 248);
+                                //$(elem).parent().css("height", 248);
                             }
                             return o;
+                        }
+
+                        $scope.setImageRatio = function (base64Code, elementId) {
+                            var elem = $('img[img-id=' + elementId + ']');
+                            var img = new Image();
+                            img.src = base64Code;
+                            var maxWidth = 280; // Max width for the image
+                            var maxHeight = 248;    // Max height for the image
+                            var ratio = 0;  // Used for aspect ratio
+                            var width = img.width;    // Current image width
+                            var height = img.height;  // Current image height
+
+                            // Check if the current width is larger than the max
+                            if (width > maxWidth) {
+                                ratio = maxWidth / width;   // get ratio for scaling image
+                                $(elem).css("width", maxWidth); // Set new width
+                                $(elem).parent().css("width", maxWidth)
+                                $(elem).css("height", height * ratio);  // Scale height based on ratio
+                                $(elem).parent().css("height", height * ratio);  
+                                height = height * ratio;    // Reset height to match scaled image
+                                width = width * ratio;    // Reset width to match scaled image
+                            }
+
+                            // Check if current height is larger than max
+                            if (height > maxHeight) {
+                                ratio = maxHeight / height; // get ratio for scaling image
+                                $(elem).css("height", maxHeight);   // Set new height
+                                $(elem).parent().css("height", maxHeight);
+                                $(elem).css("width", width * ratio);    // Scale width based on ratio
+                                $(elem).parent().css("width", width * ratio);
+                                width = width * ratio;    // Reset width to match scaled image
+                                height = height * ratio;    // Reset height to match scaled image
+                            }
                         }
 
                         $scope.clickImg = function (label) {

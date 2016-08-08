@@ -17,7 +17,7 @@
         </div>
         <div ng-switch-when="IMAGE"> 
             <input type='file' id="{{data.label}}" ng-model='data.value' class="hidden" base-sixty-four-input>
-            <img img-id="{{data.label}}" src="{{onInputLoad(data.value)}}" alt="{{data.value.filename}}" 
+            <img img-id="{{data.label}}" src="{{onInputLoad(data.value, data.label)}}" alt="{{data.value.filename}}" 
                  title="{{data.value.filename}}" ng-click="clickImg(data.label)" ng-model="data.value" class="img-thumbnail">
         </div>
         <div ng-switch-default>       
