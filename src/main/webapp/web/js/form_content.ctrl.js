@@ -415,7 +415,7 @@ form_content.controller
                             var quotedValue = value;	// default
 
                             if (type == "TEXT" && value)
-                                quotedValue = '"' + value + '"';  // if value is empty or null, instead of "" we return an empty value
+                                quotedValue = '"' + value.toString().replace(/\"/g, '\\"') + '"';  // if value is empty or null, instead of "" we return an empty value
                             if (type == "IMAGE")//Aqui hacer el parser del objeto del input. Puede factorizarce si se pone en el modelo solo el codigo en base 64
                                 quotedValue = '"' + 'data:' + value.filetype + ';base64,' + value.base64 + '"';
 
@@ -651,10 +651,8 @@ form_content.controller
                             } else {
                                 o = "images/no-img.jpg";
                                 var elem = $('img[img-id=' + elemId + ']')
-                                $(elem).css("width", 280);
-                                //$(elem).parent().css("width", 280);
-                                $(elem).css("height", 248);
-                                //$(elem).parent().css("height", 248);
+                                $scope.resizableElements(elem);
+
                             }
                             return o;
                         }
@@ -675,7 +673,7 @@ form_content.controller
                                 $(elem).css("width", maxWidth); // Set new width
                                 $(elem).parent().css("width", maxWidth)
                                 $(elem).css("height", height * ratio);  // Scale height based on ratio
-                                $(elem).parent().css("height", height * ratio);  
+                                $(elem).parent().css("height", height * ratio);
                                 height = height * ratio;    // Reset height to match scaled image
                                 width = width * ratio;    // Reset width to match scaled image
                             }
@@ -696,9 +694,18 @@ form_content.controller
                             $('#' + label).click();
                         }
 
-                        $scope.resizableElements = function () {
+                        $scope.resizableElements = function (element) {
+                            if (element != undefined && $(element).resizable("instance") != undefined) {
+                                $(element).resizable("destroy");
+                                $(element).css("width", 280);
+                                $(element).css("height", 248);
+                            }
                             setTimeout(function () {
-                                $('img[img-id]').resizable();
+                                if (element == undefined) {
+                                    element = 'img[img-id]';
+                                }
+
+                                $(element).resizable();
                             }, 500);
                         }
 
