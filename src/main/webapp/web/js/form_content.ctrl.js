@@ -649,7 +649,9 @@ form_content.controller
                                 }
 //console.info(this.userAvatar); 
                             } else {
-                                o = "images/no-img.jpg";
+                                if (o === '') {
+                                    o = "images/no-img.jpg";
+                                }
                                 var elem = $('img[img-id=' + elemId + ']')
                                 $scope.resizableElements(elem);
 
