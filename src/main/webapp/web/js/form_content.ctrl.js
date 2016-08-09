@@ -440,8 +440,8 @@ form_content.controller
                                 }
                             }
 
-                            if (type == "IMAGE" && (value === null || value === '')) {
-                                typedValue = 'images/image_file.png'
+                            if (type == "IMAGE" && (value === null || value === '' /*|| value === ''*/)) {
+                                typedValue = 'images/no-img.jpg'
                             }
 
                             return typedValue;
