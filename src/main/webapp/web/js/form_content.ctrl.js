@@ -414,10 +414,10 @@ form_content.controller
                         {
                             var quotedValue = value;	// default
 
-                            if (type == "TEXT" && value)
+                            if (type == "TEXT")
                                 quotedValue = '"' + value.toString().replace(/\"/g, '\\"') + '"';  // if value is empty or null, instead of "" we return an empty value
                             if (type == "IMAGE")//Aqui hacer el parser del objeto del input. Puede factorizarce si se pone en el modelo solo el codigo en base 64
-                                quotedValue = '"' + 'data:' + value.filetype + ';base64,' + value.base64 + '"';
+                                quotedValue = "\"" + "data:" + value.filetype + ";base64," + value.base64 + "\"";
 
                             return quotedValue;
                         }
