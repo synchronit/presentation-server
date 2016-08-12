@@ -391,7 +391,7 @@ $(function () {
     webSocket = new WebSocket('ws://' + window.location.host + '/presentation-server-test/wsocket');
 
     webSocket.onerror = function (event) {
-        alert("Error in WebSocket call: " + event.data);
+       // alert("Error in WebSocket call: " + event.data);
     };
 
     webSocket.onopen = function (event) {
