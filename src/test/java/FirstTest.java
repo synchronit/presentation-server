@@ -4,12 +4,15 @@
  * and open the template in the editor.
  */
 
+import java.io.Console;
+import java.util.Iterator;
 import java.util.List;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -83,19 +86,37 @@ public class FirstTest {
         WebDriver driver = new FirefoxDriver();
 
         driver.get(FirstTest.localHostUrl);
-
-        List<WebElement> elements = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
-
+        //driver.findElements(By.cssSelector("treecontrol > ul > li > div > span")); //
+        List<WebElement> elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
+        System.out.println("Tree count elements is: " + elements.size());
         if (!elements.isEmpty()) {
+            System.out.println("Elements founds");
             WebElement element = FindElement(elements, "CREATE_CASE");
-            element.click();
-            WebElement deleteFormButtonElem = driver.findElement(By.cssSelector("#classic a.icon-trash-empty"));
-            deleteFormButtonElem.click();
+            if (element != null) {
+                element.click();
+                System.out.println("CREATE_CASE element Clicked");
+                WebElement deleteFormButtonElem = driver.findElement(By.cssSelector("#classic a.icon-trash-empty"));
+                deleteFormButtonElem.click();
+                elements = driver.findElements(By.cssSelector("treecontrol > ul > li > div > span"));
+                element = FindElement(elements, "CREATE_CASE");
+                if (element == null) {
+                    System.out.println("CREATE_CASE element Deleted");
+                }
+            } else {
+                System.out.println("CREATE_CASE element not found");
+            }
         }
-        WebElement element = driver.findElement(By.cssSelector("a.icon-doc"));
-        element.click();
-        WebElement formNameElem = driver.findElement(By.id("newFormName"));
-        formNameElem.sendKeys("CREATE_CASE");
+        WebElement createForm = driver.findElement(By.cssSelector("a.icon-doc"));
+        createForm.click();
+        System.out.println("Selecting New Form Button");
+        WebElement formNameElem = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.id("newFormName")));
+        
+        if (formNameElem != null) {
+            formNameElem.sendKeys("CREATE_CASE");
+            System.out.println("Putting form Name");
+        } else {
+            System.out.println("FormName not found");
+        }
 
         WebElement dataButtonElem = driver.findElement(By.id("datButton"));
         WebElement runButtonElem = driver.findElement(By.id("runButton"));
@@ -103,36 +124,41 @@ public class FirstTest {
         WebElement dataLabelElem = driver.findElement(By.id("newDataLabel"));
         dataLabelElem.sendKeys("fieldText");
         dataButtonElem.click();
+        System.out.println("Setting field text");
         dataLabelElem.sendKeys("FieldNumber");
+        System.out.println("Selecting Field text");
         Select dropdown = new Select(driver.findElement(By.cssSelector("#new_form > div.formData > div:nth-child(2) > div:nth-child(2) > div.formDataRight > select")));
         dropdown.selectByValue("Number");
         dataButtonElem.click();
+        System.out.println("Setting field Number");
         dataLabelElem.sendKeys("FieldBoolean");
         dropdown.selectByValue("Boolean");
         dataButtonElem.click();
+        System.out.println("Setting field boolean ");
 
         runButtonElem.click();
+        System.out.println("Running create form");
         WebElement autorefreshElem = driver.findElement(By.id("auto_refresh_btn"));
         autorefreshElem.click();
+        System.out.println("Setting auto refresh");
 
-        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver d) {
-
-                List<WebElement> elements = d.findElements(By.cssSelector("treecontrol > ul > li > div > span"));
-                return FindElement(elements, "CREATE_CASE") != null;
-            }
-
-        });
-
+        elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
+        WebElement element = FindElement(elements, "CREATE_CASE");
+        System.out.println("Finding new form");
+        Assert.assertNotNull(formNameElem);
         driver.quit();
     }
 
     private WebElement FindElement(List<WebElement> elements, String containString) {
+        System.out.println("Init find");
         boolean found = false;
-        while (elements.iterator().hasNext() && !found) {
-            WebElement current = elements.iterator().next();
+        Iterator<WebElement> iterator = elements.iterator();
+
+        while (iterator.hasNext() && !found) {
+            System.out.println("ITERATION");
+            WebElement current = iterator.next();
             if (current.getText().contains(containString)) {
+                System.out.println("CREATE_CASE element just found");
                 return current;
             }
         }
