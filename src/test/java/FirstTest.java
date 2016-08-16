@@ -94,15 +94,7 @@ public class FirstTest {
             System.out.println("Elements founds");
             WebElement element = FindElement(elements, "CREATE_CASE");
             if (element != null) {
-                element.click();
-                System.out.println("CREATE_CASE element Clicked");
-                WebElement deleteFormButtonElem = driver.findElement(By.cssSelector("#classic a.icon-trash-empty"));
-                deleteFormButtonElem.click();
-                elements = driver.findElements(By.cssSelector("treecontrol > ul > li > div > span"));
-                element = FindElement(elements, "CREATE_CASE");
-                if (element == null) {
-                    System.out.println("CREATE_CASE element Deleted");
-                }
+                DeleteElement(element, driver);
             } else {
                 System.out.println("CREATE_CASE element not found");
             }
@@ -148,6 +140,19 @@ public class FirstTest {
         System.out.println("Finding new form");
         Assert.assertNotNull(formNameElem);
         driver.quit();
+    }
+
+    private void DeleteElement(WebElement element, WebDriver driver) {
+        List<WebElement> elements;
+        element.click();
+        System.out.println("CREATE_CASE element Clicked");
+        WebElement deleteFormButtonElem = driver.findElement(By.cssSelector("#classic a.icon-trash-empty"));
+        deleteFormButtonElem.click();
+        elements = driver.findElements(By.cssSelector("treecontrol > ul > li > div > span"));
+        element = FindElement(elements, "CREATE_CASE");
+        if (element == null) {
+            System.out.println("CREATE_CASE element Deleted");
+        }
     }
 
     private WebElement FindElement(List<WebElement> elements, String containString) {
