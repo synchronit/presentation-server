@@ -138,8 +138,8 @@ public class FirstTest {
         elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
         WebElement element = FindElement(elements, "CREATE_CASE");
         System.out.println("Finding new form");
-        Assert.assertNotNull(formNameElem);
         driver.quit();
+        Assert.assertNotNull(formNameElem);        
     }
 
     private void DeleteElement(WebElement element, WebDriver driver) {
