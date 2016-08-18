@@ -28,7 +28,7 @@ public class FirstTest {
     public static String appBaseUrl = "http://dev.synchronit.com/presentation-server-test/web/index.jsp";
     public static String localHostUrl = "http://localhost:8080/web/index.jsp";
 
-    @Test
+    /*@Test
     public void testSimple() throws Exception {
         // Create a new instance of the Firefox driver
         // Notice that the remainder of the code relies on the interface, 
@@ -80,30 +80,36 @@ public class FirstTest {
         Assert.assertNotNull(formNameElem);
 
         driver.quit();
-    }
-    
+    }*/
     @Test
     public void CreateFormTest() throws Exception {
         WebDriver driver = new FirefoxDriver();
 
         driver.get(FirstTest.localHostUrl);
         //driver.findElements(By.cssSelector("treecontrol > ul > li > div > span")); //
+        WebElement autorefreshElem = driver.findElement(By.id("auto_refresh_btn"));
         List<WebElement> elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
         System.out.println("Tree count elements is: " + elements.size());
+        autorefreshElem.click();
+        System.out.println("SETTING AUTO REFRESH");
         if (!elements.isEmpty()) {
             System.out.println("Elements founds");
             WebElement element = FindElement(elements, "CREATE_CASE");
             if (element != null) {
                 DeleteElement(element, driver);
+                WebElement notifycationElem = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#msgFooter[style=\"display: block;\"]")));
+                (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#msgFooter[style=\"display: none;\"]")));
+                System.out.println("CREATE_CASE element not Present");
             } else {
                 System.out.println("CREATE_CASE element not found");
             }
-        }
+        }//101, 104
+
         WebElement createForm = driver.findElement(By.cssSelector("a.icon-doc"));
         createForm.click();
         System.out.println("Selecting New Form Button");
-        WebElement formNameElem = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.id("newFormName")));
-        
+        WebElement formNameElem = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.id("newFormName")));
+
         if (formNameElem != null) {
             formNameElem.sendKeys("CREATE_CASE");
             System.out.println("Putting form Name");
@@ -113,7 +119,7 @@ public class FirstTest {
 
         WebElement dataButtonElem = driver.findElement(By.id("datButton"));
         WebElement runButtonElem = driver.findElement(By.id("runButton"));
-
+        
         WebElement dataLabelElem = driver.findElement(By.id("newDataLabel"));
         dataLabelElem.sendKeys("fieldText");
         dataButtonElem.click();
@@ -131,15 +137,44 @@ public class FirstTest {
 
         runButtonElem.click();
         System.out.println("Running create form");
-        WebElement autorefreshElem = driver.findElement(By.id("auto_refresh_btn"));
-        autorefreshElem.click();
-        System.out.println("Setting auto refresh");
 
-        elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
-        WebElement element = FindElement(elements, "CREATE_CASE");
+        //autorefreshElem.click();
+        //System.out.println("Setting auto refresh");
+////*[@id="classic"]/div/div/div/div/div/treecontrol/ul/li[20]/div/span
+        WebElement element = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//treecontrol//li//div/span[contains(text(), \"CREATE_CASE\")]")));
+        //WebElement element = FindElement(elements, "CREATE_CASE");
         System.out.println("Finding new form");
-        driver.quit();
-        Assert.assertNotNull(formNameElem);        
+        if (element != null) {
+            System.out.println("Form CREATE_CASE found!!! Ready to create Case");
+            element.click();
+            WebElement field1 = driver.findElement(By.xpath("//*[@id=\"form-content\"]/div/div[3]/div/div/div[2]/div/input"));
+            field1.sendKeys("CREATE_CASE field Text");
+            System.out.println("Field1 Set");
+            WebElement field2 = driver.findElement(By.xpath("//*[@id=\"form-content\"]/div/div[4]/div/div/div[2]/div/div/input"));
+            field2.sendKeys("5");
+            System.out.println("Field2 Set");
+            WebElement field3 = driver.findElement(By.xpath("//*[@id=\"form-content\"]/div/div[5]/div/div/div[2]/div/input"));
+            field3.click();
+            System.out.println("Field3 Set");
+            WebElement createButtonElem = driver.findElement(By.cssSelector("a[class=\"icon-create\"]"));
+            createButtonElem.click();
+            System.out.println("Creating case");
+            WebElement notifycationElem = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#msgFooter[style=\"display: block;\"]")));
+            System.out.println("Rsiving message");
+            WebElement msg = notifycationElem.findElement(By.cssSelector("#notificationMsg"));
+            
+            System.out.println(msg.getText());
+            System.out.println("Message contain code 101: " + msg.getText().contains("101"));
+            //DeleteElement(element, driver);
+            String message = msg.getText();
+            driver.quit();
+            Assert.assertEquals(true , message.contains("101"));
+            
+        }else{
+            driver.quit();
+            Assert.fail();
+        }
+                
     }
 
     private void DeleteElement(WebElement element, WebDriver driver) {
@@ -168,6 +203,7 @@ public class FirstTest {
                 return current;
             }
         }
+        System.out.println("CREATE_CASE element not found");
         return null;
     }
 }
