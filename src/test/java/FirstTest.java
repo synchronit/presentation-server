@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -73,7 +74,9 @@ public class FirstTest {
 
         // And now use this to visit Google
         driver.get(FirstTest.appBaseUrl);
-
+         (new WebDriverWait(driver, 30)).until(ExpectedConditions.alertIsPresent());
+        Alert alert = driver.switchTo().alert();
+        alert.accept();
         WebElement element = driver.findElement(By.cssSelector("a.icon-doc"));
         element.click();
         WebElement formNameElem = driver.findElement(By.id("newFormName"));
@@ -87,6 +90,9 @@ public class FirstTest {
 
         driver.get(FirstTest.appBaseUrl);
         //driver.findElements(By.cssSelector("treecontrol > ul > li > div > span")); //
+        (new WebDriverWait(driver, 30)).until(ExpectedConditions.alertIsPresent());
+        Alert alert = driver.switchTo().alert();
+        alert.accept();
         WebElement autorefreshElem = driver.findElement(By.id("auto_refresh_btn"));
         List<WebElement> elements = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("treecontrol > ul > li > div > span")));
         System.out.println("Tree count elements is: " + elements.size());
