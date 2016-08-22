@@ -77,10 +77,10 @@ public class FirstTest {
         WebElement element = driver.findElement(By.cssSelector("a.icon-doc"));
         element.click();
         WebElement formNameElem = driver.findElement(By.id("newFormName"));
-        Assert.assertNotNull(formNameElem);
-
         driver.quit();
+        Assert.assertNotNull(formNameElem);
     }
+
     @Test
     public void CreateFormTest() throws Exception {
         WebDriver driver = new FirefoxDriver();
@@ -119,7 +119,7 @@ public class FirstTest {
 
         WebElement dataButtonElem = driver.findElement(By.id("datButton"));
         WebElement runButtonElem = driver.findElement(By.id("runButton"));
-        
+
         WebElement dataLabelElem = driver.findElement(By.id("newDataLabel"));
         dataLabelElem.sendKeys("fieldText");
         dataButtonElem.click();
@@ -162,19 +162,19 @@ public class FirstTest {
             WebElement notifycationElem = (new WebDriverWait(driver, 30)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#msgFooter[style=\"display: block;\"]")));
             System.out.println("Rsiving message");
             WebElement msg = notifycationElem.findElement(By.cssSelector("#notificationMsg"));
-            
+
             System.out.println(msg.getText());
             System.out.println("Message contain code 101: " + msg.getText().contains("101"));
             //DeleteElement(element, driver);
             String message = msg.getText();
             driver.quit();
-            Assert.assertEquals(true , message.contains("101"));
-            
-        }else{
+            Assert.assertEquals(true, message.contains("101"));
+
+        } else {
             driver.quit();
             Assert.fail();
         }
-                
+
     }
 
     private void DeleteElement(WebElement element, WebDriver driver) {
