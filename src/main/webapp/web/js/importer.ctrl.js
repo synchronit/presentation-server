@@ -276,19 +276,18 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 var elemetBaseAttr = $(input).attr('data-base');
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    
+
                     var matrix = elemetIdAttr.split('_')[1].split('-');
                     $.json_array.data[matrix[0]][matrix[1]] = e.target.result;
-                    console.log($.json_array.data[matrix[0]][matrix[1]]);
+                    //console.log($.json_array.data[matrix[0]][matrix[1]]);
                 }
-                if(elemetBaseAttr.toString().trim() == 'base64'){
+                if (elemetBaseAttr.toString().trim() == 'base64') {
                     reader.readAsDataURL(input.files[0]);
-                }
-                else{
+                } else {
                     reader.readAsText(input.files[0]);
                 }
                 /**Leer en base64 en dependencia del parametro del input*/
-                
+
             });
         }
         //carga fichero y contenido en el textarea
@@ -546,7 +545,7 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
             $('#currentItem').html('');
             $('#stackTrace').html('');
 
-            var total = $.json_array.data.length;
+            var total = !$.mappingObj.isFirstColumnHeading ? $.json_array.data.length : $.json_array.data.length - 1;
             var progressValue = 0;
             var failureCount = 0;
             $('#stackTrace').children().remove();
