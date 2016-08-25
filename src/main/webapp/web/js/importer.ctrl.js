@@ -78,7 +78,6 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 });
                 del_button.appendTo(rowData);
                 for (var k = 0; k < columnCount(); k++) {
-
                     var columnElement = $.json_array.data[i][k];
                     if (columnElement != undefined && columnElement.toString().trim() === '#image') {
                         columnElement = '<input type="file" id="column_' + i + '-' + k + '" data-base="base64" base-sixty-four-input>';
