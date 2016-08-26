@@ -8,6 +8,7 @@ import java.io.Console;
 import java.util.Iterator;
 import java.util.List;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -29,7 +30,8 @@ public class FirstTest {
     public static String appBaseUrl = "http://dev.synchronit.com/presentation-server-test/web/index.jsp";
     public static String localHostUrl = "http://localhost:8080/web/index.jsp";
 
-    /*@Test
+    @Ignore
+    @Test
     public void testSimple() throws Exception {
         // Create a new instance of the Firefox driver
         // Notice that the remainder of the code relies on the interface, 
@@ -67,7 +69,8 @@ public class FirstTest {
         //Close the browser
         driver.quit();
     }
-
+    
+    
     @Test
     public void NewFormButtonTest() throws Exception {
         WebDriver driver = new FirefoxDriver();
@@ -181,7 +184,7 @@ public class FirstTest {
             Assert.fail();
         }
 
-    }*/
+    }
 
     private void DeleteElement(WebElement element, WebDriver driver) {
         List<WebElement> elements;
