@@ -25,6 +25,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author jvega
  */
+@Ignore
 public class FirstTest {
 
     public static String appBaseUrl = "http://dev.synchronit.com/presentation-server-test/web/index.jsp";
