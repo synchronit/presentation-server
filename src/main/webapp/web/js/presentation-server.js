@@ -160,7 +160,7 @@ function parse_forms_response(response)
     var setValue = function (dataType)
     {
         if (dataType == "BOOLEAN")
-            return false;
+            return false;        
         else
             return '';
     }

@@ -20,6 +20,9 @@
             <img img-id="{{data.label}}" ng-src="{{onInputLoad(data.value, data.label)}}" alt="{{data.value.filename}}" 
                  title="{{data.value.filename}}" ng-click="clickImg(data.label)" class="img-thumbnail">
         </div>
+        <div ng-switch-when="DATE"> 
+            <input type="date" ng-model='data.value'>
+        </div>
         <div ng-switch-default>       
             <input type="text"     ng-model="data.value">
         </div> 

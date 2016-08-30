@@ -428,6 +428,8 @@ form_content.controller
 
                             if (type == "NUMBER")
                                 typedValue = Number(value);
+                            if(type == "DATE")
+                                typedValue = new Date(value);
                             if (type == "BOOLEAN")
                             {
                                 if (typeof value == "string")

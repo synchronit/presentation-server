@@ -82,6 +82,9 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                     if (columnElement != undefined && columnElement.toString().trim() === '#image') {
                         columnElement = '<input type="file" id="column_' + i + '-' + k + '" data-base="base64" base-sixty-four-input>';
                     }
+                    if (columnElement != undefined && columnElement.toString().trim() === '#date') {
+                        columnElement = '<input type="date" id="column_' + i + '-' + k + '" >';
+                    }
                     $('<td>' + columnElement + '</td>').appendTo(rowData);
                 }
                 $("table#table_mapping tbody").append(rowData);
@@ -287,6 +290,13 @@ wholeApp.controller('importerController', ['$scope', '$http', 'broadcastService'
                 }
                 /**Leer en base64 en dependencia del parametro del input*/
 
+            });
+
+            $('input[type="date"]', '#table_mapping').bind('change', function (event) {
+                var input = event.target;
+                var elemetIdAttr = $(input).attr('id');
+                var matrix = elemetIdAttr.split('_')[1].split('-');
+                $.json_array.data[matrix[0]][matrix[1]] = $(input).val();
             });
         }
         //carga fichero y contenido en el textarea
