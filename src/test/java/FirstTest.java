@@ -28,7 +28,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @Ignore
 public class FirstTest {
 
-    public static String appBaseUrl = "http://dev.synchronit.com/presentation-server-test/web/index.jsp";
+    public static String appBaseUrl = "/presentation-server-test/web/index.jsp";
     public static String localHostUrl = "http://localhost:8080/web/index.jsp";
 
     @Ignore

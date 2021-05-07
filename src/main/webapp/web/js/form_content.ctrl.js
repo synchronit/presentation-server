@@ -312,8 +312,8 @@ form_content.controller
                             } else
                             {
                                 /**TODO: Aqui se puede hacer un Get case MyForm (Fql_Id, A, B, C, Fql_Version)*/
-                                //var fqlStmt = "Get " + form.label + "(" + $scope.getLabelDataList(data, " ") + ")";
-                                var fqlStmt = "Get " + form.label;
+                                var fqlStmt = "Get " + form.label + "(" + $scope.getLabelDataList(data, " ") + ")";
+                                //var fqlStmt = "Get " + form.label;
                                 var withCondition = $scope.getDataWithList(data, " ");
                                 fqlStmt += (withCondition) ? " with " + withCondition : "";
 // console.log(fqlStmt);							

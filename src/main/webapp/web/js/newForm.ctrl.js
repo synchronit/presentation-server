@@ -166,7 +166,7 @@ wholeApp.controller('newFormController', ['$scope', '$http', 'broadcastService',
 //
 	$scope.executeFQL = function(stmt, callback, params)
 	{	
-	    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command="+stmt)
+	    $http.get("/appbase-webconsole/json?command="+stmt)
 	    .success(function(response) {callback(response, stmt, params);});	    
 	}
 

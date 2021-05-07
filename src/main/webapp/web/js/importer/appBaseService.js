@@ -1,6 +1,6 @@
 $.extend({
     appBaseService: new function () {
-        var appBaseUrl = 'http://dev.synchronit.com/appbase-webconsole/json';
+        var appBaseUrl = '/appbase-webconsole/json';
         var self = this;
         self.HttpVerb = {
             POST: 'POST',

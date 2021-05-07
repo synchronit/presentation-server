@@ -95,12 +95,12 @@
 						            };
 									$scope.load_forms = function()
 									{
-									    $http.get("http://dev.synchronit.com/appbase-webconsole/json?command=show%20forms")
+									    $http.get("/appbase-webconsole/json?command=show%20forms")
 									    .success(function(response) {$scope.treedata = render_forms_response(response);});
 						
 						/**  
 						 *				$.ajax({
-						 *				  url: "http://dev.synchronit.com/appbase-webconsole/json?command=show%20forms"
+						 *				  url: "/appbase-webconsole/json?command=show%20forms"
 						 *				})
 						 *				  .done(function( data ) {
 						 *					  if(data.code == 100)

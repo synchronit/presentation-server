@@ -4,7 +4,7 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
 
     service.executeFQL = function (stmt, callback, params)
     {
-        $http.get("http://dev.synchronit.com/appbase-webconsole/json?command=" + stmt)
+        $http.get("/appbase-webconsole/json?command=" + stmt)
                 .then(function (response) {
                     callback(response, stmt, params);
                 },
@@ -17,7 +17,7 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
 
         $.ajax({
             type: 'POST',
-            url: "http://dev.synchronit.com/appbase-webconsole/json",
+            url: "/appbase-webconsole/json",
             cache: false,
             data: {command: stmt},
             success: function (response) {
@@ -30,7 +30,7 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
 
         /*var request = $http({
          method: "POST",
-         url: "http://dev.synchronit.com/appbase-webconsole/json",
+         url: "/appbase-webconsole/json",
          headers: {
          'Content-Type': 'application/x-www-form-urlencoded'
          },
@@ -44,7 +44,7 @@ angular.module('FQLService', []).factory('FQLService', function ($rootScope, $ht
          }
          );*/
 
-        /* $http.post("http://dev.synchronit.com/appbase-webconsole/json", {command: stmt})
+        /* $http.post("/appbase-webconsole/json", {command: stmt})
          .then(function (response) {
          callback(response, stmt, params);
          },
